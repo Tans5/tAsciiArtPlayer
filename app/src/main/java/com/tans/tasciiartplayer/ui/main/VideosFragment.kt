@@ -88,7 +88,7 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
                     video = it,
                     loadModel = MediaImageModel(
                         mediaFilePath = it.file?.canonicalPath ?: "",
-                        targetPosition = 10000L,
+                        targetPosition = it.duration / 10L,
                         keyId = it.id
                     )
                 )

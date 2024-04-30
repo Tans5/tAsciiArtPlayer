@@ -40,7 +40,7 @@ class PlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
     override fun bindContentView(view: View) {
         val playerView = this.playerView ?: return
         val viewBinding = PlayerSettingsDialogBinding.bind(view)
-
+        val ctx = requireContext()
         viewBinding.cropImageSw.isChecked = playerView.getScaleType() == tMediaPlayerView.Companion.ScaleType.CenterCrop
         viewBinding.cropImageSw.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -82,7 +82,7 @@ class PlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
                     asciiArtFilter.setCharLineWidth(requestWidth)
                     playerView.requestRender()
                 }
-                viewBinding.charWidthTv.text = "Char Width: $requestWidth"
+                viewBinding.charWidthTv.text = ctx.getString(R.string.setting_ascii_char_width, requestWidth)
             }
         })
         viewBinding.charWidthSb.progress = ((asciiArtFilter.getCharLineWith().toFloat() - AsciiArtImageFilter.MIN_CHAR_LINE_WIDTH.toFloat()) / (AsciiArtImageFilter.MAX_CHAR_LINE_WIDTH - AsciiArtImageFilter.MIN_CHAR_LINE_WIDTH).toFloat() * 100.0f + 0.5f).toInt()
@@ -97,7 +97,7 @@ class PlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
                     asciiArtFilter.colorFillRate(requestRate)
                     playerView.requestRender()
                 }
-                viewBinding.imageColorFillRateTv.text = "Image Color Fill Rate: $progress"
+                viewBinding.imageColorFillRateTv.text = ctx.getString(R.string.setting_ascii_image_color_fill_rate, progress)
             }
         })
         viewBinding.imageColorFillRateSb.progress = (asciiArtFilter.getColorFillRate() * 100.0f + 0.5f).toInt()

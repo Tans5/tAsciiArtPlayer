@@ -32,7 +32,7 @@
         android:id="@+id/action_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#55333333"
+        android:background="@color/black_transparent"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -128,8 +128,5 @@
                 android:src="@drawable/icon_play"/>
             
         </FrameLayout>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

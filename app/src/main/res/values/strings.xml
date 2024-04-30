@@ -1,3 +1,30 @@
 <resources>
     <string name="app_name">tAsciiArtPlayer</string>
+
+    <!--region MediaInfoDialog-->
+    <string name="media_info_metadata_title">Metadata</string>
+    <string name="media_info_video_title">Video</string>
+    <string name="media_info_audio_title">Audio</string>
+    <string name="media_info_codec">Codec: %s</string>
+    <string name="media_info_resolution">Resolution: %s</string>
+    <string name="media_info_fps">Fps: %.1f</string>
+    <string name="media_info_channels">Channels: %d</string>
+    <string name="media_info_simple_rate">SampleRate: %d Hz</string>
+    <string name="media_info_per_simple_bytes">PerSimpleBytes: %d Bytes</string>
+    <!--endregion-->
+
+    <!--region PlayerSettingsDialog-->
+    <string name="setting_crop_image">Crop Image: </string>
+    <string name="setting_ascii_filter">Ascii Filter: </string>
+    <string name="setting_ascii_filter_settings">Ascii Filter Settings: </string>
+    <string name="setting_ascii_char_reverse">Char Reverse: </string>
+    <string name="setting_ascii_color_reverse">Color Reverse: </string>
+    <string name="setting_ascii_char_width">Char Width: %d</string>
+    <string name="setting_ascii_image_color_fill_rate">Image Color Fill Rate: %d</string>
+    <!--endregion-->
+
+    <!--region MainActivity -->
+    <string name="main_act_videos_tab">VIDEOS</string>
+    <string name="main_act_audios_tab">AUDIOS</string>
+    <!--endregion MainActivity -->
 </resources>

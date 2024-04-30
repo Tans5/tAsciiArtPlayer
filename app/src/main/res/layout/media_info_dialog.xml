@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/settings_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#55333333"
+    android:background="@color/black_transparent"
     android:padding="5dp"
     android:layout_gravity="center_vertical|end"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -26,7 +26,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Metadata"
+                android:text="@string/media_info_metadata_title"
                 android:textSize="14sp"
                 android:textColor="@color/white" />
 
@@ -49,7 +49,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Video"
+                android:text="@string/media_info_video_title"
                 android:textSize="14sp"
                 android:textColor="@color/white"
                 android:layout_marginTop="5dp" />
@@ -74,7 +74,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Audio"
+                android:text="@string/media_info_audio_title"
                 android:textSize="14sp"
                 android:textColor="@color/white"
                 android:layout_marginTop="5dp" />

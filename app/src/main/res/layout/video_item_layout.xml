@@ -52,7 +52,7 @@
             android:ellipsize="end"
             android:lineSpacingExtra="3dp"
             android:textSize="14sp"
-            android:textColor="#333333"
+            android:textColor="@color/black1"
             android:gravity="center_vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

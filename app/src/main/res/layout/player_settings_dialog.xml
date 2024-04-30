@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/settings_layout"
+<androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/settings_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#55333333"
+    android:background="@color/black_transparent"
     android:padding="5dp"
     android:layout_gravity="center_vertical|end"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -32,7 +32,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Crop Image: "
+                    android:text="@string/setting_crop_image"
                     android:textColor="@color/white"/>
 
                 <androidx.appcompat.widget.SwitchCompat
@@ -51,7 +51,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ascii Filter: "
+                    android:text="@string/setting_ascii_filter"
                     android:textColor="@color/white"/>
 
                 <androidx.appcompat.widget.SwitchCompat
@@ -69,7 +69,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ascii Filter Settings:"
+                android:text="@string/setting_ascii_filter_settings"
                 android:layout_marginTop="12dp"
                 android:textColor="@color/white"/>
 
@@ -83,7 +83,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Char Reverse: "
+                    android:text="@string/setting_ascii_char_reverse"
                     android:textColor="@color/white"/>
 
                 <androidx.appcompat.widget.SwitchCompat
@@ -102,7 +102,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Color Reverse: "
+                    android:text="@string/setting_ascii_color_reverse"
                     android:textColor="@color/white"/>
 
                 <androidx.appcompat.widget.SwitchCompat
@@ -121,7 +121,7 @@
                     android:id="@+id/char_width_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Char Width: 128"
+                    tools:text="Char Width: 128"
                     android:textColor="@color/white"/>
 
                 <androidx.appcompat.widget.AppCompatSeekBar
@@ -142,7 +142,7 @@
                     android:id="@+id/image_color_fill_rate_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Image Color Fill Rate: 0"
+                    tools:text="Image Color Fill Rate: 0"
                     android:textColor="@color/white"/>
 
                 <androidx.appcompat.widget.AppCompatSeekBar

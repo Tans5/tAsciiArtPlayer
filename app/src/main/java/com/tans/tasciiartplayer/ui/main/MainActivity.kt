@@ -65,8 +65,8 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
             })
             TabLayoutMediator(viewBinding.tabLayout, viewBinding.viewPager) { tab, position ->
                 tab.text = when (TabType.entries[position]) {
-                    TabType.Videos -> "VIDEOS"
-                    TabType.Audios -> "AUDIOS"
+                    TabType.Videos -> getString(R.string.main_act_videos_tab)
+                    TabType.Audios -> getString(R.string.main_act_audios_tab)
                 }
             }.attach()
         }

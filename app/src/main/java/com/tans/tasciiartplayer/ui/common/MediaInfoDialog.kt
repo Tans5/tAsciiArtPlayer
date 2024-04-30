@@ -46,6 +46,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
     override fun bindContentView(view: View) {
         val mediaInfo = this.mediaInfo ?: return
         val viewBinding = MediaInfoDialogBinding.bind(view)
+        val ctx = requireContext()
 
         viewBinding.metadataRv.adapter = SimpleAdapterBuilderImpl<String>(
             itemViewCreator = SingleItemViewCreatorImpl(R.layout.media_info_item_layout),
@@ -61,9 +62,9 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
             dataSource = FlowDataSourceImpl(flow {
                 val result = mutableListOf<String>()
                 mediaInfo.videoStreamInfo?.let {
-                    result.add("Codec: ${it.videoCodec}")
-                    result.add("Resolution: ${it.videoWidth}x${it.videoHeight}")
-                    result.add("Fps: ${String.format("%.1f", it.videoFps)}")
+                    result.add(ctx.getString(R.string.media_info_codec, it.videoCodec.toString()))
+                    result.add(ctx.getString(R.string.media_info_resolution, "${it.videoWidth}x${it.videoHeight}"))
+                    result.add(ctx.getString(R.string.media_info_fps, it.videoFps))
                 }
                 emit(result)
             }),
@@ -78,10 +79,10 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
             dataSource = FlowDataSourceImpl(flow {
                 val result = mutableListOf<String>()
                 mediaInfo.audioStreamInfo?.let {
-                    result.add("Codec: ${it.audioCodec}")
-                    result.add("Channels: ${it.audioChannels}")
-                    result.add("SimpleRate: ${it.audioSimpleRate} Hz")
-                    result.add("PerSimpleBytes: ${it.audioPerSampleBytes} Bytes")
+                    result.add(ctx.getString(R.string.media_info_codec, it.audioCodec.toString()))
+                    result.add(ctx.getString(R.string.media_info_channels, it.audioChannels))
+                    result.add(ctx.getString(R.string.media_info_simple_rate, it.audioSimpleRate))
+                    result.add(ctx.getString(R.string.media_info_per_simple_bytes, it.audioPerSampleBytes))
                 }
                 emit(result)
             }),
