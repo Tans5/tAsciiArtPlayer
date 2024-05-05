@@ -65,6 +65,13 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
                     result.add(ctx.getString(R.string.media_info_codec, it.videoCodec.toString()))
                     result.add(ctx.getString(R.string.media_info_resolution, "${it.videoWidth}x${it.videoHeight}"))
                     result.add(ctx.getString(R.string.media_info_fps, it.videoFps))
+                    if (it.videoBitrate > 0) {
+                        result.add(ctx.getString(R.string.media_info_bitrate, it.videoBitrate / 1024))
+                    }
+                    if (it.videoPixelBitDepth > 0) {
+                        result.add(ctx.getString(R.string.media_info_pixel_depth, it.videoPixelBitDepth))
+                    }
+                    result.add(ctx.getString(R.string.media_info_pixel_format, it.videoPixelFormat.name))
                 }
                 emit(result)
             }),
@@ -82,7 +89,13 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
                     result.add(ctx.getString(R.string.media_info_codec, it.audioCodec.toString()))
                     result.add(ctx.getString(R.string.media_info_channels, it.audioChannels))
                     result.add(ctx.getString(R.string.media_info_simple_rate, it.audioSimpleRate))
-                    result.add(ctx.getString(R.string.media_info_per_simple_bytes, it.audioPerSampleBytes))
+                    if (it.audioBitrate > 0) {
+                        result.add(ctx.getString(R.string.media_info_bitrate, it.audioBitrate / 1024))
+                    }
+                    if (it.audioSampleBitDepth > 0) {
+                        result.add(ctx.getString(R.string.media_info_simple_depth, it.audioSampleBitDepth))
+                    }
+                    result.add(ctx.getString(R.string.media_info_simple_format, it.audioSampleFormat.name))
                 }
                 emit(result)
             }),

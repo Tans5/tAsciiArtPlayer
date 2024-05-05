@@ -13,12 +13,12 @@
         android:fitsSystemWindows="true"
         android:background="@color/white">
 
-        <Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:title="@string/app_name"
-            android:titleTextColor="#333333"/>
+            android:titleTextColor="@color/black1"
+            app:title="@string/app_name" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"

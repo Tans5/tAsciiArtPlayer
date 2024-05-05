@@ -8,9 +8,13 @@
     <string name="media_info_codec">Codec: %s</string>
     <string name="media_info_resolution">Resolution: %s</string>
     <string name="media_info_fps">Fps: %.1f</string>
+    <string name="media_info_pixel_depth">PixelBitDepth: %d bits</string>
+    <string name="media_info_pixel_format">PixelFormat: %s</string>
     <string name="media_info_channels">Channels: %d</string>
     <string name="media_info_simple_rate">SampleRate: %d Hz</string>
-    <string name="media_info_per_simple_bytes">PerSimpleBytes: %d Bytes</string>
+    <string name="media_info_bitrate">Bitrate: %d kbps</string>
+    <string name="media_info_simple_depth">SampleBitDepth: %d bits</string>
+    <string name="media_info_simple_format">SimpleFormat: %s</string>
     <!--endregion-->
 
     <!--region PlayerSettingsDialog-->

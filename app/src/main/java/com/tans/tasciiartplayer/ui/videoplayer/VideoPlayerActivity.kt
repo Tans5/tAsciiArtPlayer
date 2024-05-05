@@ -14,6 +14,8 @@ import com.tans.tasciiartplayer.ui.common.MediaInfoDialog
 import com.tans.tasciiartplayer.ui.common.PlayerSettingsDialog
 import com.tans.tmediaplayer.player.OptResult
 import com.tans.tmediaplayer.frameloader.tMediaFrameLoader
+import com.tans.tmediaplayer.player.AudioSampleBitDepth
+import com.tans.tmediaplayer.player.AudioSampleRate
 import com.tans.tmediaplayer.player.tMediaPlayer
 import com.tans.tmediaplayer.player.tMediaPlayerListener
 import com.tans.tmediaplayer.player.tMediaPlayerState
@@ -31,7 +33,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
     override val layoutId: Int = R.layout.video_player_activity
 
     private val mediaPlayer: tMediaPlayer by lazyViewModelField("mediaPlayer") {
-        tMediaPlayer()
+        tMediaPlayer(audioOutputSampleRate = AudioSampleRate.Rate96000, audioOutputSampleBitDepth = AudioSampleBitDepth.ThreeTwoBits)
     }
 
     private fun View.isVisible(): Boolean = this.visibility == View.VISIBLE
