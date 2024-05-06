@@ -55,7 +55,7 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
                     .into(itemViewBinding.videoIv)
 
                 itemViewBinding.root.clicks(this) {
-                    startActivity(VideoPlayerActivity.createIntent(requireActivity(), video.file?.canonicalPath ?: ""))
+                    startActivity(VideoPlayerActivity.createIntent(requireActivity(), video.id,  video.file?.canonicalPath ?: ""))
                 }
             }
         ).build()

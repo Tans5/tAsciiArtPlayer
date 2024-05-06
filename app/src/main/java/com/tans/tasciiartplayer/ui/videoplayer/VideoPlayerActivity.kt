@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.SeekBar
 import androidx.activity.addCallback
 import com.tans.tasciiartplayer.R
+import com.tans.tasciiartplayer.VideosManager
 import com.tans.tasciiartplayer.databinding.VideoPlayerActivityBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.ui.common.MediaInfoDialog
@@ -205,20 +206,30 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
     override fun onViewModelCleared() {
         super.onViewModelCleared()
+        val info = mediaPlayer.getMediaInfo()
+        if (info != null) {
+            val mediaId = intent.getMediaIdExtra()
+            val progress = mediaPlayer.getProgress()
+            VideosManager.updateOrInsertWatchHistory(videoId = mediaId, watchHistory = progress)
+        }
         mediaPlayer.release()
     }
 
     companion object {
 
         private const val MEDIA_FILE_EXTRA = "media_file_extra"
+        private const val MEDIA_ID_EXTRA = "media_id_extra"
 
-        fun createIntent(context: Context, mediaFile: String): Intent {
+        fun createIntent(context: Context, mediaId: Long, mediaFile: String): Intent {
             val intent = Intent(context, VideoPlayerActivity::class.java)
+            intent.putExtra(MEDIA_ID_EXTRA, mediaId)
             intent.putExtra(MEDIA_FILE_EXTRA, mediaFile)
             return intent
         }
 
         private fun Intent.getMediaFileExtra(): String = this.getStringExtra(MEDIA_FILE_EXTRA) ?: ""
+
+        private fun Intent.getMediaIdExtra(): Long = this.getLongExtra(MEDIA_ID_EXTRA, 0L)
 
         data class Progress(
             val progress: Long = 0L,
