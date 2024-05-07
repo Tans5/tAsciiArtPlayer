@@ -9,20 +9,20 @@ import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.databinding.VideoItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.VideosFragmentBinding
 import com.tans.tasciiartplayer.formatDuration
-import com.tans.tasciiartplayer.glide.MediaImageModel
 import com.tans.tasciiartplayer.ui.videoplayer.VideoPlayerActivity
+import com.tans.tasciiartplayer.video.VideoManager
+import com.tans.tasciiartplayer.video.VideoModel
 import com.tans.tuiutils.adapter.impl.builders.SimpleAdapterBuilderImpl
 import com.tans.tuiutils.adapter.impl.databinders.DataBinderImpl
 import com.tans.tuiutils.adapter.impl.datasources.FlowDataSourceImpl
 import com.tans.tuiutils.adapter.impl.viewcreatators.SingleItemViewCreatorImpl
 import com.tans.tuiutils.dialog.dp2px
 import com.tans.tuiutils.fragment.BaseCoroutineStateFragment
-import com.tans.tuiutils.mediastore.MediaStoreVideo
-import com.tans.tuiutils.mediastore.queryVideoFromMediaStore
 import com.tans.tuiutils.view.clicks
 import com.tans.tuiutils.view.refreshes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -31,29 +31,50 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
     override val layoutId: Int = R.layout.videos_fragment
 
     override fun CoroutineScope.firstLaunchInitDataCoroutine() {
-        launch { refreshVideos() }
+
+        launch {
+            VideoManager.refreshMediaStoreVideos()
+        }
+
+        launch {
+            VideoManager.stateFlow
+                .map { it.videos.sortedByDescending { mv -> mv.mediaStoreVideo.dateModified } }
+                .distinctUntilChanged()
+                .collect { videos -> updateState { it.copy(videos = videos) } }
+        }
     }
 
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
         val viewBinding = VideosFragmentBinding.bind(contentView)
         viewBinding.refreshLayout.refreshes(this, Dispatchers.IO) {
-            refreshVideos()
+            VideoManager.refreshMediaStoreVideos()
         }
+        val ctx = requireContext()
         val glideLoadManager = Glide.with(this@VideosFragment)
         glideLoadManager.resumeRequests()
-        val adapter = SimpleAdapterBuilderImpl<VideoAndLoadModel>(
+        val adapter = SimpleAdapterBuilderImpl(
             itemViewCreator = SingleItemViewCreatorImpl(R.layout.video_item_layout),
-            dataSource = FlowDataSourceImpl(stateFlow().map { it.videos }),
-            dataBinder = DataBinderImpl { (video, loadModel), view, _ ->
+            dataSource = FlowDataSourceImpl(
+                dataFlow = stateFlow().map { it.videos },
+                getDataItemIdParam = { d, _ -> d.mediaStoreVideo.id },
+                areDataItemsTheSameParam = { d1, d2 -> d1.mediaStoreVideo.id == d2.mediaStoreVideo.id },
+                getDataItemsChangePayloadParam = { d1, d2 -> if (d1.mediaStoreVideo == d2.mediaStoreVideo && d1.lastWatch != d2.lastWatch) Unit else null }
+            ),
+            dataBinder = DataBinderImpl<VideoModel> { (video, _, _), view, _ ->
                 val itemViewBinding = VideoItemLayoutBinding.bind(view)
                 itemViewBinding.videoTitleTv.text = video.displayName
-                itemViewBinding.videoDurationTv.text = video.duration.formatDuration()
+            }.addPayloadDataBinder(Unit) { (video, loadModel, lastWatch), view, _ ->
+                val itemViewBinding = VideoItemLayoutBinding.bind(view)
                 glideLoadManager
                     .load(loadModel)
                     .error(R.drawable.ic_movie)
                     .placeholder(R.drawable.ic_movie)
                     .into(itemViewBinding.videoIv)
-
+                if (lastWatch == null) {
+                    itemViewBinding.videoLastWatchAndDurationTv.text = video.duration.formatDuration()
+                } else {
+                    itemViewBinding.videoLastWatchAndDurationTv.text = ctx.getString(R.string.video_watch_history_and_duration, lastWatch.formatDuration(), video.duration.formatDuration())
+                }
                 itemViewBinding.root.clicks(this) {
                     startActivity(VideoPlayerActivity.createIntent(requireActivity(), video.id,  video.file?.canonicalPath ?: ""))
                 }
@@ -79,34 +100,10 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
         }
     }
 
-    private fun refreshVideos() {
-        val videos = queryVideoFromMediaStore()
-            .sortedByDescending { it.dateModified }
-            .filter { it.file != null }
-            .map {
-                VideoAndLoadModel(
-                    video = it,
-                    loadModel = MediaImageModel(
-                        mediaFilePath = it.file?.canonicalPath ?: "",
-                        targetPosition = it.duration / 10L,
-                        keyId = it.id
-                    )
-                )
-            }
-        updateState {
-            it.copy(videos = videos)
-        }
-    }
-
     companion object {
 
-        data class VideoAndLoadModel(
-            val video: MediaStoreVideo,
-            val loadModel: MediaImageModel
-        )
-
         data class State(
-            val videos: List<VideoAndLoadModel> = emptyList()
+            val videos: List<VideoModel> = emptyList()
         )
     }
 }

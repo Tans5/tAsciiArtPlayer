@@ -31,4 +31,8 @@
     <string name="main_act_videos_tab">VIDEOS</string>
     <string name="main_act_audios_tab">AUDIOS</string>
     <!--endregion MainActivity -->
+
+    <!--region VideosFragment-->
+    <string name="video_watch_history_and_duration">%s / %s</string>
+    <!--endregion-->
 </resources>

@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.SeekBar
 import androidx.activity.addCallback
 import com.tans.tasciiartplayer.R
-import com.tans.tasciiartplayer.VideosManager
+import com.tans.tasciiartplayer.video.VideoManager
 import com.tans.tasciiartplayer.databinding.VideoPlayerActivityBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.ui.common.MediaInfoDialog
@@ -209,8 +209,13 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
         val info = mediaPlayer.getMediaInfo()
         if (info != null) {
             val mediaId = intent.getMediaIdExtra()
-            val progress = mediaPlayer.getProgress()
-            VideosManager.updateOrInsertWatchHistory(videoId = mediaId, watchHistory = progress)
+            val state = mediaPlayer.getState()
+            if (state is tMediaPlayerState.Stopped || state is tMediaPlayerState.PlayEnd) {
+                VideoManager.updateOrInsertWatchHistory(videoId = mediaId, watchHistory = info.duration)
+            } else {
+                val progress = mediaPlayer.getProgress()
+                VideoManager.updateOrInsertWatchHistory(videoId = mediaId, watchHistory = progress)
+            }
         }
         mediaPlayer.release()
     }

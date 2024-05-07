@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import com.tans.tasciiartplayer.database.AppDatabase
 import com.tans.tasciiartplayer.database.AppDatabaseMigration
+import com.tans.tasciiartplayer.video.VideoManager
 import com.tans.tuiutils.systembar.AutoApplySystemBarAnnotation
 
 class App : Application() {
@@ -18,6 +19,6 @@ class App : Application() {
         ).addMigrations(AppDatabaseMigration)
             .build()
 
-        VideosManager.init(this, database.videoDao())
+        VideoManager.init(this, database.videoDao())
     }
 }
