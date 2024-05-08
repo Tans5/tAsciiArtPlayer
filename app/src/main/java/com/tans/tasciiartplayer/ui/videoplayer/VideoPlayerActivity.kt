@@ -37,22 +37,6 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
         tMediaPlayer(audioOutputSampleRate = AudioSampleRate.Rate96000, audioOutputSampleBitDepth = AudioSampleBitDepth.ThreeTwoBits)
     }
 
-    private fun View.isVisible(): Boolean = this.visibility == View.VISIBLE
-
-    private fun View.isInvisible(): Boolean = !isVisible()
-
-    private fun View.hide() {
-        if (isVisible()) {
-            this.visibility = View.GONE
-        }
-    }
-
-    private fun View.show() {
-        if (isInvisible()) {
-            this.visibility = View.VISIBLE
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback {
@@ -109,9 +93,9 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
         renderStateNewCoroutine({ it.playerState }) { playerState ->
             if (playerState is tMediaPlayerState.Seeking) {
-                viewBinding.seekingLoadingPb.visibility = View.VISIBLE
+                viewBinding.seekingLoadingPb.show()
             } else {
-                viewBinding.seekingLoadingPb.visibility = View.GONE
+                viewBinding.seekingLoadingPb.hide()
             }
 
             val fixedState = when (playerState) {
@@ -119,32 +103,25 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 else -> playerState
             }
             if (fixedState is tMediaPlayerState.Playing) {
-                viewBinding.pauseIv.visibility = View.VISIBLE
+                viewBinding.pauseIv.show()
             } else {
-                viewBinding.pauseIv.visibility = View.GONE
+                viewBinding.pauseIv.hide()
             }
 
             if (fixedState is tMediaPlayerState.Prepared ||
                 fixedState is tMediaPlayerState.Paused ||
                 fixedState is tMediaPlayerState.Stopped
             ) {
-                viewBinding.playIv.visibility = View.VISIBLE
+                viewBinding.playIv.show()
             } else {
-                viewBinding.playIv.visibility = View.GONE
+                viewBinding.playIv.hide()
             }
 
             if (fixedState is tMediaPlayerState.PlayEnd) {
-                viewBinding.replayIv.visibility = View.VISIBLE
-            } else {
-                viewBinding.replayIv.visibility = View.GONE
-            }
-        }
-
-        viewBinding.rootLayout.clicks(this) {
-            if (viewBinding.actionLayout.isVisible()) {
-                viewBinding.actionLayout.hide()
-            } else {
+                viewBinding.replayIv.show()
                 viewBinding.actionLayout.show()
+            } else {
+                viewBinding.replayIv.hide()
             }
         }
 
@@ -194,7 +171,13 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             d.show(supportFragmentManager, "PlayerSettingsDialog#${System.currentTimeMillis()}}")
         }
 
-        viewBinding.actionLayout.setOnClickListener {  }
+        viewBinding.playerView.clicks(this) {
+            viewBinding.actionLayout.show()
+        }
+
+        viewBinding.actionLayout.clicks(this) {
+            viewBinding.actionLayout.hide()
+        }
     }
 
     override fun onPause() {
@@ -218,6 +201,22 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             }
         }
         mediaPlayer.release()
+    }
+
+    private fun View.isVisible(): Boolean = this.visibility == View.VISIBLE
+
+    private fun View.isInvisible(): Boolean = !isVisible()
+
+    private fun View.hide() {
+        if (isVisible()) {
+            this.visibility = View.GONE
+        }
+    }
+
+    private fun View.show() {
+        if (isInvisible()) {
+            this.visibility = View.VISIBLE
+        }
     }
 
     companion object {

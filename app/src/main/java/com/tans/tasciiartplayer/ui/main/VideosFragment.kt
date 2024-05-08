@@ -3,7 +3,6 @@ package com.tans.tasciiartplayer.ui.main
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.databinding.VideoItemLayoutBinding
@@ -82,16 +81,16 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
         ).build()
         viewBinding.videosRv.adapter = adapter
 
-        viewBinding.videosRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    glideLoadManager.resumeRequests()
-                } else {
-                    glideLoadManager.pauseRequests()
-                }
-            }
-        })
+//        viewBinding.videosRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//                super.onScrollStateChanged(recyclerView, newState)
+//                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                    glideLoadManager.resumeRequests()
+//                } else {
+//                    glideLoadManager.pauseRequests()
+//                }
+//            }
+//        })
 
         ViewCompat.setOnApplyWindowInsetsListener(viewBinding.videosRv) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
