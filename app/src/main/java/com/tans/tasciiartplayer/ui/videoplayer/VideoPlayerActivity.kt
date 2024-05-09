@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.animation.LinearInterpolator
 import android.widget.SeekBar
 import androidx.activity.addCallback
 import com.tans.tasciiartplayer.R
@@ -27,6 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 @FullScreenStyle
 class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Companion.State>(State()) {
@@ -178,6 +180,21 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
         viewBinding.actionLayout.clicks(this) {
             viewBinding.actionLayout.hide()
         }
+        val lastWatch = intent.getMediaLastWatch()
+        if (lastWatch > 5000L) {
+            // Show 5s
+            viewBinding.lastWatchLayout.show()
+            viewBinding.lastWatchTv.text = lastWatch.formatDuration()
+            viewBinding.lastWatchDismissCircularPb.setProgressWithAnimation(progress = 0.0f, duration = 5000L, interpolator = LinearInterpolator())
+            viewBinding.lastWatchDismissCircularPb.onProgressChangeListener = {
+                if (abs(it - 0.0f) < 0.001) {
+                    viewBinding.lastWatchLayout.hide()
+                }
+            }
+            viewBinding.lastWatchLayout.clicks(this) {
+                mediaPlayer.seekTo(lastWatch)
+            }
+        }
     }
 
     override fun onPause() {
@@ -223,17 +240,21 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
         private const val MEDIA_FILE_EXTRA = "media_file_extra"
         private const val MEDIA_ID_EXTRA = "media_id_extra"
+        private const val MEDIA_LAST_WATCH_EXTRA = "media_last_watch_extra"
 
-        fun createIntent(context: Context, mediaId: Long, mediaFile: String): Intent {
+        fun createIntent(context: Context, mediaId: Long, mediaFile: String, lastWatch: Long?): Intent {
             val intent = Intent(context, VideoPlayerActivity::class.java)
             intent.putExtra(MEDIA_ID_EXTRA, mediaId)
             intent.putExtra(MEDIA_FILE_EXTRA, mediaFile)
+            intent.putExtra(MEDIA_LAST_WATCH_EXTRA, lastWatch ?: 0L)
             return intent
         }
 
         private fun Intent.getMediaFileExtra(): String = this.getStringExtra(MEDIA_FILE_EXTRA) ?: ""
 
         private fun Intent.getMediaIdExtra(): Long = this.getLongExtra(MEDIA_ID_EXTRA, 0L)
+
+        private fun Intent.getMediaLastWatch(): Long = this.getLongExtra(MEDIA_LAST_WATCH_EXTRA, 0L)
 
         data class Progress(
             val progress: Long = 0L,

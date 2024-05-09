@@ -75,7 +75,14 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
                     itemViewBinding.videoLastWatchAndDurationTv.text = ctx.getString(R.string.video_watch_history_and_duration, lastWatch.formatDuration(), video.duration.formatDuration())
                 }
                 itemViewBinding.root.clicks(this) {
-                    startActivity(VideoPlayerActivity.createIntent(requireActivity(), video.id,  video.file?.canonicalPath ?: ""))
+                    startActivity(
+                        VideoPlayerActivity.createIntent(
+                            context = requireActivity(),
+                            mediaId = video.id,
+                            mediaFile = video.file?.canonicalPath ?: "",
+                            lastWatch = lastWatch
+                        )
+                    )
                 }
             }
         ).build()

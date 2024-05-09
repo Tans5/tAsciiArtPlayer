@@ -18,6 +18,39 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
+    <FrameLayout
+        android:id="@+id/last_watch_layout"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:visibility="visible">
+
+        <com.mikhaellopez.circularprogressbar.CircularProgressBar
+            android:id="@+id/last_watch_dismiss_circular_pb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cpb_progressbar_color="@color/teal_200"
+            app:cpb_progressbar_width="2dp"
+            app:cpb_background_progressbar_width="2dp"
+            app:cpb_progress="100" />
+
+        <TextView
+            android:id="@+id/last_watch_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="7sp"
+            android:textStyle="bold"
+            android:textColor="@color/teal_200"
+            android:lines="1"
+            tools:text="00:00" />
+
+    </FrameLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/action_layout"
         android:layout_width="0dp"
@@ -27,8 +60,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:visibility="visible">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
             android:id="@+id/info_iv"
