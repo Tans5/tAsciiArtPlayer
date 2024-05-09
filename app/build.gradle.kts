@@ -91,6 +91,9 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.codegen)
 
+    // DataStore
+    implementation(libs.androidx.datastore.sp)
+
     // CircleProgressBar
     implementation(libs.circleprogressbar)
 }

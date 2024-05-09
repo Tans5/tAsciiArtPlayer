@@ -35,4 +35,8 @@
     <!--region VideosFragment-->
     <string name="video_watch_history_and_duration">%s / %s</string>
     <!--endregion-->
+
+    <!--region VideoPlayerActivity-->
+    <string name="video_player_error">An error occurred. T_T</string>
+    <!--endregion -->
 </resources>

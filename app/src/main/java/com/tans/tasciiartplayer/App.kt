@@ -20,5 +20,7 @@ class App : Application() {
             .build()
 
         VideoManager.init(this, database.videoDao())
+
+        AppSettings.init(this)
     }
 }

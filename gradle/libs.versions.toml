@@ -10,6 +10,7 @@ appcompat = "1.6.1"
 material = "1.12.0"
 activity = "1.9.0"
 room = "2.6.1"
+datastore = "1.1.1"
 constraintlayout = "2.1.4"
 corouines = "1.8.0"
 tuiutils = "1.0.5"
@@ -31,6 +32,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-codegen = { group= "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-datastore-sp = { group="androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "corouines" }
 coroutines-core-jvm = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "corouines" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "corouines" }
