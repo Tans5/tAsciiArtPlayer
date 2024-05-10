@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:background="@drawable/rect_white_3_radius_bg"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="?attr/dialogPreferredPadding"
+    android:layout_marginStart="?attr/dialogPreferredPadding"
+    android:layout_width="match_parent"
+    android:layout_gravity="center"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/title_tv"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="?attr/dialogPreferredPadding"
+        android:layout_marginStart="?attr/dialogPreferredPadding"
+        android:layout_marginTop="17dp"
+        android:layout_width="0dp"
+        android:text="@string/app_setting_title"
+        android:textColor="@color/md_dialog_title_color"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="?attr/dialogPreferredPadding"
+        android:layout_marginStart="?attr/dialogPreferredPadding"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_tv"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/md_dialog_title_color"
+                android:textStyle="bold"
+                android:text="@string/app_setting_video_hardware_decoder"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/video_hw_decoder_sw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/md_dialog_title_color"
+                android:textStyle="bold"
+                android:text="@string/app_setting_audio_output_channel" />
+
+            <LinearLayout
+                android:id="@+id/output_channel_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="5dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/output_channel_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/gray2"
+                    android:textStyle="bold"
+                    tools:text="Mono"/>
+
+                <ImageView
+                    android:id="@+id/output_channel_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_arrow_drop_down"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/md_dialog_title_color"
+                android:textStyle="bold"
+                android:text="@string/app_setting_audio_output_sample_rate"/>
+
+            <LinearLayout
+                android:id="@+id/output_rate_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="5dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/output_rate_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/gray2"
+                    android:textStyle="bold"
+                    tools:text="441000 Hz"/>
+
+                <ImageView
+                    android:id="@+id/output_rate_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_arrow_drop_down"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/md_dialog_title_color"
+                android:textStyle="bold"
+                android:text="@string/app_setting_audio_output_sample_format"/>
+
+            <LinearLayout
+                android:id="@+id/output_format_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="5dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/output_format_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/gray2"
+                    android:textStyle="bold"
+                    tools:text="Signed 32"/>
+
+                <ImageView
+                    android:id="@+id/output_format_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_arrow_drop_down"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

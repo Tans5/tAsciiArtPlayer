@@ -66,8 +66,8 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
                 val itemViewBinding = VideoItemLayoutBinding.bind(view)
                 glideLoadManager
                     .load(loadModel)
-                    .error(R.drawable.ic_movie)
-                    .placeholder(R.drawable.ic_movie)
+                    .error(R.drawable.icon_movie)
+                    .placeholder(R.drawable.icon_movie)
                     .into(itemViewBinding.videoIv)
                 if (lastWatch == null) {
                     itemViewBinding.videoLastWatchAndDurationTv.text = video.duration.formatDuration()

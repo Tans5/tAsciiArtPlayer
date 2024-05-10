@@ -9,6 +9,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.databinding.MainActivityBinding
+import com.tans.tasciiartplayer.ui.common.AppSettingsDialog
 import com.tans.tuiutils.activity.BaseCoroutineStateActivity
 import com.tans.tuiutils.permission.permissionsRequestSuspend
 import com.tans.tuiutils.systembar.annotation.SystemBarStyle
@@ -69,6 +70,12 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
                     TabType.Audios -> getString(R.string.main_act_audios_tab)
                 }
             }.attach()
+
+            viewBinding.toolBar.menu.findItem(R.id.app_settings).setOnMenuItemClickListener {
+                val settingsDialog = AppSettingsDialog()
+                settingsDialog.show(supportFragmentManager, "AppSettingsDialog#${System.currentTimeMillis()}")
+                true
+            }
         }
     }
 

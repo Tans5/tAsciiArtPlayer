@@ -14,11 +14,13 @@
         android:background="@color/white">
 
         <androidx.appcompat.widget.Toolbar
+            android:id="@+id/tool_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:titleTextColor="@color/black1"
-            app:title="@string/app_name" />
+            app:title="@string/app_name"
+            app:menu="@menu/app_settings_menu" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"

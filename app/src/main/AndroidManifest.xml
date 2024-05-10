@@ -23,8 +23,10 @@
 
         <activity
             android:name=".ui.main.MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true"
-            android:configChanges="screenSize|orientation|uiMode">
+            android:configChanges="screenSize|orientation|uiMode"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

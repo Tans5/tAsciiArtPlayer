@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name">tAsciiArtPlayer</string>
 
+    <!--region AppSettingsDialog -->
+    <string name="app_setting_title">Settings</string>
+    <string name="app_setting_video_hardware_decoder">Video Hardware Decoder: </string>
+    <string name="app_setting_audio_output_channel">Audio Output Channel: </string>
+    <string name="app_setting_audio_output_sample_rate">Audio Output Sample Rate: </string>
+    <string name="app_setting_audio_output_sample_format">Audio Output Sample Format: </string>
+    <!--endregion -->
+
     <!--region MediaInfoDialog-->
     <string name="media_info_metadata_title">Metadata</string>
     <string name="media_info_video_title">Video</string>
@@ -18,13 +26,13 @@
     <!--endregion-->
 
     <!--region PlayerSettingsDialog-->
-    <string name="setting_crop_image">Crop Image: </string>
-    <string name="setting_ascii_filter">Ascii Filter: </string>
-    <string name="setting_ascii_filter_settings">Ascii Filter Settings: </string>
-    <string name="setting_ascii_char_reverse">Char Reverse: </string>
-    <string name="setting_ascii_color_reverse">Color Reverse: </string>
-    <string name="setting_ascii_char_width">Char Width: %d</string>
-    <string name="setting_ascii_image_color_fill_rate">Image Color Fill Rate: %d</string>
+    <string name="player_setting_crop_image">Crop Image: </string>
+    <string name="player_setting_ascii_filter">Ascii Filter: </string>
+    <string name="player_setting_ascii_filter_settings">Ascii Filter Settings: </string>
+    <string name="player_setting_ascii_char_reverse">Char Reverse: </string>
+    <string name="player_setting_ascii_color_reverse">Color Reverse: </string>
+    <string name="player_setting_ascii_char_width">Char Width: %d</string>
+    <string name="player_setting_ascii_image_color_fill_rate">Image Color Fill Rate: %d</string>
     <!--endregion-->
 
     <!--region MainActivity -->

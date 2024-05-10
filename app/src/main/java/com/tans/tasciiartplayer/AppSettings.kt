@@ -67,6 +67,10 @@ object AppSettings {
 
     suspend fun getAudioOutputSampleFormat(): AudioSampleBitDepth {
         val simpleDepth = dataStore.data.firstOrNull()?.get(AUDIO_OUTPUT_SAMPLE_FMT_KEY)
-        return AudioSampleBitDepth.entries.find { it.depth == simpleDepth } ?: AudioSampleBitDepth.EightBits
+        return AudioSampleBitDepth.entries.find { it.depth == simpleDepth } ?: AudioSampleBitDepth.SixteenBits
+    }
+
+    suspend fun setAudioOutputSampleFormat(simpleFormat: AudioSampleBitDepth) {
+        dataStore.edit { it[AUDIO_OUTPUT_SAMPLE_FMT_KEY] = simpleFormat.depth }
     }
 }

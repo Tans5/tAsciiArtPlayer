@@ -10,8 +10,11 @@
     <color name="black1">#333333</color>
 
     <color name="gray1">#777777</color>
+    <color name="gray2">#999999</color>
 
     <color name="black_transparent">#55333333</color>
 
     <color name="white">#FFFFFFFF</color>
+
+    <color name="md_dialog_title_color">#DE000000</color>
 </resources>
