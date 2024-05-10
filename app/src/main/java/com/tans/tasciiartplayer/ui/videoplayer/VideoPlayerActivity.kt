@@ -195,7 +195,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             launch {
                 val mediaInfo = stateFlow.mapNotNull { it.player.getOrNull()?.getMediaInfo() }.first()
                 val lastWatch = intent.getMediaLastWatch()
-                if ((lastWatch > 5000L || (mediaInfo.duration - lastWatch) > 5000L)) {
+                if ((lastWatch > 5000L && (mediaInfo.duration - lastWatch) > 5000L)) {
                     // Show 5s
                     viewBinding.lastWatchLayout.show()
                     viewBinding.lastWatchTv.text = lastWatch.formatDuration()
