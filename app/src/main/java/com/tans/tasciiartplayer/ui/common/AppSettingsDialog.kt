@@ -1,9 +1,9 @@
 package com.tans.tasciiartplayer.ui.common
 
-import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -23,7 +23,6 @@ import com.tans.tuiutils.adapter.impl.databinders.DataBinderImpl
 import com.tans.tuiutils.adapter.impl.datasources.FlowDataSourceImpl
 import com.tans.tuiutils.adapter.impl.viewcreatators.SingleItemViewCreatorImpl
 import com.tans.tuiutils.dialog.BaseCoroutineStateDialogFragment
-import com.tans.tuiutils.dialog.createDefaultDialog
 import com.tans.tuiutils.view.clicks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
@@ -36,9 +35,6 @@ class AppSettingsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
         return LayoutInflater.from(context).inflate(R.layout.app_settings_dialog, parent, false)
     }
 
-    override fun createDialog(contentView: View): Dialog {
-        return requireActivity().createDefaultDialog(contentView) { e -> onDialogTouchEvent(e) }
-    }
     override fun firstLaunchInitData() {  }
 
     override fun bindContentView(view: View) {
@@ -63,6 +59,7 @@ class AppSettingsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
                         AppSettings.setAudioOutputChannels(data)
                     }
                     window.dismiss()
+                    viewBinding.outputChannelTv.updateOutputChannel(data)
                 }
             )
             channelSelectWindow.setOnDismissListener {
@@ -81,6 +78,7 @@ class AppSettingsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
                         AppSettings.setAudioOutputSampleRate(data)
                     }
                     window.dismiss()
+                    viewBinding.outputRateTv.updateOutputRate(data)
                 }
             )
             rateSelectWindow.setOnDismissListener {
@@ -99,6 +97,7 @@ class AppSettingsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
                         AppSettings.setAudioOutputSampleFormat(data)
                     }
                     window.dismiss()
+                    viewBinding.outputFormatTv.updateOutputFormat(data)
                 }
             )
             formatSelectWindow.setOnDismissListener {
@@ -109,10 +108,6 @@ class AppSettingsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
                 viewBinding.outputFormatIv.showUpOrDownArrow(true)
             }
         }
-    }
-
-    private fun onDialogTouchEvent(event: MotionEvent): Boolean {
-        return false
     }
 
     private fun TextView.updateOutputChannel(channel: AudioChannel) {
@@ -149,7 +144,7 @@ class AppSettingsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
         itemClicks: suspend (window: PopupWindow, data: T) -> Unit
     ): PopupWindow {
         val viewBinding = AppSettingsPopupWindowLayoutBinding.inflate(LayoutInflater.from(requireContext()), requireActivity().window.decorView as? ViewGroup, false)
-        val window = PopupWindow(viewBinding.root)
+        val window = PopupWindow(requireActivity())
         viewBinding.recyclerView.adapter = SimpleAdapterBuilderImpl<T>(
             itemViewCreator = SingleItemViewCreatorImpl(R.layout.app_settings_popup_window_item_layout),
             dataSource = FlowDataSourceImpl(flow { emit(items) }),
@@ -161,7 +156,11 @@ class AppSettingsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
                 }
             }
         ).build()
-        PopupWindowCompat.setOverlapAnchor(window, true)
+        window.contentView = viewBinding.root
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        window.isFocusable = true
+        window.isTouchable = true
+        PopupWindowCompat.setOverlapAnchor(window, false)
         return window
     }
 }

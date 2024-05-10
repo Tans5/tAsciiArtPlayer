@@ -193,7 +193,8 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 viewBinding.actionLayout.hide()
             }
             val lastWatch = intent.getMediaLastWatch()
-            if (lastWatch > 5000L) {
+            val mediaInfo = mediaPlayer.getMediaInfo()
+            if (mediaInfo != null && (lastWatch > 5000L && (mediaInfo.duration - lastWatch) > 5000L)) {
                 // Show 5s
                 viewBinding.lastWatchLayout.show()
                 viewBinding.lastWatchTv.text = lastWatch.formatDuration()
@@ -205,6 +206,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 }
                 viewBinding.lastWatchLayout.clicks(this) {
                     mediaPlayer.seekTo(lastWatch)
+                    viewBinding.lastWatchLayout.hide()
                 }
             }
         }
