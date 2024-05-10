@@ -192,21 +192,23 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             viewBinding.actionLayout.clicks(this) {
                 viewBinding.actionLayout.hide()
             }
-            val lastWatch = intent.getMediaLastWatch()
-            val mediaInfo = mediaPlayer.getMediaInfo()
-            if (mediaInfo != null && (lastWatch > 5000L || (mediaInfo.duration - lastWatch) > 5000L)) {
-                // Show 5s
-                viewBinding.lastWatchLayout.show()
-                viewBinding.lastWatchTv.text = lastWatch.formatDuration()
-                viewBinding.lastWatchDismissCircularPb.setProgressWithAnimation(progress = 0.0f, duration = 5000L, interpolator = LinearInterpolator())
-                viewBinding.lastWatchDismissCircularPb.onProgressChangeListener = {
-                    if (abs(it - 0.0f) < 0.001) {
+            launch {
+                val mediaInfo = stateFlow.mapNotNull { it.player.getOrNull()?.getMediaInfo() }.first()
+                val lastWatch = intent.getMediaLastWatch()
+                if ((lastWatch > 5000L || (mediaInfo.duration - lastWatch) > 5000L)) {
+                    // Show 5s
+                    viewBinding.lastWatchLayout.show()
+                    viewBinding.lastWatchTv.text = lastWatch.formatDuration()
+                    viewBinding.lastWatchDismissCircularPb.setProgressWithAnimation(progress = 0.0f, duration = 5000L, interpolator = LinearInterpolator())
+                    viewBinding.lastWatchDismissCircularPb.onProgressChangeListener = {
+                        if (abs(it - 0.0f) < 0.001f) {
+                            viewBinding.lastWatchLayout.hide()
+                        }
+                    }
+                    viewBinding.lastWatchLayout.clicks(this) {
+                        mediaPlayer.seekTo(lastWatch)
                         viewBinding.lastWatchLayout.hide()
                     }
-                }
-                viewBinding.lastWatchLayout.clicks(this) {
-                    mediaPlayer.seekTo(lastWatch)
-                    viewBinding.lastWatchLayout.hide()
                 }
             }
         }
