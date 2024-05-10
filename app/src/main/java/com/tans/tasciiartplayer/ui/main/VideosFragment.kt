@@ -48,9 +48,8 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
         viewBinding.refreshLayout.refreshes(this, Dispatchers.IO) {
             VideoManager.refreshMediaStoreVideos()
         }
-        val ctx = requireContext()
         val glideLoadManager = Glide.with(this@VideosFragment)
-        glideLoadManager.resumeRequests()
+//        glideLoadManager.resumeRequests()
         val adapter = SimpleAdapterBuilderImpl(
             itemViewCreator = SingleItemViewCreatorImpl(R.layout.video_item_layout),
             dataSource = FlowDataSourceImpl(
@@ -69,10 +68,12 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
                     .error(R.drawable.icon_movie)
                     .placeholder(R.drawable.icon_movie)
                     .into(itemViewBinding.videoIv)
+                itemViewBinding.durationTv.text = video.duration.formatDuration()
                 if (lastWatch == null) {
-                    itemViewBinding.videoLastWatchAndDurationTv.text = video.duration.formatDuration()
+                    itemViewBinding.lastWatchPb.visibility = View.GONE
                 } else {
-                    itemViewBinding.videoLastWatchAndDurationTv.text = ctx.getString(R.string.video_watch_history_and_duration, lastWatch.formatDuration(), video.duration.formatDuration())
+                    itemViewBinding.lastWatchPb.visibility = View.VISIBLE
+                    itemViewBinding.lastWatchPb.progress = ((lastWatch.toDouble() / video.duration.toDouble()) * 100.0).toInt()
                 }
                 itemViewBinding.root.clicks(this) {
                     startActivity(
