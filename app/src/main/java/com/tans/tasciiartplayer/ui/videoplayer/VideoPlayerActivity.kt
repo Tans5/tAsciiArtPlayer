@@ -196,9 +196,10 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 val mediaInfo = stateFlow.mapNotNull { it.player.getOrNull()?.getMediaInfo() }.first()
                 val lastWatch = intent.getMediaLastWatch()
                 if ((lastWatch > 5000L && (mediaInfo.duration - lastWatch) > 5000L)) {
+                    val targetSeekTime = lastWatch - 5000L
                     // Show 5s
                     viewBinding.lastWatchLayout.show()
-                    viewBinding.lastWatchTv.text = lastWatch.formatDuration()
+                    viewBinding.lastWatchTv.text = targetSeekTime.formatDuration()
                     viewBinding.lastWatchDismissCircularPb.setProgressWithAnimation(progress = 0.0f, duration = 5000L, interpolator = LinearInterpolator())
                     viewBinding.lastWatchDismissCircularPb.onProgressChangeListener = {
                         if (abs(it - 0.0f) < 0.001f) {
@@ -206,7 +207,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                         }
                     }
                     viewBinding.lastWatchLayout.clicks(this) {
-                        mediaPlayer.seekTo(lastWatch)
+                        mediaPlayer.seekTo(targetSeekTime)
                         viewBinding.lastWatchLayout.hide()
                     }
                 }
