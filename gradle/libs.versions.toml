@@ -1,12 +1,12 @@
 [versions]
 agp = "8.3.2"
-kotlin = "1.9.23"
-googleKsp = "1.9.23-1.0.19"
+kotlin = "2.0.0"
+googleKsp = "2.0.0-1.0.22"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-appcompat = "1.6.1"
+appcompat = "1.7.0"
 material = "1.12.0"
 activity = "1.9.0"
 room = "2.6.1"
@@ -16,8 +16,7 @@ corouines = "1.8.0"
 tuiutils = "1.0.5"
 glide = "4.16.0"
 swiperefreshlayout = "1.1.0"
-tmediaplayer = "1.0.5"
-#com.mikhaellopez:circularprogressbar:3.1.0
+tmediaplayer = "1.1.0"
 circleprogressbar = "3.1.0"
 
 [libraries]

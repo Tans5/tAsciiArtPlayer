@@ -14,8 +14,8 @@ import com.tans.tasciiartplayer.databinding.VideoPlayerActivityBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.ui.common.MediaInfoDialog
 import com.tans.tasciiartplayer.ui.common.PlayerSettingsDialog
-import com.tans.tmediaplayer.player.OptResult
 import com.tans.tmediaplayer.frameloader.tMediaFrameLoader
+import com.tans.tmediaplayer.player.model.OptResult
 import com.tans.tmediaplayer.player.tMediaPlayer
 import com.tans.tmediaplayer.player.tMediaPlayerListener
 import com.tans.tmediaplayer.player.tMediaPlayerState

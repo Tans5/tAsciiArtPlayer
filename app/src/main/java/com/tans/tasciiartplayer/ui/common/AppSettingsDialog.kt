@@ -15,9 +15,9 @@ import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.databinding.AppSettingsDialogBinding
 import com.tans.tasciiartplayer.databinding.AppSettingsPopupWindowItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.AppSettingsPopupWindowLayoutBinding
-import com.tans.tmediaplayer.player.AudioChannel
-import com.tans.tmediaplayer.player.AudioSampleBitDepth
-import com.tans.tmediaplayer.player.AudioSampleRate
+import com.tans.tmediaplayer.player.model.AudioChannel
+import com.tans.tmediaplayer.player.model.AudioSampleBitDepth
+import com.tans.tmediaplayer.player.model.AudioSampleRate
 import com.tans.tuiutils.adapter.impl.builders.SimpleAdapterBuilderImpl
 import com.tans.tuiutils.adapter.impl.databinders.DataBinderImpl
 import com.tans.tuiutils.adapter.impl.datasources.FlowDataSourceImpl

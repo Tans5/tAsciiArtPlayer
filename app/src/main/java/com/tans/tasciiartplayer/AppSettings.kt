@@ -7,9 +7,9 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.tans.tmediaplayer.player.AudioChannel
-import com.tans.tmediaplayer.player.AudioSampleBitDepth
-import com.tans.tmediaplayer.player.AudioSampleRate
+import com.tans.tmediaplayer.player.model.AudioChannel
+import com.tans.tmediaplayer.player.model.AudioSampleBitDepth
+import com.tans.tmediaplayer.player.model.AudioSampleRate
 import kotlinx.coroutines.flow.firstOrNull
 
 object AppSettings {
