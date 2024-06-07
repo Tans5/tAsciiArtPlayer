@@ -2,6 +2,7 @@ package com.tans.tasciiartplayer
 
 import android.app.Application
 import androidx.room.Room
+import com.tans.tasciiartplayer.audio.AudioManager
 import com.tans.tasciiartplayer.database.AppDatabase
 import com.tans.tasciiartplayer.database.AppDatabaseMigration
 import com.tans.tasciiartplayer.video.VideoManager
@@ -20,7 +21,7 @@ class App : Application() {
             .build()
 
         VideoManager.init(this, database.videoDao())
-
+        AudioManager.init(this, database.audioDao())
         AppSettings.init(this)
     }
 }

@@ -35,7 +35,7 @@ object VideoManager : CoroutineState<VideoManagerState> by CoroutineState(VideoM
                         if (newWatch == v.lastWatch) {
                             v
                         } else {
-                            val newGlideLoadModel = v.glideLoadModel.copy(targetPosition = newWatch ?: 0L)
+                            val newGlideLoadModel = v.glideLoadModel.copy(targetPosition = newWatch ?: (v.mediaStoreVideo.duration / 10L))
                             v.copy(glideLoadModel = newGlideLoadModel, lastWatch = newWatch)
                         }
                     }
