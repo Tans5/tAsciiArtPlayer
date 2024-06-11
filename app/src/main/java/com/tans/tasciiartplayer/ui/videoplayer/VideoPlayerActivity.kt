@@ -1,8 +1,10 @@
 package com.tans.tasciiartplayer.ui.videoplayer
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.SeekBar
@@ -24,12 +26,13 @@ import com.tans.tuiutils.systembar.annotation.FullScreenStyle
 import com.tans.tuiutils.view.clicks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 @FullScreenStyle
 class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Companion.State>(State()) {
@@ -50,8 +53,6 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 return@launch
             }
 
-            updateState { it.copy(player = Optional.of(mediaPlayer)) }
-
             mediaPlayer.setListener(object : tMediaPlayerListener {
                 override fun onPlayerState(state: tMediaPlayerState) {
                     updateState { it.copy(playerState = state) }
@@ -65,7 +66,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             val loadResult = mediaPlayer.prepare(intent.getMediaFileExtra())
             when (loadResult) {
                 OptResult.Success -> {
-                    mediaPlayer.play()
+                    updateState { it.copy(loadStatus = PlayerLoadStatus.Prepared(mediaPlayer)) }
                     Log.d(TAG, "Load media file success.")
                 }
 
@@ -76,16 +77,18 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
         tMediaFrameLoader
         val viewBinding = VideoPlayerActivityBinding.bind(contentView)
 
         launch {
-            // Waiting player is ok.
-            val mediaPlayer = stateFlow.mapNotNull { it.player.getOrNull() }.first()
-
+            // Waiting player prepare.
+            val mediaPlayer = stateFlow.map { it.loadStatus }.filterIsInstance<PlayerLoadStatus.Prepared>().first().player
             mediaPlayer.attachPlayerView(viewBinding.playerView)
-
+            if (mediaPlayer.getState() is tMediaPlayerState.Prepared) {
+                mediaPlayer.play()
+            }
             renderStateNewCoroutine({ it.progress.duration }) { duration ->
                 viewBinding.durationTv.text = duration.formatDuration()
             }
@@ -185,30 +188,34 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 d.show(supportFragmentManager, "PlayerSettingsDialog#${System.currentTimeMillis()}}")
             }
 
+            viewBinding.playerView.setOnTouchListener(PlayerClickTouchListener())
             viewBinding.playerView.clicks(this) {
                 viewBinding.actionLayout.show()
             }
 
+            viewBinding.actionLayout.setOnTouchListener(PlayerClickTouchListener())
             viewBinding.actionLayout.clicks(this) {
                 viewBinding.actionLayout.hide()
             }
             launch {
-                val mediaInfo = stateFlow.mapNotNull { it.player.getOrNull()?.getMediaInfo() }.first()
-                val lastWatch = intent.getMediaLastWatch()
-                if ((lastWatch > 5000L && (mediaInfo.duration - lastWatch) > 5000L)) {
-                    val targetSeekTime = lastWatch - 5000L
-                    // Show 5s
-                    viewBinding.lastWatchLayout.show()
-                    viewBinding.lastWatchTv.text = targetSeekTime.formatDuration()
-                    viewBinding.lastWatchDismissCircularPb.setProgressWithAnimation(progress = 0.0f, duration = 5000L, interpolator = LinearInterpolator())
-                    viewBinding.lastWatchDismissCircularPb.onProgressChangeListener = {
-                        if (abs(it - 0.0f) < 0.001f) {
+                val mediaInfo = mediaPlayer.getMediaInfo()
+                if (mediaInfo != null) {
+                    val lastWatch = intent.getMediaLastWatch()
+                    if ((lastWatch > 5000L && (mediaInfo.duration - lastWatch) > 5000L)) {
+                        val targetSeekTime = lastWatch - 5000L
+                        // Show 5s
+                        viewBinding.lastWatchLayout.show()
+                        viewBinding.lastWatchTv.text = targetSeekTime.formatDuration()
+                        viewBinding.lastWatchDismissCircularPb.setProgressWithAnimation(progress = 0.0f, duration = 5000L, interpolator = LinearInterpolator())
+                        viewBinding.lastWatchDismissCircularPb.onProgressChangeListener = {
+                            if (abs(it - 0.0f) < 0.001f) {
+                                viewBinding.lastWatchLayout.hide()
+                            }
+                        }
+                        viewBinding.lastWatchLayout.clicks(this) {
+                            mediaPlayer.seekTo(targetSeekTime)
                             viewBinding.lastWatchLayout.hide()
                         }
-                    }
-                    viewBinding.lastWatchLayout.clicks(this) {
-                        mediaPlayer.seekTo(targetSeekTime)
-                        viewBinding.lastWatchLayout.hide()
                     }
                 }
             }
@@ -217,7 +224,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
     override fun onPause() {
         super.onPause()
-        val player = stateFlow.value.player.getOrNull()
+        val player = (stateFlow.value.loadStatus as? PlayerLoadStatus.Prepared)?.player
         if (player != null && player.getState() is tMediaPlayerState.Playing) {
             player.pause()
         }
@@ -225,7 +232,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
     override fun onViewModelCleared() {
         super.onViewModelCleared()
-        val player = stateFlow.value.player.getOrNull()
+        val player = (stateFlow.value.loadStatus as? PlayerLoadStatus.Prepared)?.player
         if (player != null) {
             val info = player.getMediaInfo()
             if (info != null) {
@@ -258,6 +265,39 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
         }
     }
 
+    class PlayerClickTouchListener : View.OnTouchListener {
+        private var downX: Float? = null
+        private var downY: Float? = null
+
+        private val minDownAndUpDistance = 10.0f
+        @SuppressLint("ClickableViewAccessibility")
+        override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+            return if (event != null) {
+                when (event.actionMasked) {
+                    MotionEvent.ACTION_DOWN -> {
+                        downX = event.x
+                        downY = event.y
+                        false
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        val dx = downX
+                        val dy = downY
+                        if (dx != null && dy != null) {
+                            val d = sqrt((event.x - dx).pow(2) + (event.y - dy).pow(2))
+                            d > minDownAndUpDistance
+                        } else {
+                            false
+                        }
+                    }
+                    else -> false
+                }
+            } else {
+                false
+            }
+        }
+
+    }
+
     companion object {
 
         private const val MEDIA_FILE_EXTRA = "media_file_extra"
@@ -283,12 +323,18 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             val duration: Long = 0L
         )
 
+        sealed class PlayerLoadStatus {
+            data class Prepared(val player: tMediaPlayer) : PlayerLoadStatus()
+
+            data object None : PlayerLoadStatus()
+        }
+
         data class State(
             val playerState: tMediaPlayerState = tMediaPlayerState.NoInit,
             val progress: Progress = Progress(),
-            val player: Optional<tMediaPlayer> = Optional.empty()
+            val loadStatus: PlayerLoadStatus = PlayerLoadStatus.None
         )
 
-        const val TAG = "MainActivity"
+        const val TAG = "VideoPlayerActivity"
     }
 }

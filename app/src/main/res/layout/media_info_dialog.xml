@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/settings_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/black_transparent"
+    android:background="@color/black_transparent1"
     android:padding="5dp"
     android:layout_gravity="center_vertical|end"
     xmlns:app="http://schemas.android.com/apk/res-auto"

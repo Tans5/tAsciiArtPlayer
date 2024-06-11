@@ -55,7 +55,7 @@
         android:id="@+id/action_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/black_transparent"
+        android:background="@color/black_transparent2"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,26 +64,22 @@
         tools:visibility="visible">
 
         <ImageView
-            android:id="@+id/info_iv"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:padding="3dp"
-            android:src="@drawable/icon_info"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="10dp"
-            app:layout_constraintEnd_toStartOf="@id/settings_iv"
+            android:id="@+id/settings_iv"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:padding="10dp"
+            android:src="@drawable/icon_settings"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <ImageView
-            android:id="@+id/settings_iv"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:padding="3dp"
-            android:src="@drawable/icon_settings"
-            android:layout_marginEnd="15dp"
-            android:layout_marginTop="15dp"
+            android:id="@+id/info_iv"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:padding="10dp"
+            android:src="@drawable/icon_info"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/settings_iv"/>
 
         <FrameLayout
             android:id="@+id/play_pause_layout"
@@ -118,7 +114,7 @@
 
         </FrameLayout>
 
-        <SeekBar
+        <androidx.appcompat.widget.AppCompatSeekBar
             android:id="@+id/player_sb"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -126,6 +122,7 @@
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp"
             android:layout_marginBottom="10dp"
+            android:progressDrawable="@drawable/video_player_seek_bar_bg"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/progress_tv"
