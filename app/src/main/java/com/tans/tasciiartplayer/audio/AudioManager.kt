@@ -5,6 +5,9 @@ import androidx.annotation.WorkerThread
 import com.tans.tasciiartplayer.AppLog
 import com.tans.tasciiartplayer.appGlobalCoroutineScope
 import com.tans.tasciiartplayer.database.dao.AudioDao
+import com.tans.tasciiartplayer.database.entity.AudioPlaylist
+import com.tans.tasciiartplayer.database.entity.AudioPlaylistCrossRef
+import com.tans.tasciiartplayer.database.entity.LikeAudio
 import com.tans.tasciiartplayer.glide.MediaImageModel
 import com.tans.tuiutils.mediastore.queryAudioFromMediaStore
 import com.tans.tuiutils.state.CoroutineState
@@ -147,6 +150,55 @@ object AudioManager : CoroutineState<AudioManagerState> by CoroutineState(AudioM
         val activeMediaIds = allMediaStoreAudios.map { it.id }
         dao.deleteNotActiveLikeAudios(activeMediaIds)
         dao.deleteNotActivePlaylistRef(activeMediaIds)
+    }
+
+    @WorkerThread
+    suspend fun likeAudio(audioId: Long) {
+        val dao = getDaoOrError()
+        dao.insertLikeAudio(LikeAudio(audioId))
+    }
+
+    @WorkerThread
+    suspend fun unlikeAudio(audioId: Long) {
+        val dao = getDaoOrError()
+        dao.deleteLikeAudio(audioId)
+    }
+
+    @WorkerThread
+    suspend fun createCustomAudioList(playlistName: String) {
+        val dao = getDaoOrError()
+        val time = System.currentTimeMillis()
+        dao.insertAudioPlaylist(
+            AudioPlaylist(
+                playlistId = time,
+                playlistName = playlistName,
+                playlistCreateTime = time
+            )
+        )
+    }
+
+    @WorkerThread
+    suspend fun deleteCustomAudioList(playlistId: Long) {
+        val dao = getDaoOrError()
+        dao.deleteAudioPlaylistAndRefs(playlistId)
+    }
+
+    @WorkerThread
+    suspend fun addAudioToCustomAudioList(audioId: Long, playlistId: Long) {
+        val dao = getDaoOrError()
+        dao.insertAudioPlaylistRef(
+            AudioPlaylistCrossRef(
+                audioId = audioId,
+                playlistId = playlistId,
+                createTime = System.currentTimeMillis()
+            )
+        )
+    }
+
+    @WorkerThread
+    suspend fun deleteAudioFromCustomAudioList(audioId: Long, playlistId: Long) {
+        val dao = getDaoOrError()
+        dao.deleteAudioPlaylistRef(audioId = audioId, playlistId = playlistId)
     }
 
     private fun getDaoOrError(): AudioDao {
