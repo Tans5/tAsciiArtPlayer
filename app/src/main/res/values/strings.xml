@@ -13,6 +13,7 @@
     <string name="media_info_metadata_title">Metadata</string>
     <string name="media_info_video_title">Video</string>
     <string name="media_info_audio_title">Audio</string>
+    <string name="media_info_decoder">Decoder: %s</string>
     <string name="media_info_codec">Codec: %s</string>
     <string name="media_info_resolution">Resolution: %s</string>
     <string name="media_info_fps">Fps: %.1f</string>

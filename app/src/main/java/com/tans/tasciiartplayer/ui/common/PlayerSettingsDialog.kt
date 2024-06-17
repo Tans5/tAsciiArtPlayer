@@ -81,11 +81,14 @@ class PlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
                 if (fromUser) {
                     asciiArtFilter.setCharLineWidth(requestWidth)
                     playerView.requestRender()
+                    viewBinding.charWidthTv.text = ctx.getString(R.string.player_setting_ascii_char_width, requestWidth)
                 }
-                viewBinding.charWidthTv.text = ctx.getString(R.string.player_setting_ascii_char_width, requestWidth)
             }
         })
-        viewBinding.charWidthSb.progress = ((asciiArtFilter.getCharLineWith().toFloat() - AsciiArtImageFilter.MIN_CHAR_LINE_WIDTH.toFloat()) / (AsciiArtImageFilter.MAX_CHAR_LINE_WIDTH - AsciiArtImageFilter.MIN_CHAR_LINE_WIDTH).toFloat() * 100.0f + 0.5f).toInt()
+        val charWidthProgress = ((asciiArtFilter.getCharLineWith().toFloat() - AsciiArtImageFilter.MIN_CHAR_LINE_WIDTH.toFloat()) / (AsciiArtImageFilter.MAX_CHAR_LINE_WIDTH - AsciiArtImageFilter.MIN_CHAR_LINE_WIDTH).toFloat() * 100.0f + 0.5f).toInt()
+        val charWidth = asciiArtFilter.getCharLineWith()
+        viewBinding.charWidthSb.progress = charWidthProgress
+        viewBinding.charWidthTv.text = ctx.getString(R.string.player_setting_ascii_char_width, charWidth)
 
         viewBinding.imageColorFillRateSb.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStartTrackingTouch(seekBar: SeekBar?) { }
@@ -96,10 +99,12 @@ class PlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
                     val requestRate = progress.toFloat() / 100.0f
                     asciiArtFilter.colorFillRate(requestRate)
                     playerView.requestRender()
+                    viewBinding.imageColorFillRateTv.text = ctx.getString(R.string.player_setting_ascii_image_color_fill_rate, progress)
                 }
-                viewBinding.imageColorFillRateTv.text = ctx.getString(R.string.player_setting_ascii_image_color_fill_rate, progress)
             }
         })
-        viewBinding.imageColorFillRateSb.progress = (asciiArtFilter.getColorFillRate() * 100.0f + 0.5f).toInt()
+        val colorFillProgress = (asciiArtFilter.getColorFillRate() * 100.0f + 0.5f).toInt()
+        viewBinding.imageColorFillRateTv.text = ctx.getString(R.string.player_setting_ascii_image_color_fill_rate, colorFillProgress)
+        viewBinding.imageColorFillRateSb.progress = colorFillProgress
     }
 }

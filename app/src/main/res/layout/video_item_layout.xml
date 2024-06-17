@@ -48,7 +48,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/video_iv"
-            app:trackThickness="2dp"
+            app:trackThickness="3dp"
             tools:visibility="visible"
             tools:progress="30" />
 
