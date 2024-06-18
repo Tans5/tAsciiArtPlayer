@@ -184,7 +184,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
             viewBinding.settingsIv.clicks(this) {
                 viewBinding.actionLayout.hide()
-                val d = PlayerSettingsDialog(playerView = viewBinding.playerView)
+                val d = PlayerSettingsDialog(playerView = viewBinding.playerView, player = mediaPlayer)
                 d.show(supportFragmentManager, "PlayerSettingsDialog#${System.currentTimeMillis()}}")
             }
 

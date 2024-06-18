@@ -10,6 +10,8 @@ import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.databinding.PlayerSettingsDialogBinding
 import com.tans.tmediaplayer.player.playerview.filter.AsciiArtImageFilter
 import com.tans.tmediaplayer.player.playerview.tMediaPlayerView
+import com.tans.tmediaplayer.player.tMediaPlayer
+import com.tans.tmediaplayer.player.tMediaPlayerState
 import com.tans.tuiutils.dialog.BaseCoroutineStateDialogFragment
 import com.tans.tuiutils.dialog.createDefaultDialog
 
@@ -17,12 +19,16 @@ class PlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
 
     private val playerView: tMediaPlayerView?
 
+    private val player: tMediaPlayer?
+
     constructor() : super(Unit) {
         this.playerView = null
+        this.player = null
     }
 
-    constructor(playerView: tMediaPlayerView) : super(Unit) {
+    constructor(playerView: tMediaPlayerView, player: tMediaPlayer) : super(Unit) {
         this.playerView = playerView
+        this.player = player
     }
 
     override val contentViewWidthInScreenRatio: Float = 0.5f
@@ -39,8 +45,20 @@ class PlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
 
     override fun bindContentView(view: View) {
         val playerView = this.playerView ?: return
+        val player = this.player ?: return
         val viewBinding = PlayerSettingsDialogBinding.bind(view)
         val ctx = requireContext()
+        fun requestRender() {
+            val info = player.getMediaInfo()
+            val state = player.getState()
+            if (info?.videoStreamInfo?.isAttachment == true
+                || state is tMediaPlayerState.Paused
+                || state is tMediaPlayerState.PlayEnd
+                || state is tMediaPlayerState.Stopped
+            ) {
+                playerView.requestRender()
+            }
+        }
         viewBinding.cropImageSw.isChecked = playerView.getScaleType() == tMediaPlayerView.Companion.ScaleType.CenterCrop
         viewBinding.cropImageSw.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -48,27 +66,27 @@ class PlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
             } else {
                 playerView.setScaleType(tMediaPlayerView.Companion.ScaleType.CenterFit)
             }
-            playerView.requestRender()
+            requestRender()
         }
 
         val asciiArtFilter = playerView.getAsciiArtImageFilter()
         viewBinding.asciiFilterSw.isChecked = asciiArtFilter.isEnable()
         viewBinding.asciiFilterSw.setOnCheckedChangeListener { _, isChecked ->
             playerView.enableAsciiArtFilter(isChecked)
-            playerView.requestRender()
+            requestRender()
         }
 
 
         viewBinding.charReverseSw.isChecked = asciiArtFilter.isReverseChar()
         viewBinding.charReverseSw.setOnCheckedChangeListener { _, isChecked ->
             asciiArtFilter.reverseChar(isChecked)
-            playerView.requestRender()
+            requestRender()
         }
 
         viewBinding.colorReverseSw.isChecked = asciiArtFilter.isReverseColor()
         viewBinding.colorReverseSw.setOnCheckedChangeListener { _, isChecked ->
             asciiArtFilter.reverseColor(isChecked)
-            playerView.requestRender()
+            requestRender()
         }
 
 
@@ -80,7 +98,7 @@ class PlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
                 val requestWidth = (progress.toFloat() / 100.0f * (AsciiArtImageFilter.MAX_CHAR_LINE_WIDTH - AsciiArtImageFilter.MIN_CHAR_LINE_WIDTH).toFloat() + AsciiArtImageFilter.MIN_CHAR_LINE_WIDTH.toFloat() + 0.5f).toInt()
                 if (fromUser) {
                     asciiArtFilter.setCharLineWidth(requestWidth)
-                    playerView.requestRender()
+                    requestRender()
                     viewBinding.charWidthTv.text = ctx.getString(R.string.player_setting_ascii_char_width, requestWidth)
                 }
             }
@@ -98,7 +116,7 @@ class PlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
                 if (fromUser) {
                     val requestRate = progress.toFloat() / 100.0f
                     asciiArtFilter.colorFillRate(requestRate)
-                    playerView.requestRender()
+                    requestRender()
                     viewBinding.imageColorFillRateTv.text = ctx.getString(R.string.player_setting_ascii_image_color_fill_rate, progress)
                 }
             }
