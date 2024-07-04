@@ -1,5 +1,6 @@
 package com.tans.tasciiartplayer.ui.common
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
@@ -49,6 +50,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun bindContentView(view: View) {
         val mediaInfo = this.mediaInfo ?: return
         val filePath = this.filePath ?: return
@@ -77,6 +79,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
                 itemViewBinding.keyValueTv.text = data
             }
         ).build()
+        viewBinding.fileRv.setOnTouchListener { _, _ -> true }
 
         val videoStreamInfo = mediaInfo.videoStreamInfo
         if (videoStreamInfo != null) {
@@ -114,6 +117,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
         } else {
             viewBinding.videoGroup.visibility = View.GONE
         }
+        viewBinding.videoRv.setOnTouchListener { _, _ -> true }
 
         val audioStreamInfo = mediaInfo.audioStreamInfo
         if (audioStreamInfo != null) {
@@ -151,6 +155,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
         } else {
             viewBinding.audioGroup.visibility = View.GONE
         }
+        viewBinding.audioRv.setOnTouchListener { _, _ -> true }
 
         val subtitleStreams = mediaInfo.subtitleStreams
         if (subtitleStreams.isNotEmpty()) {
@@ -175,6 +180,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
         } else {
             viewBinding.subtitleGroup.visibility = View.GONE
         }
+        viewBinding.subtitleRv.setOnTouchListener { _, _ -> true }
     }
 
 
