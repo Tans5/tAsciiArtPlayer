@@ -86,6 +86,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             // Waiting player prepare.
             val mediaPlayer = stateFlow.map { it.loadStatus }.filterIsInstance<PlayerLoadStatus.Prepared>().first().player
             mediaPlayer.attachPlayerView(viewBinding.playerView)
+            mediaPlayer.attachSubtitleView(viewBinding.subtitleTv)
             if (mediaPlayer.getState() is tMediaPlayerState.Prepared) {
                 mediaPlayer.play()
             }
@@ -186,6 +187,17 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 viewBinding.actionLayout.hide()
                 val d = PlayerSettingsDialog(playerView = viewBinding.playerView, player = mediaPlayer)
                 d.show(supportFragmentManager, "PlayerSettingsDialog#${System.currentTimeMillis()}}")
+            }
+            val subtitleStreams = mediaPlayer.getMediaInfo()?.subtitleStreams ?: emptyList()
+            if (subtitleStreams.isNotEmpty()) {
+                viewBinding.subtitleIv.show()
+                viewBinding.subtitleIv.clicks(this) {
+                    viewBinding.actionLayout.hide()
+                    val d = SubtitleSelectDialog(player = mediaPlayer)
+                    d.show(supportFragmentManager, "SubtitleSelectDialog#${System.currentTimeMillis()}")
+                }
+            } else {
+                viewBinding.subtitleIv.hide()
             }
 
             viewBinding.playerView.setOnTouchListener(PlayerClickTouchListener())
