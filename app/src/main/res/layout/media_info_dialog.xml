@@ -18,79 +18,170 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/file_title_tv"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/media_info_metadata_title"
+                android:text="@string/media_info_file_title"
                 android:textSize="14sp"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:gravity="start"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/metadata_rv"
-                android:layout_width="match_parent"
+                android:id="@+id/file_rv"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/file_title_tv"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/media_info_item_layout"
                 tools:itemCount="3"/>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/white"
-                android:layout_marginTop="8dp"/>
 
-            <TextView
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/file_group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:constraint_referenced_ids="file_title_tv,file_rv"/>
+
+            <View
+                android:id="@+id/video_line"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@color/white"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/file_rv" />
+
+            <TextView
+                android:id="@+id/video_title_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:text="@string/media_info_video_title"
+                android:gravity="start"
                 android:textSize="14sp"
                 android:textColor="@color/white"
-                android:layout_marginTop="5dp" />
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/video_line"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/video_rv"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/video_title_tv"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/media_info_item_layout"
                 tools:itemCount="3"/>
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/video_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="video_line,video_title_tv,video_rv"/>
+
             <View
-                android:layout_width="match_parent"
+                android:id="@+id/audio_line"
+                android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:background="@color/white"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/video_rv" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/audio_title_tv"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/media_info_audio_title"
                 android:textSize="14sp"
                 android:textColor="@color/white"
-                android:layout_marginTop="5dp" />
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/audio_line"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/audio_rv"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/audio_title_tv"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/media_info_item_layout"
                 tools:itemCount="3"/>
 
-        </LinearLayout>
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/audio_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="audio_line,audio_rv,audio_title_tv"/>
+
+            <View
+                android:id="@+id/subtitle_line"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@color/white"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/audio_rv" />
+
+            <TextView
+                android:id="@+id/subtitle_title_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/media_info_subtitle_title"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/subtitle_line"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/subtitle_rv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/subtitle_title_tv"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/media_info_item_layout"
+                tools:itemCount="3"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/subtitle_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="subtitle_line,subtitle_rv,subtitle_title_tv" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
 
