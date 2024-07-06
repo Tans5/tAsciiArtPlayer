@@ -16,7 +16,6 @@ import com.tans.tasciiartplayer.databinding.VideoPlayerActivityBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.ui.common.MediaInfoDialog
 import com.tans.tasciiartplayer.ui.common.PlayerSettingsDialog
-import com.tans.tmediaplayer.frameloader.tMediaFrameLoader
 import com.tans.tmediaplayer.player.model.OptResult
 import com.tans.tmediaplayer.player.tMediaPlayer
 import com.tans.tmediaplayer.player.tMediaPlayerListener
@@ -79,8 +78,16 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
     @SuppressLint("ClickableViewAccessibility")
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
-        tMediaFrameLoader
         val viewBinding = VideoPlayerActivityBinding.bind(contentView)
+
+        launch {
+            renderStateNewCoroutine({ it.playerState }) {
+                if (it is tMediaPlayerState.Error) {
+                    Toast.makeText(this@VideoPlayerActivity, R.string.video_player_error, Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            }
+        }
 
         launch {
             // Waiting player prepare.
@@ -104,11 +111,6 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             }
 
             renderStateNewCoroutine({ it.playerState }) { playerState ->
-
-                if (playerState is tMediaPlayerState.Error) {
-                    Toast.makeText(this@VideoPlayerActivity, R.string.video_player_error, Toast.LENGTH_SHORT).show()
-                    finish()
-                }
 
                 if (playerState is tMediaPlayerState.Seeking) {
                     viewBinding.seekingLoadingPb.show()
