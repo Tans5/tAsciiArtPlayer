@@ -28,8 +28,8 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                 audioOutputSampleRate = AppSettings.getAudioOutputSampleRate(),
                 enableVideoHardwareDecoder = false
             )
-            p.setListener(this@AudioPlayerManager)
             player.getAndSet(p)?.release()
+            p.setListener(this@AudioPlayerManager)
         }
     }
 
