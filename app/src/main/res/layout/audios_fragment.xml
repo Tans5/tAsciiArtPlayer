@@ -43,8 +43,8 @@
                         android:layout_marginStart="50dp"
                         android:layout_marginEnd="50dp"
                         android:text="@string/audios_fgt_all_audios"
-                        android:textSize="16sp"
-                        android:textColor="@color/gray2" />
+                        android:textSize="14sp"
+                        android:textColor="@color/black1" />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -81,8 +81,8 @@
                         android:layout_marginStart="50dp"
                         android:layout_marginEnd="50dp"
                         android:text="@string/audios_fgt_my_favorites"
-                        android:textSize="16sp"
-                        android:textColor="@color/gray2" />
+                        android:textSize="14sp"
+                        android:textColor="@color/black1" />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -119,8 +119,8 @@
                         android:layout_marginStart="50dp"
                         android:layout_marginEnd="50dp"
                         android:text="@string/audios_fgt_albums"
-                        android:textSize="16sp"
-                        android:textColor="@color/gray2" />
+                        android:textSize="14sp"
+                        android:textColor="@color/black1" />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -158,8 +158,8 @@
                         android:layout_marginStart="50dp"
                         android:layout_marginEnd="50dp"
                         android:text="@string/audios_fgt_artists"
-                        android:textSize="16sp"
-                        android:textColor="@color/gray2" />
+                        android:textSize="14sp"
+                        android:textColor="@color/black1" />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -196,8 +196,8 @@
                         android:layout_marginStart="50dp"
                         android:layout_marginEnd="50dp"
                         android:text="@string/audios_fgt_custom_playlists"
-                        android:textSize="16sp"
-                        android:textColor="@color/gray2" />
+                        android:textSize="14sp"
+                        android:textColor="@color/black1" />
 
                     <ImageView
                         android:layout_width="wrap_content"
