@@ -9,6 +9,9 @@ import com.tans.tmediaplayer.player.tMediaPlayerListener
 import com.tans.tmediaplayer.player.tMediaPlayerState
 import com.tans.tuiutils.state.CoroutineState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.random.Random
@@ -21,8 +24,8 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
         AtomicReference()
     }
 
-
     fun init() {
+        // Init player
         appGlobalCoroutineScope.launch {
             // This player never release.
             val p = tMediaPlayer(
@@ -33,6 +36,54 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
             )
             player.getAndSet(p)?.release()
             p.setListener(this@AudioPlayerManager)
+        }
+
+        // Observe AudioList
+        appGlobalCoroutineScope.launch {
+            AudioManager.stateFlow()
+                .distinctUntilChanged()
+                .map { it to it.getAllPlayList() }
+                .collectLatest { (managerState, allPlayList) ->
+                    val state = stateFlow.value
+                    val playListState = state.playListState
+                    if (playListState is PlayListState.SelectedPlayList) {
+                        val minePlayList = playListState.audioList
+                        val managerPlayList = allPlayList[minePlayList.audioListType]
+                        if (managerPlayList != minePlayList) {
+                            // PlayList changed.
+                            if (managerPlayList == null) {
+                                // Current play list was removed.
+                                removeAudioList()
+                            } else {
+                                val currentPlayAudio = playListState.getCurrentPlayAudio()
+                                val managerPlayAudio = managerState.audioIdToAudioMap[currentPlayAudio.mediaStoreAudio.id]
+                                if (managerPlayAudio == null) {
+                                    // Current play audio was removed from list.
+                                    // Play first audio in the list.
+                                    playAudioList(list = managerPlayList, startIndex = 0, clearPlayedList = true)
+                                } else {
+                                    // Current play audio was not removed from list.
+                                    updateState { s ->
+                                        val currentPlayIndex = managerPlayList.audios.indexOf(managerPlayAudio)
+                                        s.copy(
+                                            playListState = playListState.copy(
+                                                audioList = managerPlayList,
+                                                currentPlayIndex = currentPlayIndex,
+                                                playedIndexes = setOf(currentPlayIndex),
+                                                nextPlayIndex = computeNextPlayIndex(
+                                                    playType = s.playType,
+                                                    playedIndexes = setOf(currentPlayIndex),
+                                                    currentPlayIndex = currentPlayIndex,
+                                                    playListSize = managerPlayList.audios.size
+                                                )
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
         }
     }
 
@@ -87,6 +138,12 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
     }
 
     fun playAudioList(list: AudioList, startIndex: Int, clearPlayedList: Boolean = true) {
+        val allPlayList = AudioManager.stateFlow.value.getAllPlayList()
+        val listFromManager = allPlayList[list.audioListType]
+        if (listFromManager != list) {
+            AppLog.e(TAG, "Check list fail: ${list.audioListType}")
+            return
+        }
         val audio = list.audios.getOrNull(startIndex)
         if (audio == null) {
             AppLog.e(TAG, "Wrong play index $startIndex for list: $list")
@@ -269,6 +326,21 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                 currentPlayIndex
             }
         }
+    }
+
+    private fun AudioManagerState.getAllPlayList(): Map<AudioListType, AudioList> {
+        val result = mutableMapOf<AudioListType, AudioList>()
+        fun addToResultIfNotEmpty(list: AudioList) {
+            if (list.audios.isNotEmpty()) {
+                result[list.audioListType] = list
+            }
+        }
+        addToResultIfNotEmpty(allAudioList)
+        addToResultIfNotEmpty(likeAudioList)
+        for (l in (albumAudioLists + artistAudioLists + customAudioLists)) {
+            addToResultIfNotEmpty(l)
+        }
+        return result
     }
 
     private const val TAG = "AudioPlayerManager"
