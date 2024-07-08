@@ -27,7 +27,8 @@ sealed class PlayListState {
         val playerDuration: Long,
         val playerState: tMediaPlayerState,
         val playerMediaInfo: MediaInfo?,
-        val playedIndexes: Set<Int>
+        val playedIndexes: Set<Int>,
+        val nextPlayIndex: Int?
     ) : PlayListState()
 }
 

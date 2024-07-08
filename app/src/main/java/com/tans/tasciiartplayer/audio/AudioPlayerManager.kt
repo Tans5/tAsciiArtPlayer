@@ -1,5 +1,6 @@
 package com.tans.tasciiartplayer.audio
 
+import android.os.SystemClock
 import com.tans.tasciiartplayer.AppLog
 import com.tans.tasciiartplayer.AppSettings
 import com.tans.tasciiartplayer.appGlobalCoroutineScope
@@ -10,6 +11,7 @@ import com.tans.tuiutils.state.CoroutineState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.random.Random
 
 object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerManagerState> {
 
@@ -54,7 +56,15 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                     playType = playType,
                     playListState = when (listState) {
                         PlayListState.NoSelectedList -> PlayListState.NoSelectedList
-                        is PlayListState.SelectedPlayList -> listState.copy(playedIndexes = setOf(listState.currentPlayIndex))
+                        is PlayListState.SelectedPlayList -> listState.copy(
+                            playedIndexes = setOf(listState.currentPlayIndex),
+                            nextPlayIndex = computeNextPlayIndex(
+                                playType = s.playType,
+                                playedIndexes = setOf(listState.currentPlayIndex),
+                                currentPlayIndex = listState.currentPlayIndex,
+                                playListSize = listState.audioList.audios.size
+                            )
+                        )
                     }
                 )
             } else {
@@ -92,11 +102,17 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                         playerDuration = audio.mediaStoreAudio.duration,
                         playerState = tMediaPlayerState.NoInit,
                         playerMediaInfo = null,
-                        playedIndexes = setOf(startIndex)
+                        playedIndexes = setOf(startIndex),
+                        nextPlayIndex = computeNextPlayIndex(
+                            playType = s.playType,
+                            playedIndexes = setOf(startIndex),
+                            currentPlayIndex = startIndex,
+                            playListSize = list.audios.size)
                     )
                 }
                 is PlayListState.SelectedPlayList -> {
                     if (list == s.playListState.audioList) {
+                        val newPlayedIndexes = if (clearPlayedList) setOf(startIndex) else s.playListState.playedIndexes + setOf(startIndex)
                         // list not change
                         s.playListState.copy(
                             currentPlayIndex = startIndex,
@@ -104,7 +120,13 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                             playerDuration = audio.mediaStoreAudio.duration,
                             playerState = tMediaPlayerState.NoInit,
                             playerMediaInfo = null,
-                            playedIndexes = if (clearPlayedList) setOf(startIndex) else s.playListState.playedIndexes + setOf(startIndex)
+                            playedIndexes = newPlayedIndexes,
+                            nextPlayIndex = computeNextPlayIndex(
+                                playType = s.playType,
+                                playedIndexes = newPlayedIndexes,
+                                currentPlayIndex = startIndex,
+                                playListSize = list.audios.size
+                            )
                         )
                     } else {
                         // list changed
@@ -115,7 +137,13 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                             playerDuration = audio.mediaStoreAudio.duration,
                             playerState = tMediaPlayerState.NoInit,
                             playerMediaInfo = null,
-                            playedIndexes = setOf(startIndex)
+                            playedIndexes = setOf(startIndex),
+                            nextPlayIndex = computeNextPlayIndex(
+                                playType = s.playType,
+                                playedIndexes = setOf(startIndex),
+                                currentPlayIndex = startIndex,
+                                playListSize = list.audios.size
+                            )
                         )
                     }
                 }
@@ -132,7 +160,17 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
         }
 
         if (state is tMediaPlayerState.PlayEnd) {
-            // TODO: load next audio.
+            val s = stateFlow.value
+            if (s.playListState is PlayListState.SelectedPlayList) {
+                val nextPlayIndex = s.playListState.nextPlayIndex
+                if (nextPlayIndex != null) {
+                    playAudioList(
+                        list = s.playListState.audioList,
+                        startIndex = nextPlayIndex,
+                        clearPlayedList = false
+                    )
+                }
+            }
         }
 
         if (state is tMediaPlayerState.Error) {
@@ -185,6 +223,51 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                }
            }
            s.copy(playListState = playListState)
+        }
+    }
+
+    private fun computeNextPlayIndex(
+        playType: PlayType,
+        playedIndexes: Set<Int>,
+        currentPlayIndex: Int,
+        playListSize: Int
+    ): Int? {
+        if (currentPlayIndex >= playListSize || currentPlayIndex < 0) {
+            return null
+        }
+        return when (playType) {
+            PlayType.ListSequentialPlay -> {
+                val next = currentPlayIndex + 1
+                if (next >= playListSize) {
+                    null
+                } else {
+                    next
+                }
+            }
+            PlayType.ListLoopPlay -> {
+                (currentPlayIndex + 1) % playListSize
+            }
+            PlayType.ListRandomPlay, PlayType.ListRandomLoopPlay -> {
+                val canUseIndexes = (0 until playListSize)
+                    .filter { !playedIndexes.contains(it) }
+                    .toList()
+                    .let {
+                        if (playType == PlayType.ListRandomLoopPlay) {
+                            (0 until playListSize).toList()
+                        } else {
+                            it
+                        }
+                    }
+                if (canUseIndexes.isEmpty()) {
+                    null
+                } else {
+                    return canUseIndexes.random(Random(SystemClock.uptimeMillis()))
+                }
+
+            }
+            PlayType.SingleLoopPlay -> {
+                currentPlayIndex
+            }
         }
     }
 
