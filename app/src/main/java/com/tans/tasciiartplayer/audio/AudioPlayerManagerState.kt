@@ -3,9 +3,22 @@ package com.tans.tasciiartplayer.audio
 import com.tans.tmediaplayer.player.model.MediaInfo
 import com.tans.tmediaplayer.player.tMediaPlayerState
 
-sealed class AudioPlayerManagerState {
+data class AudioPlayerManagerState(
+    val playListState: PlayListState = PlayListState.NoSelectedList,
+    val playType: PlayType = PlayType.ListSequentialPlay
+)
 
-    data object NoSelectedList : AudioPlayerManagerState()
+enum class PlayType {
+    ListSequentialPlay,
+    ListLoopPlay,
+    ListRandomPlay,
+    ListRandomLoopPlay,
+    SingleLoopPlay
+}
+
+sealed class PlayListState {
+
+    data object NoSelectedList : PlayListState()
 
     data class SelectedPlayList(
         val audioList: AudioList,
@@ -13,6 +26,9 @@ sealed class AudioPlayerManagerState {
         val playerProgress: Long,
         val playerDuration: Long,
         val playerState: tMediaPlayerState,
-        val playerMediaInfo: MediaInfo?
-    ) : AudioPlayerManagerState()
+        val playerMediaInfo: MediaInfo?,
+        val playedIndexes: Set<Int>
+    ) : PlayListState()
 }
+
+fun PlayListState.SelectedPlayList.getCurrentPlayAudio(): AudioModel = this.audioList.audios[this.currentPlayIndex]
