@@ -50,6 +50,14 @@
     <!--<string name="video_watch_history_and_duration">%s / %s</string>-->
     <!--endregion-->
 
+    <!--region AudiosFragment-->
+    <string name="audios_fgt_all_audios">All Audios</string>
+    <string name="audios_fgt_my_favorites">My Favorites</string>
+    <string name="audios_fgt_albums">Albums</string>
+    <string name="audios_fgt_artists">Artists</string>
+    <string name="audios_fgt_custom_playlists">Custom Playlists</string>
+    <!--endregion-->
+
     <!--region VideoPlayerActivity-->
     <string name="video_player_error">An error occurred. T_T</string>
     <!--endregion -->

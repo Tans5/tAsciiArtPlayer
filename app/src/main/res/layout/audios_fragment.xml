@@ -2,15 +2,236 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TODO"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toTopOf="@id/play_layout">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:id="@+id/all_audios_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/icon_audio"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="10dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="50dp"
+                        android:layout_marginEnd="50dp"
+                        android:text="@string/audios_fgt_all_audios"
+                        android:textSize="16sp"
+                        android:textColor="@color/gray2" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_right_arrow"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginEnd="10dp"/>
+
+                </FrameLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@color/gray3" />
+
+                <FrameLayout
+                    android:id="@+id/my_favorites_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/icon_favorite_fill"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="10dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="50dp"
+                        android:layout_marginEnd="50dp"
+                        android:text="@string/audios_fgt_my_favorites"
+                        android:textSize="16sp"
+                        android:textColor="@color/gray2" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_right_arrow"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginEnd="10dp"/>
+
+                </FrameLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@color/gray3" />
+
+                <FrameLayout
+                    android:id="@+id/albums_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/icon_album"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="10dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="50dp"
+                        android:layout_marginEnd="50dp"
+                        android:text="@string/audios_fgt_albums"
+                        android:textSize="16sp"
+                        android:textColor="@color/gray2" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_right_arrow"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginEnd="10dp"/>
+
+                </FrameLayout>
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@color/gray3" />
+
+                <FrameLayout
+                    android:id="@+id/artists_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/icon_artist"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="10dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="50dp"
+                        android:layout_marginEnd="50dp"
+                        android:text="@string/audios_fgt_artists"
+                        android:textSize="16sp"
+                        android:textColor="@color/gray2" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_right_arrow"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginEnd="10dp"/>
+
+                </FrameLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@color/gray3" />
+
+                <FrameLayout
+                    android:id="@+id/custom_playlists_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/icon_playlist"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="10dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="50dp"
+                        android:layout_marginEnd="50dp"
+                        android:text="@string/audios_fgt_custom_playlists"
+                        android:textSize="16sp"
+                        android:textColor="@color/gray2" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_right_arrow"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_marginEnd="10dp"/>
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/play_layout"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!--TODO: Play State-->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TODO:"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,7 +5,10 @@ import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.audio.AudioManager
 import com.tans.tasciiartplayer.databinding.AudiosFragmentBinding
 import com.tans.tuiutils.fragment.BaseCoroutineStateFragment
+import com.tans.tuiutils.view.clicks
+import com.tans.tuiutils.view.refreshes
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
@@ -16,11 +19,33 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
         launch {
             AudioManager.refreshMediaStoreAudios()
         }
-        // TODO:
     }
 
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
         val viewBinding = AudiosFragmentBinding.bind(contentView)
-        // TODO:
+
+        viewBinding.swipeRefreshLayout.refreshes(this, Dispatchers.IO) {
+            AudioManager.refreshMediaStoreAudios()
+        }
+
+        viewBinding.allAudiosLayout.clicks(this) {
+            // TODO:
+        }
+
+        viewBinding.myFavoritesLayout.clicks(this) {
+            // TODO:
+        }
+
+        viewBinding.albumsLayout.clicks(this) {
+            // TODO:
+        }
+
+        viewBinding.artistsLayout.clicks(this) {
+            // TODO:
+        }
+
+        viewBinding.customPlaylistsLayout.clicks(this) {
+            // TODO:
+        }
     }
 }

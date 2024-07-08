@@ -11,6 +11,7 @@
 
     <color name="gray1">#777777</color>
     <color name="gray2">#999999</color>
+    <color name="gray3">#F2F2F2</color>
 
     <color name="black_transparent1">#66000000</color>
     <color name="black_transparent2">#88000000</color>
