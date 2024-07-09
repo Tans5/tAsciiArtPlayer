@@ -24,6 +24,7 @@ import com.tans.tuiutils.adapter.impl.datasources.DataSourceImpl
 import com.tans.tuiutils.adapter.impl.viewcreatators.SingleItemViewCreatorImpl
 import com.tans.tuiutils.dialog.BaseCoroutineStateDialogFragment
 import com.tans.tuiutils.dialog.createBottomSheetDialog
+import com.tans.tuiutils.systembar.SystemBarThemeStyle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -47,7 +48,11 @@ class ArtistsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
             v.setPadding(0, 0, 0, systemInsets.bottom + systemInsets.top)
             insets
         }
-        return requireActivity().createBottomSheetDialog(contentView = contentView) { b ->
+        return requireActivity().createBottomSheetDialog(
+            contentView = contentView,
+            navigationThemeStyle = SystemBarThemeStyle.Light,
+            statusBarThemeStyle = SystemBarThemeStyle.Light
+        ) { b ->
             b.isDraggable = true
             b.isHideable = true
         }
