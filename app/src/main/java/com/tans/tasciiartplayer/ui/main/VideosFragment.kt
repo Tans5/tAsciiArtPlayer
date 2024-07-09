@@ -66,7 +66,6 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
                 glideLoadManager
                     .load(loadModel)
                     .error(R.drawable.icon_movie)
-                    .placeholder(R.drawable.icon_movie)
                     .into(itemViewBinding.videoIv)
                 itemViewBinding.durationTv.text = video.duration.formatDuration()
                 if (lastWatch == null) {

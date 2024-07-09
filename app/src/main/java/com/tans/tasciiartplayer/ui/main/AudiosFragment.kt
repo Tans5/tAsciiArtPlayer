@@ -2,8 +2,10 @@ package com.tans.tasciiartplayer.ui.main
 
 import android.view.View
 import com.tans.tasciiartplayer.R
+import com.tans.tasciiartplayer.audio.AudioListType
 import com.tans.tasciiartplayer.audio.AudioManager
 import com.tans.tasciiartplayer.databinding.AudiosFragmentBinding
+import com.tans.tasciiartplayer.ui.audioplayer.AudioListDialog
 import com.tans.tuiutils.fragment.BaseCoroutineStateFragment
 import com.tans.tuiutils.view.clicks
 import com.tans.tuiutils.view.refreshes
@@ -29,7 +31,8 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
         }
 
         viewBinding.allAudiosLayout.clicks(this) {
-            // TODO:
+            val d = AudioListDialog(AudioListType.AllAudios)
+            d.show(requireActivity().supportFragmentManager, "AudioListDialog#${System.currentTimeMillis()}")
         }
 
         viewBinding.myFavoritesLayout.clicks(this) {
