@@ -43,19 +43,7 @@ class ArtistsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
     }
 
     override fun createDialog(contentView: View): Dialog {
-        ViewCompat.setOnApplyWindowInsetsListener(contentView) { v, insets ->
-            val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(0, 0, 0, systemInsets.bottom + systemInsets.top)
-            insets
-        }
-        return requireActivity().createBottomSheetDialog(
-            contentView = contentView,
-            navigationThemeStyle = SystemBarThemeStyle.Light,
-            statusBarThemeStyle = SystemBarThemeStyle.Light
-        ) { b ->
-            b.isDraggable = true
-            b.isHideable = true
-        }
+        return requireActivity().createAudioBottomSheetDialog(contentView)
     }
 
     override fun firstLaunchInitData() {  }

@@ -2,12 +2,16 @@ package com.tans.tasciiartplayer.ui.audioplayer
 
 import android.app.Dialog
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.appGlobalCoroutineScope
 import com.tans.tasciiartplayer.audio.AudioListType
@@ -57,19 +61,7 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
     }
 
     override fun createDialog(contentView: View): Dialog {
-        ViewCompat.setOnApplyWindowInsetsListener(contentView) { v, insets ->
-            val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(0, 0, 0, systemInsets.bottom + systemInsets.top)
-            insets
-        }
-        return requireActivity().createBottomSheetDialog(
-            contentView = contentView,
-            navigationThemeStyle = SystemBarThemeStyle.Light,
-            statusBarThemeStyle = SystemBarThemeStyle.Light
-        ) { b ->
-            b.isDraggable = true
-            b.isHideable = true
-        }
+        return requireActivity().createAudioBottomSheetDialog(contentView)
     }
 
     override fun firstLaunchInitData() {  }
