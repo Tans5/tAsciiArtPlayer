@@ -36,7 +36,8 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
         }
 
         viewBinding.myFavoritesLayout.clicks(this) {
-            // TODO:
+            val d = AudioListDialog(AudioListType.LikeAudios)
+            d.show(requireActivity().supportFragmentManager, "AudioListDialog#${System.currentTimeMillis()}")
         }
 
         viewBinding.albumsLayout.clicks(this) {

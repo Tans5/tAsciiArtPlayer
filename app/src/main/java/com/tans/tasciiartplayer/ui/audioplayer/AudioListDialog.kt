@@ -13,12 +13,13 @@ import com.tans.tasciiartplayer.appGlobalCoroutineScope
 import com.tans.tasciiartplayer.audio.AudioListType
 import com.tans.tasciiartplayer.audio.AudioManager
 import com.tans.tasciiartplayer.audio.AudioModel
-import com.tans.tasciiartplayer.audio.AudioPlayerManager
 import com.tans.tasciiartplayer.audio.getAllPlayList
 import com.tans.tasciiartplayer.databinding.AudioItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.AudioListDialogBinding
+import com.tans.tasciiartplayer.databinding.EmptyItemLayoutBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tuiutils.adapter.impl.builders.SimpleAdapterBuilderImpl
+import com.tans.tuiutils.adapter.impl.builders.plus
 import com.tans.tuiutils.adapter.impl.databinders.DataBinderImpl
 import com.tans.tuiutils.adapter.impl.datasources.DataSourceImpl
 import com.tans.tuiutils.adapter.impl.viewcreatators.SingleItemViewCreatorImpl
@@ -30,7 +31,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 
 class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
@@ -108,7 +108,7 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                     }
                     val dataSource = DataSourceImpl<AudioModel>()
                     val glideLoadManager = Glide.with(ctx)
-                    val adapter = SimpleAdapterBuilderImpl<AudioModel>(
+                    val audioAdapterBuilder = SimpleAdapterBuilderImpl<AudioModel>(
                         itemViewCreator = SingleItemViewCreatorImpl(R.layout.audio_item_layout),
                         dataSource = dataSource,
                         dataBinder = DataBinderImpl { (audio, loadModel), view, _ ->
@@ -124,14 +124,28 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                                 // TODO:
                             }
                         }
-                    ).build()
-                    viewBinding.audioListRv.adapter = adapter
+                    )
+                    val emptyDataSource = DataSourceImpl<Unit>()
+                    val emptyAdapterBuilder = SimpleAdapterBuilderImpl<Unit>(
+                        itemViewCreator = SingleItemViewCreatorImpl(R.layout.empty_item_layout),
+                        dataSource = emptyDataSource,
+                        dataBinder = DataBinderImpl{ _, itemView, _ ->
+                            val itemViewBinding = EmptyItemLayoutBinding.bind(itemView)
+                            itemViewBinding.msgTv.text = itemView.context.getString(R.string.audios_fgt_no_audio)
+                        }
+                    )
+                    viewBinding.audioListRv.adapter = (audioAdapterBuilder + emptyAdapterBuilder).build()
                     AudioManager.stateFlow()
                         .map { it.getAllPlayList()[type]?.audios ?: emptyList() }
                         .distinctUntilChanged()
                         .flowOn(Dispatchers.IO)
                         .collect {
                             dataSource.submitDataList(it)
+                            if (it.isEmpty()) {
+                                emptyDataSource.submitDataList(listOf(Unit))
+                            } else {
+                                emptyDataSource.submitDataList(emptyList())
+                            }
                         }
                 }
                 return cachedContentViews.putIfAbsent(type, ContentViewAndTask(view, task)).let {

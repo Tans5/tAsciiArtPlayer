@@ -5,6 +5,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.tans.tasciiartplayer.R
+import com.tans.tasciiartplayer.databinding.EmptyItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.VideoItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.VideosFragmentBinding
 import com.tans.tasciiartplayer.formatDuration
@@ -12,6 +13,7 @@ import com.tans.tasciiartplayer.ui.videoplayer.VideoPlayerActivity
 import com.tans.tasciiartplayer.video.VideoManager
 import com.tans.tasciiartplayer.video.VideoModel
 import com.tans.tuiutils.adapter.impl.builders.SimpleAdapterBuilderImpl
+import com.tans.tuiutils.adapter.impl.builders.plus
 import com.tans.tuiutils.adapter.impl.databinders.DataBinderImpl
 import com.tans.tuiutils.adapter.impl.datasources.FlowDataSourceImpl
 import com.tans.tuiutils.adapter.impl.viewcreatators.SingleItemViewCreatorImpl
@@ -21,6 +23,7 @@ import com.tans.tuiutils.view.clicks
 import com.tans.tuiutils.view.refreshes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -50,7 +53,7 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
         }
         val glideLoadManager = Glide.with(this@VideosFragment)
 //        glideLoadManager.resumeRequests()
-        val adapter = SimpleAdapterBuilderImpl(
+        val videoAdapterBuilder = SimpleAdapterBuilderImpl(
             itemViewCreator = SingleItemViewCreatorImpl(R.layout.video_item_layout),
             dataSource = FlowDataSourceImpl(
                 dataFlow = stateFlow().map { it.videos },
@@ -85,8 +88,17 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
                     )
                 }
             }
-        ).build()
-        viewBinding.videosRv.adapter = adapter
+        )
+
+        val emptyAdapterBuilder = SimpleAdapterBuilderImpl<Unit>(
+            itemViewCreator = SingleItemViewCreatorImpl(R.layout.empty_item_layout),
+            dataSource = FlowDataSourceImpl(stateFlow.map { if (it.videos.isEmpty()) listOf(Unit) else emptyList() }.debounce(200L)),
+            dataBinder = DataBinderImpl{ _, itemView, _ ->
+                val itemViewBinding = EmptyItemLayoutBinding.bind(itemView)
+                itemViewBinding.msgTv.text = itemView.context.getString(R.string.videos_fgt_no_video)
+            }
+        )
+        viewBinding.videosRv.adapter = (videoAdapterBuilder + emptyAdapterBuilder).build()
 
 //        viewBinding.videosRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 //            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {

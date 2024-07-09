@@ -47,7 +47,7 @@
     <!--endregion MainActivity -->
 
     <!--region VideosFragment-->
-    <!--<string name="video_watch_history_and_duration">%s / %s</string>-->
+    <string name="videos_fgt_no_video">No Video</string>
     <!--endregion-->
 
     <!--region AudiosFragment-->
@@ -56,6 +56,7 @@
     <string name="audios_fgt_albums">Albums</string>
     <string name="audios_fgt_artists">Artists</string>
     <string name="audios_fgt_custom_playlists">Custom Playlists</string>
+    <string name="audios_fgt_no_audio">No Audio</string>
     <!--endregion-->
 
     <!--region VideoPlayerActivity-->
