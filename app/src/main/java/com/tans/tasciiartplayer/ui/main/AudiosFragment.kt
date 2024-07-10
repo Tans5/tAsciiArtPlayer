@@ -33,12 +33,12 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
 
         viewBinding.allAudiosLayout.clicks(this) {
             val d = AudioListDialog(AudioListType.AllAudios)
-            d.show(requireActivity().supportFragmentManager, "AudioListDialog#${System.currentTimeMillis()}")
+            d.showSafe(requireActivity().supportFragmentManager, "AudioListDialog#${System.currentTimeMillis()}")
         }
 
         viewBinding.myFavoritesLayout.clicks(this) {
             val d = AudioListDialog(AudioListType.LikeAudios)
-            d.show(requireActivity().supportFragmentManager, "AudioListDialog#${System.currentTimeMillis()}")
+            d.showSafe(requireActivity().supportFragmentManager, "AudioListDialog#${System.currentTimeMillis()}")
         }
 
         viewBinding.albumsLayout.clicks(this) {
@@ -47,7 +47,7 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
 
         viewBinding.artistsLayout.clicks(this) {
             val d = ArtistsDialog()
-            d.show(requireActivity().supportFragmentManager, "ArtistsDialog#${System.currentTimeMillis()}")
+            d.showSafe(requireActivity().supportFragmentManager, "ArtistsDialog#${System.currentTimeMillis()}")
         }
 
         viewBinding.customPlaylistsLayout.clicks(this) {

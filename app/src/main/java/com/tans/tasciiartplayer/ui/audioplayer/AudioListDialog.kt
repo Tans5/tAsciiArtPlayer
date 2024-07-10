@@ -2,16 +2,12 @@ package com.tans.tasciiartplayer.ui.audioplayer
 
 import android.app.Dialog
 import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.shape.MaterialShapeDrawable
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.appGlobalCoroutineScope
 import com.tans.tasciiartplayer.audio.AudioListType
@@ -28,8 +24,7 @@ import com.tans.tuiutils.adapter.impl.databinders.DataBinderImpl
 import com.tans.tuiutils.adapter.impl.datasources.DataSourceImpl
 import com.tans.tuiutils.adapter.impl.viewcreatators.SingleItemViewCreatorImpl
 import com.tans.tuiutils.dialog.BaseCoroutineStateDialogFragment
-import com.tans.tuiutils.dialog.createBottomSheetDialog
-import com.tans.tuiutils.systembar.SystemBarThemeStyle
+import com.tans.tuiutils.view.clicks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -117,8 +112,12 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                                 .load(loadModel)
                                 .error(R.drawable.icon_audio)
                                 .into(itemViewBinding.audioImgIv)
-                            itemViewBinding.root.setOnClickListener {
-                                // TODO:
+
+                            val scope = (view.context as? FragmentActivity)?.lifecycleScope
+                            if (scope != null) {
+                                itemViewBinding.root.clicks(scope, 1000L) {
+                                    // TODO:
+                                }
                             }
                         }
                     )

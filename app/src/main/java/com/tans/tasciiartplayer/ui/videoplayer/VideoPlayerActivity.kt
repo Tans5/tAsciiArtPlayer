@@ -184,7 +184,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 if (info != null) {
                     viewBinding.actionLayout.hide()
                     val d = MediaInfoDialog(info, intent.getMediaFileExtra())
-                    d.show(supportFragmentManager, "MediaInfoDialog#${System.currentTimeMillis()}")
+                    d.showSafe(supportFragmentManager, "MediaInfoDialog#${System.currentTimeMillis()}")
                 }
 
             }
@@ -192,7 +192,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             viewBinding.settingsIv.clicks(this) {
                 viewBinding.actionLayout.hide()
                 val d = PlayerSettingsDialog(playerView = viewBinding.playerView, player = mediaPlayer)
-                d.show(supportFragmentManager, "PlayerSettingsDialog#${System.currentTimeMillis()}}")
+                d.showSafe(supportFragmentManager, "PlayerSettingsDialog#${System.currentTimeMillis()}}")
             }
             val subtitleStreams = mediaPlayer.getMediaInfo()?.subtitleStreams ?: emptyList()
             if (subtitleStreams.isNotEmpty()) {
@@ -200,7 +200,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 viewBinding.subtitleIv.clicks(this) {
                     viewBinding.actionLayout.hide()
                     val d = SubtitleSelectDialog(player = mediaPlayer)
-                    d.show(supportFragmentManager, "SubtitleSelectDialog#${System.currentTimeMillis()}")
+                    d.showSafe(supportFragmentManager, "SubtitleSelectDialog#${System.currentTimeMillis()}")
                 }
             } else {
                 viewBinding.subtitleIv.hide()

@@ -73,7 +73,7 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
 
             viewBinding.toolBar.menu.findItem(R.id.app_settings).setOnMenuItemClickListener {
                 val settingsDialog = AppSettingsDialog()
-                settingsDialog.show(supportFragmentManager, "AppSettingsDialog#${System.currentTimeMillis()}")
+                settingsDialog.showSafe(supportFragmentManager, "AppSettingsDialog#${System.currentTimeMillis()}")
                 true
             }
         }
