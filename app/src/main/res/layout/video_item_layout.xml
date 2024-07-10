@@ -48,6 +48,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/video_iv"
+            app:trackColor="@color/gray3"
+            app:indicatorColor="@color/teal_200"
+            app:indicatorTrackGapSize="0dp"
+            app:trackStopIndicatorSize="0dp"
             app:trackThickness="3dp"
             tools:visibility="visible"
             tools:progress="30" />
