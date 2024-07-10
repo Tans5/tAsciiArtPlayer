@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.appGlobalCoroutineScope
@@ -22,7 +21,6 @@ import com.tans.tuiutils.adapter.impl.databinders.DataBinderImpl
 import com.tans.tuiutils.adapter.impl.datasources.DataSourceImpl
 import com.tans.tuiutils.adapter.impl.viewcreatators.SingleItemViewCreatorImpl
 import com.tans.tuiutils.dialog.BaseCoroutineStateDialogFragment
-import com.tans.tuiutils.view.clicks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -87,14 +85,11 @@ class ArtistsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
                                 .error(R.drawable.icon_artist)
                                 .into(itemViewBinding.artistAvatarIv)
 
-                            val scope = (view.context as? FragmentActivity)?.lifecycleScope
-                            if (scope != null) {
-                                itemViewBinding.root.clicks(scope, 1000L) {
-                                    val ctx = itemViewBinding.root.context as? FragmentActivity
-                                    if (ctx != null) {
-                                        val d = AudioListDialog(data.audioListType)
-                                        d.showSafe(ctx.supportFragmentManager, "AudioListDialog#${System.currentTimeMillis()}")
-                                    }
+                            itemViewBinding.root.setOnClickListener {
+                                val ctx = it.context as? FragmentActivity
+                                if (ctx != null) {
+                                    val d = AudioListDialog(data.audioListType)
+                                    d.showSafe(ctx.supportFragmentManager, "AudioListDialog#${System.currentTimeMillis()}")
                                 }
                             }
                         }
