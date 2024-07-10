@@ -41,23 +41,26 @@
 
     <FrameLayout
         android:id="@+id/last_watch_layout"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:visibility="visible">
 
-        <com.mikhaellopez.circularprogressbar.CircularProgressBar
+        <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/last_watch_dismiss_circular_pb"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:cpb_progressbar_color="@color/teal_200"
-            app:cpb_progressbar_width="2dp"
-            app:cpb_background_progressbar_width="2dp"
-            app:cpb_progress="100" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:indicatorSize="30dp"
+            app:trackThickness="2dp"
+            app:trackColor="@color/gray3"
+            app:indicatorColor="@color/teal_200"
+            app:indicatorTrackGapSize="1dp"
+            app:hideAnimationBehavior="escape"
+            tools:progress="30"/>
 
         <TextView
             android:id="@+id/last_watch_tv"

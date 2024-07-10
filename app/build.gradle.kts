@@ -92,7 +92,4 @@ dependencies {
 
     // DataStore
     implementation(libs.androidx.datastore.sp)
-
-    // CircleProgressBar
-    implementation(libs.circleprogressbar)
 }

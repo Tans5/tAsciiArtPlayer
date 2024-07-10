@@ -1,5 +1,6 @@
 package com.tans.tasciiartplayer.ui.videoplayer
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -25,10 +26,13 @@ import com.tans.tuiutils.systembar.annotation.FullScreenStyle
 import com.tans.tuiutils.view.clicks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -76,7 +80,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "Recycle")
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
         val viewBinding = VideoPlayerActivityBinding.bind(contentView)
 
@@ -220,15 +224,41 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                         // Show 5s
                         viewBinding.lastWatchLayout.show()
                         viewBinding.lastWatchTv.text = targetSeekTime.formatDuration()
-                        viewBinding.lastWatchDismissCircularPb.setProgressWithAnimation(progress = 0.0f, duration = 5000L, interpolator = LinearInterpolator())
-                        viewBinding.lastWatchDismissCircularPb.onProgressChangeListener = {
-                            if (abs(it - 0.0f) < 0.001f) {
-                                viewBinding.lastWatchLayout.hide()
+                        viewBinding.lastWatchDismissCircularPb.setVisibilityAfterHide(View.INVISIBLE)
+
+                        val animatorJob = launch {
+                            suspendCancellableCoroutine { cont ->
+                                val animator = ValueAnimator.ofInt(0, 100)
+                                animator.duration = 5000L
+                                cont.invokeOnCancellation {
+                                    animator.cancel()
+                                }
+                                animator.interpolator = LinearInterpolator()
+                                animator.setEvaluator { fraction, startValue, endValue ->
+                                    startValue as Int
+                                    endValue as Int
+                                    ((endValue - startValue).toFloat() * fraction).toInt()
+                                }
+                                animator.addUpdateListener { value ->
+                                    val progress = value.animatedValue as Int
+                                    viewBinding.lastWatchDismissCircularPb.setProgressCompat(progress, false)
+                                    if (progress >= 100) {
+                                        viewBinding.lastWatchDismissCircularPb.hide()
+                                        if (cont.isActive) {
+                                            cont.resume(Unit)
+                                        }
+                                    }
+                                }
+                                animator.start()
                             }
+                            delay(300L)
+                            viewBinding.lastWatchLayout.hide()
                         }
+
                         viewBinding.lastWatchLayout.clicks(this) {
                             mediaPlayer.seekTo(targetSeekTime)
                             viewBinding.lastWatchLayout.hide()
+                            animatorJob.cancel()
                         }
                     }
                 }
