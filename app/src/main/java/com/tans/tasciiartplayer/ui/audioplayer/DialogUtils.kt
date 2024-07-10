@@ -22,10 +22,23 @@ fun FragmentActivity.createAudioBottomSheetDialog(contentView: View): Dialog {
         contentView = contentView,
         navigationThemeStyle = SystemBarThemeStyle.Light,
         statusBarThemeStyle = SystemBarThemeStyle.Light,
-        dimAmount = 0.1f
+        dimAmount = 0.05f
     ) { b ->
         b.isDraggable = true
         b.isHideable = true
+        b.isFitToContents = true
+        b.state = BottomSheetBehavior.STATE_EXPANDED
+        b.setPeekHeight(0, false)
+        b.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    b.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            }
+        })
         try {
             val method = BottomSheetBehavior::class.java.getDeclaredMethod("getMaterialShapeDrawable")
             method.isAccessible = true
