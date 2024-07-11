@@ -1,5 +1,6 @@
 package com.tans.tasciiartplayer.ui.audioplayer
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
@@ -76,6 +77,7 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
 
         private val cachedContentViews: ConcurrentHashMap<AudioListType, ContentViewAndTask> = ConcurrentHashMap()
 
+        @SuppressLint("SetTextI18n")
         private fun createContentViewOrGetFromCache(
             type: AudioListType,
             context: Context,
