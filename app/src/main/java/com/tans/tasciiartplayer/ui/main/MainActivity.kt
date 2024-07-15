@@ -9,6 +9,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.databinding.MainActivityBinding
+import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.ArtistsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.AudioListDialog
 import com.tans.tasciiartplayer.ui.common.AppSettingsDialog
@@ -85,6 +86,7 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
         super.onDestroy()
         ArtistsDialog.removeCacheContentViewAndTask(this)
         AudioListDialog.removeCacheContentViewAndTask(this)
+        AlbumsDialog.removeCacheContentViewAndTask(this)
     }
 
     companion object {

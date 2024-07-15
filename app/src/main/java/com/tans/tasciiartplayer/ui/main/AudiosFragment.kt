@@ -5,6 +5,7 @@ import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.audio.AudioListType
 import com.tans.tasciiartplayer.audio.AudioManager
 import com.tans.tasciiartplayer.databinding.AudiosFragmentBinding
+import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.ArtistsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.AudioListDialog
 import com.tans.tuiutils.fragment.BaseCoroutineStateFragment
@@ -42,7 +43,8 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
         }
 
         viewBinding.albumsLayout.clicks(this) {
-            // TODO:
+            val d = AlbumsDialog()
+            d.showSafe(requireActivity().supportFragmentManager, "AlbumsDialog#${System.currentTimeMillis()}")
         }
 
         viewBinding.artistsLayout.clicks(this) {

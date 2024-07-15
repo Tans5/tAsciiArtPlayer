@@ -57,6 +57,8 @@
     <string name="audios_fgt_artists">Artists</string>
     <string name="audios_fgt_custom_playlists">Custom Playlists</string>
     <string name="audios_fgt_no_audio">No Audio</string>
+    <string name="audios_fgt_no_artist">No Artist</string>
+    <string name="audios_fgt_no_album">No Album</string>
     <!--endregion-->
 
     <!--region VideoPlayerActivity-->
