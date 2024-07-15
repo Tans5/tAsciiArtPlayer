@@ -59,6 +59,7 @@
     <string name="audios_fgt_no_audio">No Audio</string>
     <string name="audios_fgt_no_artist">No Artist</string>
     <string name="audios_fgt_no_album">No Album</string>
+    <string name="audios_fgt_no_play">No Play</string>
     <!--endregion-->
 
     <!--region VideoPlayerActivity-->
