@@ -69,10 +69,10 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                                             playListState = playListState.copy(
                                                 audioList = managerPlayList,
                                                 currentPlayIndex = currentPlayIndex,
-                                                playedIndexes = setOf(currentPlayIndex),
+                                                playedIndexes = listOf(currentPlayIndex),
                                                 nextPlayIndex = computeNextPlayIndex(
                                                     playType = s.playType,
-                                                    playedIndexes = setOf(currentPlayIndex),
+                                                    playedIndexes = listOf(currentPlayIndex),
                                                     currentPlayIndex = currentPlayIndex,
                                                     playListSize = managerPlayList.audios.size
                                                 )
@@ -108,10 +108,10 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                     playListState = when (listState) {
                         PlayListState.NoSelectedList -> PlayListState.NoSelectedList
                         is PlayListState.SelectedPlayList -> listState.copy(
-                            playedIndexes = setOf(listState.currentPlayIndex),
+                            playedIndexes = listOf(listState.currentPlayIndex),
                             nextPlayIndex = computeNextPlayIndex(
-                                playType = s.playType,
-                                playedIndexes = setOf(listState.currentPlayIndex),
+                                playType = playType,
+                                playedIndexes = listOf(listState.currentPlayIndex),
                                 currentPlayIndex = listState.currentPlayIndex,
                                 playListSize = listState.audioList.audios.size
                             )
@@ -159,17 +159,27 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                         playerDuration = audio.mediaStoreAudio.duration,
                         playerState = tMediaPlayerState.NoInit,
                         playerMediaInfo = null,
-                        playedIndexes = setOf(startIndex),
+                        playedIndexes = listOf(startIndex),
                         nextPlayIndex = computeNextPlayIndex(
                             playType = s.playType,
-                            playedIndexes = setOf(startIndex),
+                            playedIndexes = listOf(startIndex),
                             currentPlayIndex = startIndex,
                             playListSize = list.audios.size)
                     )
                 }
                 is PlayListState.SelectedPlayList -> {
                     if (list == s.playListState.audioList) {
-                        val newPlayedIndexes = if (clearPlayedList) setOf(startIndex) else s.playListState.playedIndexes + setOf(startIndex)
+                        val newPlayedIndexes = if (clearPlayedList) {
+                            listOf(startIndex)
+                        } else {
+                            val oldList = s.playListState.playedIndexes
+                            val i = oldList.indexOf(startIndex)
+                            if (i >= 0) {
+                                oldList.subList(0, i + 1)
+                            } else {
+                                oldList + startIndex
+                            }
+                        }
                         // list not change
                         s.playListState.copy(
                             currentPlayIndex = startIndex,
@@ -194,10 +204,10 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                             playerDuration = audio.mediaStoreAudio.duration,
                             playerState = tMediaPlayerState.NoInit,
                             playerMediaInfo = null,
-                            playedIndexes = setOf(startIndex),
+                            playedIndexes = listOf(startIndex),
                             nextPlayIndex = computeNextPlayIndex(
                                 playType = s.playType,
-                                playedIndexes = setOf(startIndex),
+                                playedIndexes = listOf(startIndex),
                                 currentPlayIndex = startIndex,
                                 playListSize = list.audios.size
                             )
@@ -211,7 +221,26 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
      }
 
     override fun onPlayerState(state: tMediaPlayerState) {
+
         val player = ensurePlayer()
+
+        val lastManagerState = stateFlow.value
+
+        if (lastManagerState.playListState is PlayListState.SelectedPlayList && lastManagerState.playListState.playerState != state) {
+            updateSelectedPlayListState(
+                errorState = {
+                    player.stop()
+                    // Shouldn't be this state.
+                    AppLog.e(TAG, "Player state update, but no playlist active.")
+                }
+            ) {
+                it.copy(
+                    playerState = state,
+                    playerMediaInfo = player.getMediaInfo()
+                )
+            }
+        }
+
         if (state is tMediaPlayerState.Prepared) {
             player.play()
         }
@@ -232,19 +261,6 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
 
         if (state is tMediaPlayerState.Error) {
             AppLog.e(TAG, "Player error: $state")
-        }
-
-        updateSelectedPlayListState(
-            errorState = {
-                player.stop()
-                // Shouldn't be this state.
-                AppLog.e(TAG, "Player state update, but no playlist active.")
-            }
-        ) {
-            it.copy(
-                playerState = state,
-                playerMediaInfo = player.getMediaInfo()
-            )
         }
     }
 
@@ -285,7 +301,7 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
 
     private fun computeNextPlayIndex(
         playType: PlayType,
-        playedIndexes: Set<Int>,
+        playedIndexes: List<Int>,
         currentPlayIndex: Int,
         playListSize: Int
     ): Int? {
