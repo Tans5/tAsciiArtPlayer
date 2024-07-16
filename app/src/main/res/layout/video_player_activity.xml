@@ -130,7 +130,7 @@
                 android:id="@+id/pause_iv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/icon_pause"
+                android:src="@drawable/icon_video_pause"
                 android:visibility="invisible"/>
 
             <ImageView
@@ -144,7 +144,7 @@
                 android:id="@+id/play_iv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/icon_play"/>
+                android:src="@drawable/icon_video_play"/>
 
         </FrameLayout>
 
