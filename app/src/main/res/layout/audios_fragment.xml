@@ -45,7 +45,7 @@
                         android:layout_marginEnd="50dp"
                         android:text="@string/audios_fgt_all_audios"
                         android:textSize="14sp"
-                        android:textColor="@color/black1" />
+                        android:textColor="@color/gray_900" />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -83,7 +83,7 @@
                         android:layout_marginEnd="50dp"
                         android:text="@string/audios_fgt_my_favorites"
                         android:textSize="14sp"
-                        android:textColor="@color/black1" />
+                        android:textColor="@color/gray_900" />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -121,7 +121,7 @@
                         android:layout_marginEnd="50dp"
                         android:text="@string/audios_fgt_albums"
                         android:textSize="14sp"
-                        android:textColor="@color/black1" />
+                        android:textColor="@color/gray_900" />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -160,7 +160,7 @@
                         android:layout_marginEnd="50dp"
                         android:text="@string/audios_fgt_artists"
                         android:textSize="14sp"
-                        android:textColor="@color/black1" />
+                        android:textColor="@color/gray_900" />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -198,7 +198,7 @@
                         android:layout_marginEnd="50dp"
                         android:text="@string/audios_fgt_custom_playlists"
                         android:textSize="14sp"
-                        android:textColor="@color/black1" />
+                        android:textColor="@color/gray_900" />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -234,7 +234,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:textSize="14sp"
-            android:textColor="@color/black1"
+            android:textColor="@color/gray_900"
             android:text="@string/audios_fgt_no_play"
             android:visibility="visible"
             tools:visibility="gone"/>
@@ -274,7 +274,7 @@
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="5dp"
                 android:ellipsize="end"
-                android:textColor="@color/black1"
+                android:textColor="@color/gray_900"
                 android:textSize="16sp"
                 android:lines="1"
                 android:lineSpacingExtra="2dp"
@@ -291,7 +291,7 @@
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="2dp"
-                android:textColor="@color/gray1"
+                android:textColor="@color/gray_900"
                 android:textSize="12sp"
                 android:lines="1"
                 android:lineSpacingExtra="1dp"
@@ -451,7 +451,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="10sp"
-                android:textColor="@color/gray1"
+                android:textColor="@color/gray_500"
                 android:layout_marginStart="5dp"
                 android:layout_marginBottom="5dp"
                 app:layout_constraintStart_toEndOf="@id/audio_img_card"
@@ -463,7 +463,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="10sp"
-                android:textColor="@color/gray1"
+                android:textColor="@color/gray_500"
                 android:layout_marginEnd="5dp"
                 android:layout_marginBottom="5dp"
                 app:layout_constraintEnd_toEndOf="parent"

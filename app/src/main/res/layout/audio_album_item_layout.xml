@@ -79,7 +79,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
             android:layout_marginTop="2dp"
-            android:textColor="@color/teal_200"
+            android:textColor="@color/cyan_200"
             android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/audio_count_iv"

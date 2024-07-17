@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:titleTextColor="@color/black1"
+            android:titleTextColor="@color/gray_900"
             android:fitsSystemWindows="true"
             app:title="@string/app_name"
             app:menu="@menu/app_settings_menu" />
