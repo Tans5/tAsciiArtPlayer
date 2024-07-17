@@ -1,21 +1,29 @@
 package com.tans.tasciiartplayer.ui.main
 
+import android.annotation.SuppressLint
 import android.view.View
+import com.bumptech.glide.Glide
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.audio.AudioListType
 import com.tans.tasciiartplayer.audio.AudioManager
+import com.tans.tasciiartplayer.audio.AudioPlayerManager
+import com.tans.tasciiartplayer.audio.AudioPlayerManagerState
+import com.tans.tasciiartplayer.audio.PlayListState
 import com.tans.tasciiartplayer.databinding.AudiosFragmentBinding
+import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.ArtistsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.AudioListDialog
+import com.tans.tmediaplayer.player.tMediaPlayerState
 import com.tans.tuiutils.fragment.BaseCoroutineStateFragment
 import com.tans.tuiutils.view.clicks
 import com.tans.tuiutils.view.refreshes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Optional
 
-class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
+class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(AudioPlayerManagerState()) {
 
     override val layoutId: Int = R.layout.audios_fragment
 
@@ -23,8 +31,13 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
         launch {
             AudioManager.refreshMediaStoreAudios()
         }
+
+        launch {
+            AudioPlayerManager.stateFlow().collect { s -> updateState { s } }
+        }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
         val viewBinding = AudiosFragmentBinding.bind(contentView)
 
@@ -54,6 +67,120 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
 
         viewBinding.customPlaylistsLayout.clicks(this) {
             // TODO:
+        }
+
+        // Playing audio
+        renderStateNewCoroutine({ it.playListState }) {
+            when (it) {
+                PlayListState.NoSelectedList -> {
+                    viewBinding.noPlayLayout.visibility = View.VISIBLE
+                    viewBinding.playingLayout.visibility = View.GONE
+                }
+                is PlayListState.SelectedPlayList -> {
+                    viewBinding.noPlayLayout.visibility = View.GONE
+                    viewBinding.playingLayout.visibility = View.VISIBLE
+                }
+            }
+        }
+
+
+        // Audio info.
+        val glideManager = Glide.with(requireActivity())
+        renderStateNewCoroutine({
+            val playListState = it.playListState as? PlayListState.SelectedPlayList
+            val playIndex = playListState?.currentPlayIndex
+            val audio = if (playIndex != null) {
+                playListState.audioList.audios.getOrNull(playIndex)
+            } else {
+                null
+            }
+            Optional.ofNullable(audio)
+        }) {
+            if (it.isPresent) {
+                val audio = it.get()
+                viewBinding.audioTitleTv.text = audio.mediaStoreAudio.title
+                viewBinding.audioArtistAlbumTv.text = "${audio.mediaStoreAudio.artist}-${audio.mediaStoreAudio.album}"
+                glideManager.load(audio.glideLoadModel)
+                    .error(R.drawable.icon_audio)
+                    .into(viewBinding.audioImgIv)
+            } else {
+                viewBinding.audioTitleTv.text = ""
+                viewBinding.audioArtistAlbumTv.text = ""
+                viewBinding.audioImgIv.setImageResource(R.drawable.icon_audio)
+            }
+        }
+
+        // Player State
+        renderStateNewCoroutine({
+            val playerState = (it.playListState as? PlayListState.SelectedPlayList)?.playerState
+            Optional.ofNullable(playerState)
+        }) {
+            if (it.isPresent) {
+                val state = it.get()
+                if (state is tMediaPlayerState.Playing) {
+                    viewBinding.audioPauseLayout.visibility = View.VISIBLE
+                    viewBinding.audioPlayLayout.visibility = View.GONE
+                } else {
+                    viewBinding.audioPauseLayout.visibility = View.GONE
+                    viewBinding.audioPlayLayout.visibility = View.VISIBLE
+                }
+            } else {
+                viewBinding.audioPauseLayout.visibility = View.GONE
+                viewBinding.audioPlayLayout.visibility = View.VISIBLE
+            }
+        }
+
+        // Player Next/Previous play
+        renderStateNewCoroutine({
+            val playListState = it.playListState as? PlayListState.SelectedPlayList
+            if (playListState != null) {
+                (playListState.playedIndexes.size > 1) to (playListState.nextPlayIndex != null)
+            } else {
+                false to false
+            }
+        }) { (canPlayPrevious, canPlayNext) ->
+            viewBinding.audioPreviousLayout.isEnabled = canPlayPrevious
+            viewBinding.audioPreviousIv.isEnabled = canPlayPrevious
+
+            viewBinding.audioNextLayout.isEnabled = canPlayNext
+            viewBinding.audioNextIv.isEnabled = canPlayNext
+        }
+
+        // Player Progress/Duration
+        renderStateNewCoroutine({
+            val playListState = it.playListState as? PlayListState.SelectedPlayList
+            if (playListState!= null) {
+                playListState.playerProgress to playListState.playerDuration
+            } else {
+                0L to 0L
+            }
+        }) { (progress, duration) ->
+            viewBinding.audioPlayingProgressTv.text = progress.formatDuration()
+            viewBinding.audioDurationTv.text = duration.formatDuration()
+
+            val progressInPercent = if (progress > 0 && duration > 0) {
+                ((progress.toFloat() / duration.toFloat()) * 100.0f).toInt()
+            } else {
+                0
+            }
+            viewBinding.audioSeekBar.progress = progressInPercent
+        }
+
+
+        viewBinding.audioPreviousLayout.clicks(this, 1000L) {
+            AudioPlayerManager.playPrevious()
+        }
+
+        viewBinding.audioNextLayout.clicks(this, 1000L) {
+            AudioPlayerManager.playNext()
+        }
+
+        viewBinding.audioPlayLayout.clicks(this, 1000L) {
+            AudioPlayerManager.play()
+        }
+
+        viewBinding.audioPauseLayout.clicks(this, 1000L) {
+            AudioPlayerManager.pause()
         }
     }
 }

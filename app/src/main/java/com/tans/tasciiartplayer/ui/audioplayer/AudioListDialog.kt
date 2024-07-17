@@ -12,6 +12,7 @@ import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.audio.AudioListType
 import com.tans.tasciiartplayer.audio.AudioManager
 import com.tans.tasciiartplayer.audio.AudioModel
+import com.tans.tasciiartplayer.audio.AudioPlayerManager
 import com.tans.tasciiartplayer.audio.getAllPlayList
 import com.tans.tasciiartplayer.databinding.AudioItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.AudioListDialogBinding
@@ -82,7 +83,8 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                 val audioAdapterBuilder = SimpleAdapterBuilderImpl<AudioModel>(
                     itemViewCreator = SingleItemViewCreatorImpl(R.layout.audio_item_layout),
                     dataSource = dataSource,
-                    dataBinder = DataBinderImpl { (audio, loadModel), view, _ ->
+                    dataBinder = DataBinderImpl { data, view, _ ->
+                        val (audio, loadModel) = data
                         val itemViewBinding = AudioItemLayoutBinding.bind(view)
                         itemViewBinding.titleTv.text = audio.title
                         itemViewBinding.artistAlbumTv.text = "${audio.artist}-${audio.album}"
@@ -93,7 +95,10 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                             .into(itemViewBinding.audioImgIv)
 
                         itemViewBinding.root.clicks(coroutineScope, 1000L) {
-                            // TODO:
+                            val audioList = AudioManager.stateFlow.value.getAllPlayList()[type]
+                            if (audioList != null) {
+                                AudioPlayerManager.playAudioList(list = audioList, startIndex = audioList.audios.indexOf(data))
+                            }
                         }
                     }
                 )

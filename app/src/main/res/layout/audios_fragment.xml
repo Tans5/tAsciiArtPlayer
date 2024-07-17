@@ -388,13 +388,14 @@
                         android:foreground="?attr/selectableItemBackgroundBorderless">
 
                         <ImageView
+                            android:id="@+id/audio_previous_iv"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@drawable/audio_previous_bg"
-                            android:layout_marginStart="6dp"
-                            android:layout_marginEnd="6dp"
-                            android:layout_marginTop="6dp"
-                            android:layout_marginBottom="6dp"/>
+                            android:layout_marginStart="3dp"
+                            android:layout_marginEnd="3dp"
+                            android:layout_marginTop="3dp"
+                            android:layout_marginBottom="3dp"/>
 
                     </FrameLayout>
 
@@ -422,13 +423,14 @@
                         android:foreground="?attr/selectableItemBackgroundBorderless">
 
                         <ImageView
+                            android:id="@+id/audio_next_iv"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@drawable/audio_next_bg"
-                            android:layout_marginStart="6dp"
-                            android:layout_marginEnd="6dp"
-                            android:layout_marginTop="6dp"
-                            android:layout_marginBottom="6dp"/>
+                            android:layout_marginStart="3dp"
+                            android:layout_marginEnd="3dp"
+                            android:layout_marginTop="3dp"
+                            android:layout_marginBottom="3dp"/>
 
                     </FrameLayout>
 
