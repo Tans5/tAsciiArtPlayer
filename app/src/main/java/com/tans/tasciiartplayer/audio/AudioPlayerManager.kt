@@ -87,6 +87,45 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
         }
     }
 
+    fun playPrevious() {
+        val state = stateFlow.value
+        val playListState = state.playListState
+        if (playListState is PlayListState.SelectedPlayList && playListState.playedIndexes.size > 1) {
+            val newPlayedIndexes = playListState.playedIndexes.dropLast(1)
+            val newCurrentPlayIndex = newPlayedIndexes.last()
+            val newPlayedAudio = playListState.audioList.audios.getOrNull(newCurrentPlayIndex)
+            if (newPlayedAudio != null) {
+                updateState { s ->
+                    s.copy(
+                        playListState = playListState.copy(
+                            playedIndexes = newPlayedIndexes,
+                            currentPlayIndex = newCurrentPlayIndex,
+                            nextPlayIndex = computeNextPlayIndex(
+                                playType = s.playType,
+                                playedIndexes = newPlayedIndexes,
+                                currentPlayIndex = newCurrentPlayIndex,
+                                playListSize = playListState.audioList.audios.size
+                            )
+                        )
+                    )
+                }
+                ensurePlayer().prepare(newPlayedAudio.mediaStoreAudio.file?.canonicalPath ?: "")
+            }
+        }
+    }
+
+    fun playNext() {
+        val state = stateFlow.value
+        val playListState = state.playListState
+        if (playListState is PlayListState.SelectedPlayList && playListState.nextPlayIndex != null) {
+            playAudioList(
+                list = playListState.audioList,
+                startIndex = playListState.nextPlayIndex,
+                clearPlayedList = false
+            )
+        }
+    }
+
     fun play() {
         ensurePlayer().play()
     }

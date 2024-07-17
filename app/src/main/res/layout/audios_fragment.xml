@@ -329,7 +329,7 @@
                         android:id="@+id/audio_pause_layout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/audio_action_ring_bg"
+                        android:background="@drawable/audio_action_bg"
                         android:visibility="gone">
 
                         <ImageView
@@ -348,7 +348,7 @@
                         android:id="@+id/audio_play_layout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/audio_action_ring_bg"
+                        android:background="@drawable/audio_action_bg"
                         android:foreground="?attr/selectableItemBackgroundBorderless"
                         android:visibility="visible">
 
@@ -381,15 +381,16 @@
 
                     <FrameLayout
                         android:id="@+id/audio_previous_layout"
+                        android:enabled="false"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/audio_action_ring_bg"
+                        android:background="@drawable/audio_action_bg"
                         android:foreground="?attr/selectableItemBackgroundBorderless">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/icon_audio_previous"
+                            android:src="@drawable/audio_previous_bg"
                             android:layout_marginStart="6dp"
                             android:layout_marginEnd="6dp"
                             android:layout_marginTop="6dp"
@@ -417,13 +418,13 @@
                         android:id="@+id/audio_next_layout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/audio_action_ring_bg"
+                        android:background="@drawable/audio_action_bg"
                         android:foreground="?attr/selectableItemBackgroundBorderless">
 
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/icon_audio_next"
+                            android:src="@drawable/audio_next_bg"
                             android:layout_marginStart="6dp"
                             android:layout_marginEnd="6dp"
                             android:layout_marginTop="6dp"

@@ -19,4 +19,6 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="md_dialog_title_color">#DE000000</color>
+
+    <color name="audio_action_disable_color">#FFD3EAFB</color>
 </resources>
