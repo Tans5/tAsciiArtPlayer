@@ -6,6 +6,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.tans.tasciiartplayer.R
@@ -13,6 +14,7 @@ import com.tans.tasciiartplayer.audio.AudioListType
 import com.tans.tasciiartplayer.audio.AudioManager
 import com.tans.tasciiartplayer.audio.AudioModel
 import com.tans.tasciiartplayer.audio.AudioPlayerManager
+import com.tans.tasciiartplayer.audio.PlayListState
 import com.tans.tasciiartplayer.audio.getAllPlayList
 import com.tans.tasciiartplayer.databinding.AudioItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.AudioListDialogBinding
@@ -26,6 +28,7 @@ import com.tans.tuiutils.adapter.impl.viewcreatators.SingleItemViewCreatorImpl
 import com.tans.tuiutils.dialog.BaseCoroutineStateDialogFragment
 import com.tans.tuiutils.view.clicks
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -65,6 +68,16 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
 
     companion object {
 
+        private enum class ChangePayload {
+            PlayingStateChange,
+            LikeStateChange
+        }
+
+        private data class AudioWithPlaying(
+            val audioModel: AudioModel,
+            val isPlaying: Boolean,
+        )
+
         @SuppressLint("SetTextI18n")
         private val cache = ContextMultiViewAndTaskCache<AudioListType> { type, ctx, viewGroup ->
             val view = LayoutInflater.from(ctx).inflate(R.layout.audio_list_dialog, viewGroup, false)
@@ -78,13 +91,41 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                     is AudioListType.ArtistAudios -> type.artistName
                     is AudioListType.CustomAudioList -> type.listName
                 }
-                val dataSource = DataSourceImpl<AudioModel>()
+                launch {
+                    AudioPlayerManager.stateFlow()
+                        .map {
+                            if (it.playListState is PlayListState.SelectedPlayList) {
+                                it.playListState.audioList.audioListType == type
+                            } else {
+                                false
+                            }
+                        }
+                        .distinctUntilChanged()
+                        .flowOn(Dispatchers.IO)
+                        .collect {
+                            viewBinding.listTitleTv.setTextColor(ContextCompat.getColor(ctx, if (it) R.color.cyan_400 else R.color.gray_900))
+                        }
+                }
+
+                val dataSource = DataSourceImpl<AudioWithPlaying>(
+                    areDataItemsTheSameParam = { d1, d2 -> d1.audioModel.mediaStoreAudio.id == d2.audioModel.mediaStoreAudio.id},
+                    areDataItemsContentTheSameParam = { d1, d2 -> d1 == d2 },
+                    getDataItemIdParam = { d, _ -> d.audioModel.mediaStoreAudio.id },
+                    getDataItemsChangePayloadParam = { d1, d2 ->
+                        when {
+                            d1.isPlaying != d2.isPlaying -> ChangePayload.PlayingStateChange
+                            d1.audioModel.isLike != d2.audioModel.isLike -> ChangePayload.LikeStateChange
+                            else -> null
+                        }
+                    }
+                )
                 val glideLoadManager = Glide.with(ctx)
-                val audioAdapterBuilder = SimpleAdapterBuilderImpl<AudioModel>(
+                val audioAdapterBuilder = SimpleAdapterBuilderImpl<AudioWithPlaying>(
                     itemViewCreator = SingleItemViewCreatorImpl(R.layout.audio_item_layout),
                     dataSource = dataSource,
-                    dataBinder = DataBinderImpl { data, view, _ ->
-                        val (audio, loadModel) = data
+                    dataBinder = DataBinderImpl<AudioWithPlaying> { data, view, _ ->
+                        val audio = data.audioModel.mediaStoreAudio
+                        val loadModel = data.audioModel.glideLoadModel
                         val itemViewBinding = AudioItemLayoutBinding.bind(view)
                         itemViewBinding.titleTv.text = audio.title
                         itemViewBinding.artistAlbumTv.text = "${audio.artist}-${audio.album}"
@@ -93,13 +134,20 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                             .load(loadModel)
                             .error(R.drawable.icon_audio)
                             .into(itemViewBinding.audioImgIv)
-
+                    }.addPayloadDataBinder(ChangePayload.PlayingStateChange) { data, view, _ ->
+                        val itemViewBinding = AudioItemLayoutBinding.bind(view)
+                        itemViewBinding.titleTv.setTextColor(ContextCompat.getColor(ctx, if (data.isPlaying) R.color.cyan_400 else R.color.gray_900))
+                        itemViewBinding.artistAlbumTv.setTextColor(ContextCompat.getColor(ctx, if (data.isPlaying) R.color.cyan_400 else R.color.gray_900))
+                        itemViewBinding.durationTv.setTextColor(ContextCompat.getColor(ctx, if (data.isPlaying) R.color.cyan_200 else R.color.gray_400))
+                    }.addPayloadDataBinder(ChangePayload.LikeStateChange) { data, view, _ ->
+                        val itemViewBinding = AudioItemLayoutBinding.bind(view)
                         itemViewBinding.root.clicks(coroutineScope, 1000L) {
                             val audioList = AudioManager.stateFlow.value.getAllPlayList()[type]
                             if (audioList != null) {
-                                AudioPlayerManager.playAudioList(list = audioList, startIndex = audioList.audios.indexOf(data))
+                                AudioPlayerManager.playAudioList(list = audioList, startIndex = audioList.audios.indexOf(data.audioModel))
                             }
                         }
+                        // TODO: like state change.
                     }
                 )
                 val emptyDataSource = DataSourceImpl<Unit>()
@@ -112,9 +160,19 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                     }
                 )
                 viewBinding.audioListRv.adapter = (audioAdapterBuilder + emptyAdapterBuilder).build()
-                AudioManager.stateFlow()
-                    .map { it.getAllPlayList()[type]?.audios ?: emptyList() }
-                    .distinctUntilChanged()
+                combine(AudioManager.stateFlow(), AudioPlayerManager.stateFlow()) { ams, apms ->
+                    val audioList = ams.getAllPlayList()[type]?.audios ?: emptyList()
+                    val isPlayingAudioId = (apms.playListState as? PlayListState.SelectedPlayList)?.currentPlayIndex?.let {
+                        apms.playListState.audioList.audios.getOrNull(it)?.mediaStoreAudio?.id
+                    }
+                    audioList
+                        .map {
+                            AudioWithPlaying(
+                                audioModel = it,
+                                isPlaying = it.mediaStoreAudio.id == isPlayingAudioId
+                            )
+                        }
+                }.distinctUntilChanged()
                     .flowOn(Dispatchers.IO)
                     .collect {
                         dataSource.submitDataList(it)
