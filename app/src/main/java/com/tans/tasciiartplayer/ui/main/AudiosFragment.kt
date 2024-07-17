@@ -2,6 +2,9 @@ package com.tans.tasciiartplayer.ui.main
 
 import android.annotation.SuppressLint
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.audio.AudioListType
@@ -15,6 +18,7 @@ import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.ArtistsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.AudioListDialog
 import com.tans.tmediaplayer.player.tMediaPlayerState
+import com.tans.tuiutils.dialog.dp2px
 import com.tans.tuiutils.fragment.BaseCoroutineStateFragment
 import com.tans.tuiutils.view.clicks
 import com.tans.tuiutils.view.refreshes
@@ -83,6 +87,15 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
             }
         }
 
+        ViewCompat.setOnApplyWindowInsetsListener(viewBinding.playLayout) { v, insets ->
+            val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val lp = v.layoutParams as? MarginLayoutParams
+            if (lp != null) {
+                lp.bottomMargin = systemInsets.bottom + v.context.dp2px(10)
+                v.layoutParams = lp
+            }
+            insets
+        }
 
         // Audio info.
         val glideManager = Glide.with(requireActivity())
@@ -118,15 +131,15 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
             if (it.isPresent) {
                 val state = it.get()
                 if (state is tMediaPlayerState.Playing) {
-                    viewBinding.audioPauseLayout.visibility = View.VISIBLE
-                    viewBinding.audioPlayLayout.visibility = View.GONE
+                    viewBinding.audioPauseIv.visibility = View.VISIBLE
+                    viewBinding.audioPlayIv.visibility = View.GONE
                 } else {
-                    viewBinding.audioPauseLayout.visibility = View.GONE
-                    viewBinding.audioPlayLayout.visibility = View.VISIBLE
+                    viewBinding.audioPauseIv.visibility = View.GONE
+                    viewBinding.audioPlayIv.visibility = View.VISIBLE
                 }
             } else {
-                viewBinding.audioPauseLayout.visibility = View.GONE
-                viewBinding.audioPlayLayout.visibility = View.VISIBLE
+                viewBinding.audioPauseIv.visibility = View.GONE
+                viewBinding.audioPlayIv.visibility = View.VISIBLE
             }
         }
 
@@ -175,12 +188,13 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
             AudioPlayerManager.playNext()
         }
 
-        viewBinding.audioPlayLayout.clicks(this, 1000L) {
-            AudioPlayerManager.play()
-        }
-
-        viewBinding.audioPauseLayout.clicks(this, 1000L) {
-            AudioPlayerManager.pause()
+        viewBinding.audioPlayPauseLayout.clicks(this, 1000L) {
+            val playListState = AudioPlayerManager.stateFlow.value.playListState
+            if (playListState is PlayListState.SelectedPlayList && playListState.playerState is tMediaPlayerState.Playing) {
+                AudioPlayerManager.pause()
+            } else {
+                AudioPlayerManager.play()
+            }
         }
     }
 }
