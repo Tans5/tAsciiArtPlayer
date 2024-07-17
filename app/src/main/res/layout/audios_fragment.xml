@@ -60,7 +60,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="10dp"
-                    android:background="@color/gray3" />
+                    android:background="@color/gray_200" />
 
                 <FrameLayout
                     android:id="@+id/my_favorites_layout"
@@ -98,7 +98,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="10dp"
-                    android:background="@color/gray3" />
+                    android:background="@color/gray_200" />
 
                 <FrameLayout
                     android:id="@+id/albums_layout"
@@ -137,7 +137,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="10dp"
-                    android:background="@color/gray3" />
+                    android:background="@color/gray_200" />
 
                 <FrameLayout
                     android:id="@+id/artists_layout"
@@ -175,7 +175,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="10dp"
-                    android:background="@color/gray3" />
+                    android:background="@color/gray_200" />
 
                 <FrameLayout
                     android:id="@+id/custom_playlists_layout"
