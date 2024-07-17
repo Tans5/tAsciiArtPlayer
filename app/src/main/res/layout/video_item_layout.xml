@@ -49,7 +49,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/video_iv"
             app:trackColor="@color/gray_500"
-            app:indicatorColor="@color/cyan_200"
+            app:indicatorColor="@color/cyan_400"
             app:indicatorTrackGapSize="0dp"
             app:trackStopIndicatorSize="0dp"
             app:trackThickness="3dp"
