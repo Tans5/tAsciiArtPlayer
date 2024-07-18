@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.bumptech.glide.Glide
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.audio.AudioListType
 import com.tans.tasciiartplayer.audio.AudioManager
@@ -24,6 +23,10 @@ import com.tans.tuiutils.view.clicks
 import com.tans.tuiutils.view.refreshes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.Optional
 
@@ -41,6 +44,7 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
         }
     }
 
+    @Suppress("OPT_IN_USAGE")
     @SuppressLint("SetTextI18n")
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
         val viewBinding = AudiosFragmentBinding.bind(contentView)
@@ -77,12 +81,10 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
         renderStateNewCoroutine({ it.playListState }) {
             when (it) {
                 PlayListState.NoSelectedList -> {
-                    viewBinding.noPlayLayout.visibility = View.VISIBLE
-                    viewBinding.playingLayout.visibility = View.GONE
+                    viewBinding.playCard.visibility = View.INVISIBLE
                 }
                 is PlayListState.SelectedPlayList -> {
-                    viewBinding.noPlayLayout.visibility = View.GONE
-                    viewBinding.playingLayout.visibility = View.VISIBLE
+                    viewBinding.playCard.visibility = View.VISIBLE
                 }
             }
         }
@@ -98,7 +100,6 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
         }
 
         // Audio info.
-        val glideManager = Glide.with(requireActivity())
         renderStateNewCoroutine({
             val playListState = it.playListState as? PlayListState.SelectedPlayList
             val playIndex = playListState?.currentPlayIndex
@@ -113,34 +114,37 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
                 val audio = it.get()
                 viewBinding.audioTitleTv.text = audio.mediaStoreAudio.title
                 viewBinding.audioArtistAlbumTv.text = "${audio.mediaStoreAudio.artist}-${audio.mediaStoreAudio.album}"
-                glideManager.load(audio.glideLoadModel)
-                    .error(R.drawable.icon_audio)
-                    .into(viewBinding.audioImgIv)
             } else {
                 viewBinding.audioTitleTv.text = ""
                 viewBinding.audioArtistAlbumTv.text = ""
-                viewBinding.audioImgIv.setImageResource(R.drawable.icon_audio)
             }
         }
 
         // Player State
-        renderStateNewCoroutine({
-            val playerState = (it.playListState as? PlayListState.SelectedPlayList)?.playerState
-            Optional.ofNullable(playerState)
-        }) {
-            if (it.isPresent) {
-                val state = it.get()
-                if (state is tMediaPlayerState.Playing) {
-                    viewBinding.audioPauseIv.visibility = View.VISIBLE
-                    viewBinding.audioPlayIv.visibility = View.GONE
-                } else {
-                    viewBinding.audioPauseIv.visibility = View.GONE
-                    viewBinding.audioPlayIv.visibility = View.VISIBLE
+        launch {
+            stateFlow()
+                .map {
+                    val playerState = (it.playListState as? PlayListState.SelectedPlayList)?.playerState
+                    Optional.ofNullable(playerState)
                 }
-            } else {
-                viewBinding.audioPauseIv.visibility = View.GONE
-                viewBinding.audioPlayIv.visibility = View.VISIBLE
-            }
+                .distinctUntilChanged()
+                .debounce(100L)
+                .flowOn(Dispatchers.IO)
+                .collect {
+                    if (it.isPresent) {
+                        val state = it.get()
+                        if (state is tMediaPlayerState.Playing) {
+                            viewBinding.audioPauseIv.visibility = View.VISIBLE
+                            viewBinding.audioPlayIv.visibility = View.GONE
+                        } else {
+                            viewBinding.audioPauseIv.visibility = View.GONE
+                            viewBinding.audioPlayIv.visibility = View.VISIBLE
+                        }
+                    } else {
+                        viewBinding.audioPauseIv.visibility = View.GONE
+                        viewBinding.audioPlayIv.visibility = View.VISIBLE
+                    }
+                }
         }
 
         // Player Next/Previous play

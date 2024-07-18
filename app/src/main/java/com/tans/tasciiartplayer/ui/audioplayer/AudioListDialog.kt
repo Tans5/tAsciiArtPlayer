@@ -160,19 +160,20 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                     }
                 )
                 viewBinding.audioListRv.adapter = (audioAdapterBuilder + emptyAdapterBuilder).build()
-                combine(AudioManager.stateFlow(), AudioPlayerManager.stateFlow()) { ams, apms ->
-                    val audioList = ams.getAllPlayList()[type]?.audios ?: emptyList()
-                    val isPlayingAudioId = (apms.playListState as? PlayListState.SelectedPlayList)?.currentPlayIndex?.let {
-                        apms.playListState.audioList.audios.getOrNull(it)?.mediaStoreAudio?.id
-                    }
-                    audioList
-                        .map {
-                            AudioWithPlaying(
-                                audioModel = it,
-                                isPlaying = it.mediaStoreAudio.id == isPlayingAudioId
-                            )
+                combine(
+                    AudioManager.stateFlow(),
+                    AudioPlayerManager.stateFlow()
+                        .map { apms ->
+                            (apms.playListState as? PlayListState.SelectedPlayList)?.currentPlayIndex?.let {
+                                apms.playListState.audioList.audios.getOrNull(it)?.mediaStoreAudio?.id
+                            }
                         }
-                }.distinctUntilChanged()
+                        .distinctUntilChanged()
+                ) { ams, playingAudioId ->
+                    val audioList = ams.getAllPlayList()[type]?.audios ?: emptyList()
+                    audioList.map { AudioWithPlaying(audioModel = it, isPlaying = it.mediaStoreAudio.id == playingAudioId) }
+                }
+                    .distinctUntilChanged()
                     .flowOn(Dispatchers.IO)
                     .collect {
                         dataSource.submitDataList(it)

@@ -5,6 +5,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.tans.tasciiartplayer.R
+import com.tans.tasciiartplayer.audio.AudioPlayerManager
 import com.tans.tasciiartplayer.databinding.EmptyItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.VideoItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.VideosFragmentBinding
@@ -78,6 +79,7 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
                     itemViewBinding.lastWatchPb.progress = ((lastWatch.toDouble() / video.duration.toDouble()) * 100.0).toInt()
                 }
                 itemViewBinding.root.clicks(this) {
+                    AudioPlayerManager.removeAudioList()
                     startActivity(
                         VideoPlayerActivity.createIntent(
                             context = requireActivity(),

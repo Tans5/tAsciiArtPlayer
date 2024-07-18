@@ -13,7 +13,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/play_layout">
+        app:layout_constraintBottom_toTopOf="@id/play_card">
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -216,71 +216,40 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/play_layout"
+        android:id="@+id/play_card"
         android:layout_width="0dp"
-        android:layout_height="125dp"
-        android:layout_marginStart="6dp"
-        android:layout_marginEnd="6dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
+        android:visibility="invisible"
         app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="6dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <TextView
-            android:id="@+id/no_play_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textSize="14sp"
-            android:textColor="@color/gray_900"
-            android:text="@string/audios_fgt_no_play"
-            android:visibility="visible"
-            tools:visibility="gone"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:visibility="visible">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/playing_layout"
+            android:id="@+id/play_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/audio_img_card"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:cardCornerRadius="6dp"
-                app:cardElevation="0dp"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-
-                <ImageView
-                    android:id="@+id/audio_img_iv"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/icon_audio" />
-
-            </androidx.cardview.widget.CardView>
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/audio_title_tv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginTop="2dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:textColor="@color/gray_900"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:lines="1"
                 android:lineSpacingExtra="2dp"
                 android:gravity="center_vertical"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/audio_img_card"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:text="Title" />
 
@@ -288,33 +257,34 @@
                 android:id="@+id/audio_artist_album_tv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="4dp"
                 android:textColor="@color/gray_900"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:lines="1"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 app:layout_constraintTop_toBottomOf="@id/audio_title_tv"
-                app:layout_constraintStart_toEndOf="@id/audio_img_card"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:text="Artist-Album" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/audio_action_layout"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintStart_toEndOf="@id/audio_img_card"
+                android:layout_height="60dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="3dp"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/audio_artist_album_tv"
-                app:layout_constraintBottom_toTopOf="@id/audio_seek_bar">
+                app:layout_constraintTop_toBottomOf="@id/audio_artist_album_tv" >
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/audio_center_act_card"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginTop="3dp"
-                    android:layout_marginBottom="3dp"
                     app:cardElevation="0dp"
                     app:cardCornerRadius="100dp"
                     app:layout_constraintDimensionRatio="1:1"
@@ -327,7 +297,6 @@
                         android:id="@+id/audio_play_pause_layout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/audio_action_bg"
                         android:foreground="@drawable/audio_action_ripple_bg"
                         android:visibility="visible">
 
@@ -360,8 +329,9 @@
                     android:id="@+id/audio_left_act_card"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="6dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintHorizontal_bias="0.6"
                     app:cardElevation="0dp"
                     app:cardCornerRadius="100dp"
                     app:layout_constraintDimensionRatio="1:1"
@@ -375,7 +345,6 @@
                         android:enabled="false"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/audio_action_bg"
                         android:foreground="@drawable/audio_action_ripple_bg">
 
                         <ImageView
@@ -396,8 +365,9 @@
                     android:id="@+id/audio_right_act_card"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="6dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintHorizontal_bias="0.4"
                     app:cardElevation="0dp"
                     app:cardCornerRadius="100dp"
                     app:layout_constraintDimensionRatio="1:1"
@@ -410,7 +380,6 @@
                         android:id="@+id/audio_next_layout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/audio_action_bg"
                         android:foreground="@drawable/audio_action_ripple_bg">
 
                         <ImageView
@@ -434,20 +403,24 @@
                 android:id="@+id/audio_seek_bar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@id/audio_img_card"
+                android:layout_marginTop="3dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/audio_playing_progress_tv"
+                app:layout_constraintTop_toBottomOf="@id/audio_action_layout"
                 tools:progress="30"/>
 
             <TextView
                 android:id="@+id/audio_playing_progress_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="12sp"
                 android:textColor="@color/gray_500"
-                android:layout_marginStart="4dp"
-                android:layout_marginBottom="2dp"
-                app:layout_constraintStart_toEndOf="@id/audio_img_card"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintTop_toBottomOf="@id/audio_seek_bar"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 tools:text="00:00" />
 
@@ -455,10 +428,11 @@
                 android:id="@+id/audio_duration_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="12sp"
                 android:textColor="@color/gray_500"
-                android:layout_marginEnd="4dp"
-                android:layout_marginBottom="2dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintTop_toBottomOf="@id/audio_seek_bar"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 tools:text="05:00" />
