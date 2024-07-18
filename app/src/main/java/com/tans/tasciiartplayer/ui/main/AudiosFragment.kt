@@ -89,7 +89,7 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
             }
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(viewBinding.playLayout) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(viewBinding.playCard) { v, insets ->
             val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val lp = v.layoutParams as? MarginLayoutParams
             if (lp != null) {
