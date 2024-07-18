@@ -42,8 +42,8 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
         appGlobalCoroutineScope.launch {
             AudioManager.stateFlow()
                 .distinctUntilChanged()
-                .map { it to it.getAllPlayList() }
-                .collectLatest { (managerState, allPlayList) ->
+                .map { it.getAllPlayList() }
+                .collectLatest { allPlayList ->
                     val state = stateFlow.value
                     val playListState = state.playListState
                     if (playListState is PlayListState.SelectedPlayList) {
@@ -62,22 +62,32 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                                     // Play first audio in the list.
                                     playAudioList(list = managerPlayList, startIndex = 0, clearPlayedList = true)
                                 } else {
-                                    // Current play audio was not removed from list.
-                                    updateState { s ->
-                                        val currentPlayIndex = managerPlayList.audios.indexOf(managerPlayAudio)
-                                        s.copy(
-                                            playListState = playListState.copy(
-                                                audioList = managerPlayList,
-                                                currentPlayIndex = currentPlayIndex,
-                                                playedIndexes = listOf(currentPlayIndex),
-                                                nextPlayIndex = computeNextPlayIndex(
-                                                    playType = s.playType,
-                                                    playedIndexes = listOf(currentPlayIndex),
+                                    val audioFilesChanged = if (managerPlayList.audios.size != minePlayList.audios.size) {
+                                        true
+                                    } else {
+                                        val managerAudioIds = managerPlayList.audios.map { it.mediaStoreAudio.id }
+                                        val mineAudioIds = minePlayList.audios.map { it.mediaStoreAudio.id }
+                                        managerAudioIds != mineAudioIds
+                                    }
+                                    if (audioFilesChanged) {
+                                        updateState { s ->
+                                            val currentPlayIndex = managerPlayList.audios.indexOf(managerPlayAudio)
+                                            s.copy(
+                                                playListState = playListState.copy(
+                                                    audioList = managerPlayList,
                                                     currentPlayIndex = currentPlayIndex,
-                                                    playListSize = managerPlayList.audios.size
+                                                    playedIndexes = listOf(currentPlayIndex),
+                                                    nextPlayIndex = computeNextPlayIndex(
+                                                        playType = s.playType,
+                                                        playedIndexes = listOf(currentPlayIndex),
+                                                        currentPlayIndex = currentPlayIndex,
+                                                        playListSize = managerPlayList.audios.size
+                                                    )
                                                 )
                                             )
-                                        )
+                                        }
+                                    } else {
+                                        updateState { s -> s.copy(playListState = playListState.copy(audioList = managerPlayList)) }
                                     }
                                 }
                             }
