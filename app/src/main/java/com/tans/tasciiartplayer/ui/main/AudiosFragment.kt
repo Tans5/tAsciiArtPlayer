@@ -3,6 +3,7 @@ package com.tans.tasciiartplayer.ui.main
 import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
+import android.widget.SeekBar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.tans.tasciiartplayer.R
@@ -181,6 +182,8 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
             viewBinding.audioNextIv.isEnabled = canPlayNext
         }
 
+        var isPlayerSbInTouching = false
+
         // Player Progress/Duration
         renderStateNewCoroutine({
             val playListState = it.playListState as? PlayListState.SelectedPlayList
@@ -193,12 +196,14 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
             viewBinding.audioPlayingProgressTv.text = progress.formatDuration()
             viewBinding.audioDurationTv.text = duration.formatDuration()
 
-            val progressInPercent = if (progress > 0 && duration > 0) {
-                ((progress.toFloat() / duration.toFloat()) * 100.0f).toInt()
-            } else {
-                0
+            if (!isPlayerSbInTouching) {
+                val progressInPercent = if (progress > 0 && duration > 0) {
+                    ((progress.toFloat() / duration.toFloat()) * 100.0f).toInt()
+                } else {
+                    0
+                }
+                viewBinding.audioSeekBar.progress = progressInPercent
             }
-            viewBinding.audioSeekBar.progress = progressInPercent
         }
 
         viewBinding.likeCard.clicks(this, 1000L) {
@@ -254,5 +259,23 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
                 AudioPlayerManager.play()
             }
         }
+
+        viewBinding.audioSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {}
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                isPlayerSbInTouching = true
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                isPlayerSbInTouching = false
+                val duration = (AudioPlayerManager.stateFlow.value.playListState as? PlayListState.SelectedPlayList)?.playerDuration
+                if (duration != null && duration > 0L) {
+                    val progressF = seekBar.progress.toFloat() / seekBar.max.toFloat()
+                    val requestMediaProgress = (progressF * duration.toDouble()).toLong()
+                    AudioPlayerManager.seekTo(requestMediaProgress)
+                }
+            }
+        })
     }
 }
