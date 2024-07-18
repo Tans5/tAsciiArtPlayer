@@ -7,13 +7,13 @@ import android.widget.SeekBar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.tans.tasciiartplayer.R
-import com.tans.tasciiartplayer.audio.AudioListType
-import com.tans.tasciiartplayer.audio.AudioManager
-import com.tans.tasciiartplayer.audio.AudioPlayerManager
-import com.tans.tasciiartplayer.audio.AudioPlayerManagerState
-import com.tans.tasciiartplayer.audio.PlayListState
-import com.tans.tasciiartplayer.audio.PlayType.*
-import com.tans.tasciiartplayer.audio.getCurrentPlayAudio
+import com.tans.tasciiartplayer.audio.audiolist.AudioListType
+import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
+import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManager
+import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManagerState
+import com.tans.tasciiartplayer.audio.audioplayer.PlayListState
+import com.tans.tasciiartplayer.audio.audioplayer.PlayType.*
+import com.tans.tasciiartplayer.audio.audioplayer.getCurrentPlayAudio
 import com.tans.tasciiartplayer.databinding.AudiosFragmentBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
@@ -40,7 +40,7 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
 
     override fun CoroutineScope.firstLaunchInitDataCoroutine() {
         launch {
-            AudioManager.refreshMediaStoreAudios()
+            AudioListManager.refreshMediaStoreAudios()
         }
 
         launch {
@@ -54,7 +54,7 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
         val viewBinding = AudiosFragmentBinding.bind(contentView)
 
         viewBinding.swipeRefreshLayout.refreshes(this, Dispatchers.IO) {
-            AudioManager.refreshMediaStoreAudios()
+            AudioListManager.refreshMediaStoreAudios()
         }
 
         viewBinding.allAudiosLayout.clicks(this) {
@@ -212,9 +212,9 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
                 withContext(Dispatchers.IO) {
                     try {
                         if (audio.isLike) {
-                            AudioManager.unlikeAudio(audio.mediaStoreAudio.id)
+                            AudioListManager.unlikeAudio(audio.mediaStoreAudio.id)
                         } else {
-                            AudioManager.likeAudio(audio.mediaStoreAudio.id)
+                            AudioListManager.likeAudio(audio.mediaStoreAudio.id)
                         }
                     } catch (e: Throwable) {
                         e.printStackTrace()
@@ -243,11 +243,11 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
             AudioPlayerManager.changePlayType(newPlayType)
         }
 
-        viewBinding.audioPreviousLayout.clicks(this, 1000L) {
+        viewBinding.audioPreviousLayout.clicks(this, 1000L, Dispatchers.IO) {
             AudioPlayerManager.playPrevious()
         }
 
-        viewBinding.audioNextLayout.clicks(this, 1000L) {
+        viewBinding.audioNextLayout.clicks(this, 1000L, Dispatchers.IO) {
             AudioPlayerManager.playNext()
         }
 

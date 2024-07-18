@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.tans.tasciiartplayer.R
-import com.tans.tasciiartplayer.audio.AudioList
-import com.tans.tasciiartplayer.audio.AudioListType
-import com.tans.tasciiartplayer.audio.AudioManager
+import com.tans.tasciiartplayer.audio.audiolist.AudioList
+import com.tans.tasciiartplayer.audio.audiolist.AudioListType
+import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
 import com.tans.tasciiartplayer.databinding.AudioAlbumItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.AudioAlbumsDialogBinding
 import com.tans.tasciiartplayer.databinding.EmptyItemLayoutBinding
@@ -84,7 +84,7 @@ class AlbumsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
                 )
 
                 viewBinding.albumsRv.adapter = (dataAdapterBuilder + emptyAdapterBuilder).build()
-                AudioManager.stateFlow()
+                AudioListManager.stateFlow()
                     .map { it.albumAudioLists }
                     .distinctUntilChanged()
                     .flowOn(Dispatchers.IO)

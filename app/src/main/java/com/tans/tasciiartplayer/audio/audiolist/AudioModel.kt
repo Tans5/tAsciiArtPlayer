@@ -1,4 +1,4 @@
-package com.tans.tasciiartplayer.audio
+package com.tans.tasciiartplayer.audio.audiolist
 
 import com.tans.tasciiartplayer.glide.MediaImageModel
 import com.tans.tuiutils.mediastore.MediaStoreAudio

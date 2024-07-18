@@ -1,4 +1,4 @@
-package com.tans.tasciiartplayer.audio
+package com.tans.tasciiartplayer.audio.audiolist
 
 sealed class AudioListType {
     data object AllAudios : AudioListType()

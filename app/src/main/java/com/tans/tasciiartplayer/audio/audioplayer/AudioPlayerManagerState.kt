@@ -1,5 +1,7 @@
-package com.tans.tasciiartplayer.audio
+package com.tans.tasciiartplayer.audio.audioplayer
 
+import com.tans.tasciiartplayer.audio.audiolist.AudioList
+import com.tans.tasciiartplayer.audio.audiolist.AudioModel
 import com.tans.tmediaplayer.player.model.MediaInfo
 import com.tans.tmediaplayer.player.tMediaPlayerState
 

@@ -5,7 +5,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.tans.tasciiartplayer.R
-import com.tans.tasciiartplayer.audio.AudioPlayerManager
+import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManager
 import com.tans.tasciiartplayer.databinding.EmptyItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.VideoItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.VideosFragmentBinding

@@ -1,4 +1,4 @@
-package com.tans.tasciiartplayer.audio
+package com.tans.tasciiartplayer.audio.audiolist
 
 data class AudioManagerState(
     val audioIdToAudioMap: Map<Long, AudioModel> = emptyMap(),

@@ -1,4 +1,4 @@
-package com.tans.tasciiartplayer.audio
+package com.tans.tasciiartplayer.audio.audiolist
 
 data class AudioList(
     val audioListType: AudioListType,

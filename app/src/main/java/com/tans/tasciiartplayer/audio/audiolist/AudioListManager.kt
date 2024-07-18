@@ -1,4 +1,4 @@
-package com.tans.tasciiartplayer.audio
+package com.tans.tasciiartplayer.audio.audiolist
 
 import android.app.Application
 import androidx.annotation.WorkerThread
@@ -16,15 +16,15 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
-object AudioManager : CoroutineState<AudioManagerState> by CoroutineState(AudioManagerState()), CoroutineScope by appGlobalCoroutineScope {
+object AudioListManager : CoroutineState<AudioManagerState> by CoroutineState(AudioManagerState()), CoroutineScope by appGlobalCoroutineScope {
 
     private var application: Application? = null
 
     private var dao: AudioDao? = null
 
     fun init(application: Application, audioDao: AudioDao) {
-        AudioManager.application = application
-        this.dao = audioDao
+        AudioListManager.application = application
+        dao = audioDao
 
 
         // Observe database like state changes
@@ -118,11 +118,21 @@ object AudioManager : CoroutineState<AudioManagerState> by CoroutineState(AudioM
         val likeAudioList = AudioList(audioListType = AudioListType.LikeAudios, audios = allAudios.filter { it.isLike })
 
         // Album
-        val albumAudioLists = allAudios.groupBy { AudioListType.AlbumAudios(it.mediaStoreAudio.albumId, it.mediaStoreAudio.album) }
+        val albumAudioLists = allAudios.groupBy {
+            AudioListType.AlbumAudios(
+                it.mediaStoreAudio.albumId,
+                it.mediaStoreAudio.album
+            )
+        }
             .map { AudioList(it.key, it.value) }
 
         // Artist
-        val artistAudioLists = allAudios.groupBy { AudioListType.ArtistAudios(it.mediaStoreAudio.artistId, it.mediaStoreAudio.artist) }
+        val artistAudioLists = allAudios.groupBy {
+            AudioListType.ArtistAudios(
+                it.mediaStoreAudio.artistId,
+                it.mediaStoreAudio.artist
+            )
+        }
             .map { AudioList(it.key, it.value) }
 
         // Custom

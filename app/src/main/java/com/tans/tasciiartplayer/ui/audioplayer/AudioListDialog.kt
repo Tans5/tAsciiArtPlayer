@@ -10,12 +10,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.tans.tasciiartplayer.R
-import com.tans.tasciiartplayer.audio.AudioListType
-import com.tans.tasciiartplayer.audio.AudioManager
-import com.tans.tasciiartplayer.audio.AudioModel
-import com.tans.tasciiartplayer.audio.AudioPlayerManager
-import com.tans.tasciiartplayer.audio.PlayListState
-import com.tans.tasciiartplayer.audio.getAllPlayList
+import com.tans.tasciiartplayer.audio.audiolist.AudioListType
+import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
+import com.tans.tasciiartplayer.audio.audiolist.AudioModel
+import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManager
+import com.tans.tasciiartplayer.audio.audioplayer.PlayListState
+import com.tans.tasciiartplayer.audio.audiolist.getAllPlayList
 import com.tans.tasciiartplayer.databinding.AudioItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.AudioListDialogBinding
 import com.tans.tasciiartplayer.databinding.EmptyItemLayoutBinding
@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlin.jvm.Throws
 
 class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
 
@@ -142,8 +141,8 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                         itemViewBinding.durationTv.setTextColor(ContextCompat.getColor(ctx, if (data.isPlaying) R.color.cyan_200 else R.color.gray_400))
                     }.addPayloadDataBinder(ChangePayload.LikeStateChange) { data, view, _ ->
                         val itemViewBinding = AudioItemLayoutBinding.bind(view)
-                        itemViewBinding.root.clicks(coroutineScope, 1000L) {
-                            val audioList = AudioManager.stateFlow.value.getAllPlayList()[type]
+                        itemViewBinding.root.clicks(coroutineScope, 1000L, Dispatchers.IO) {
+                            val audioList = AudioListManager.stateFlow.value.getAllPlayList()[type]
                             if (audioList != null) {
                                 AudioPlayerManager.playAudioList(list = audioList, startIndex = audioList.audios.indexOf(data.audioModel))
                             }
@@ -152,9 +151,9 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                         itemViewBinding.likeCard.clicks(coroutineScope, 1000L, Dispatchers.IO) {
                             try {
                                 if (data.audioModel.isLike) {
-                                    AudioManager.unlikeAudio(data.audioModel.mediaStoreAudio.id)
+                                    AudioListManager.unlikeAudio(data.audioModel.mediaStoreAudio.id)
                                 } else {
-                                    AudioManager.likeAudio(data.audioModel.mediaStoreAudio.id)
+                                    AudioListManager.likeAudio(data.audioModel.mediaStoreAudio.id)
                                 }
                             } catch (e: Throwable) {
                                 e.printStackTrace()
@@ -173,7 +172,7 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                 )
                 viewBinding.audioListRv.adapter = (audioAdapterBuilder + emptyAdapterBuilder).build()
                 combine(
-                    AudioManager.stateFlow(),
+                    AudioListManager.stateFlow(),
                     AudioPlayerManager.stateFlow()
                         .map { apms ->
                             (apms.playListState as? PlayListState.SelectedPlayList)?.currentPlayIndex?.let {

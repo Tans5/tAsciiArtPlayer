@@ -1,9 +1,13 @@
-package com.tans.tasciiartplayer.audio
+package com.tans.tasciiartplayer.audio.audioplayer
 
 import android.os.SystemClock
 import com.tans.tasciiartplayer.AppLog
 import com.tans.tasciiartplayer.AppSettings
 import com.tans.tasciiartplayer.appGlobalCoroutineScope
+import com.tans.tasciiartplayer.audio.audiolist.AudioList
+import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
+import com.tans.tasciiartplayer.audio.audiolist.getAllPlayList
+import com.tans.tmediaplayer.player.model.OptResult
 import com.tans.tmediaplayer.player.tMediaPlayer
 import com.tans.tmediaplayer.player.tMediaPlayerListener
 import com.tans.tmediaplayer.player.tMediaPlayerState
@@ -18,7 +22,9 @@ import kotlin.random.Random
 
 object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerManagerState> {
 
-    override val stateFlow: MutableStateFlow<AudioPlayerManagerState> = MutableStateFlow(AudioPlayerManagerState())
+    override val stateFlow: MutableStateFlow<AudioPlayerManagerState> = MutableStateFlow(
+        AudioPlayerManagerState()
+    )
 
     private val player: AtomicReference<tMediaPlayer?> by lazy {
         AtomicReference()
@@ -40,7 +46,7 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
 
         // Observe AudioList
         appGlobalCoroutineScope.launch {
-            AudioManager.stateFlow()
+            AudioListManager.stateFlow()
                 .distinctUntilChanged()
                 .map { it.getAllPlayList() }
                 .collectLatest { allPlayList ->
@@ -119,7 +125,15 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                         )
                     )
                 }
-                ensurePlayer().prepare(newPlayedAudio.mediaStoreAudio.file?.canonicalPath ?: "")
+                val player = ensurePlayer()
+                val filePath = newPlayedAudio.mediaStoreAudio.file?.canonicalPath ?: ""
+                val result = player.prepare(filePath)
+                if (result == OptResult.Success) {
+                    AppLog.d(TAG, "playPrevious() open file: $filePath success and start to play")
+                    player.play()
+                } else {
+                    AppLog.e(TAG, "playPrevious() open file: $filePath fail.")
+                }
             }
         }
     }
@@ -187,7 +201,7 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
     }
 
     fun playAudioList(list: AudioList, startIndex: Int, clearPlayedList: Boolean = true) {
-        val allPlayList = AudioManager.stateFlow.value.getAllPlayList()
+        val allPlayList = AudioListManager.stateFlow.value.getAllPlayList()
         val listFromManager = allPlayList[list.audioListType]
         if (listFromManager != list) {
             AppLog.e(TAG, "Check list fail: ${list.audioListType}")
@@ -213,7 +227,8 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                             playType = s.playType,
                             playedIndexes = listOf(startIndex),
                             currentPlayIndex = startIndex,
-                            playListSize = list.audios.size)
+                            playListSize = list.audios.size
+                        )
                     )
                 }
                 is PlayListState.SelectedPlayList -> {
@@ -266,7 +281,15 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
             }
             s.copy(playListState = playListState)
         }
-        ensurePlayer().prepare(audio.mediaStoreAudio.file?.canonicalPath ?: "")
+        val player = ensurePlayer()
+        val filePath = audio.mediaStoreAudio.file?.canonicalPath ?: ""
+        val result = player.prepare(filePath)
+        if (result == OptResult.Success) {
+            AppLog.d(TAG, "playAudioList() open file: $filePath success and start to play")
+            player.play()
+        } else {
+            AppLog.e(TAG, "playAudioList() open file: $filePath fail.")
+        }
      }
 
     override fun onPlayerState(state: tMediaPlayerState) {
@@ -288,10 +311,6 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                     playerMediaInfo = player.getMediaInfo()
                 )
             }
-        }
-
-        if (state is tMediaPlayerState.Prepared) {
-            player.play()
         }
 
         if (state is tMediaPlayerState.PlayEnd) {
