@@ -337,7 +337,7 @@
                         android:id="@+id/play_type_iv"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:src="@drawable/icon_audio_single_loop_play"
+                        android:src="@drawable/icon_audio_sequence_play"
                         android:layout_marginStart="4dp"
                         android:layout_marginEnd="4dp"
                         android:layout_marginTop="4dp"

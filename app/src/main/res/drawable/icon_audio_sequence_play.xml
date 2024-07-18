@@ -9,24 +9,24 @@
     <path
         android:pathData="M6,6L3,7.732L3,4.268L6,6Z"
         android:strokeLineJoin="round"
-        android:strokeWidth="2.5"
+        android:strokeWidth="2.2"
         android:strokeColor="@color/cyan_400"/>
     <path
         android:pathData="M3,12L21,12"
         android:strokeLineJoin="round"
-        android:strokeWidth="2.5"
+        android:strokeWidth="2.2"
         android:strokeColor="@color/cyan_400"
         android:strokeLineCap="round"/>
     <path
         android:pathData="M10,6L21,6"
         android:strokeLineJoin="round"
-        android:strokeWidth="2.5"
+        android:strokeWidth="2.2"
         android:strokeColor="@color/cyan_400"
         android:strokeLineCap="round"/>
     <path
         android:pathData="M3,18L21,18"
         android:strokeLineJoin="round"
-        android:strokeWidth="2.5"
+        android:strokeWidth="2.2"
         android:strokeColor="@color/cyan_400"
         android:strokeLineCap="round"/>
   </group>

@@ -9,13 +9,13 @@
     <path
         android:pathData="M3,17H5.735C7.14,17 8.442,16.263 9.165,15.058L12.835,8.942C13.558,7.737 14.86,7 16.265,7H21M21,7L19,5M21,7L19,9"
         android:strokeLineJoin="round"
-        android:strokeWidth="2.5"
+        android:strokeWidth="2.2"
         android:strokeColor="@color/cyan_400"
         android:strokeLineCap="round"/>
     <path
         android:pathData="M3,7H5.735C6.83,7 7.862,7.447 8.606,8.215M21,17H16.265C15.17,17 14.138,16.553 13.394,15.785M21,17L19,19M21,17L19,15"
         android:strokeLineJoin="round"
-        android:strokeWidth="2.5"
+        android:strokeWidth="2.2"
         android:strokeColor="@color/cyan_400"
         android:strokeLineCap="round"/>
   </group>
