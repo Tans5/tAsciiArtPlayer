@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlin.jvm.Throws
 
 class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
 
@@ -147,7 +148,18 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                                 AudioPlayerManager.playAudioList(list = audioList, startIndex = audioList.audios.indexOf(data.audioModel))
                             }
                         }
-                        // TODO: like state change.
+                        itemViewBinding.likeIv.setImageResource(if (data.audioModel.isLike) R.drawable.icon_favorite_fill else R.drawable.icon_favorite_unfill)
+                        itemViewBinding.likeCard.clicks(coroutineScope, 1000L, Dispatchers.IO) {
+                            try {
+                                if (data.audioModel.isLike) {
+                                    AudioManager.unlikeAudio(data.audioModel.mediaStoreAudio.id)
+                                } else {
+                                    AudioManager.likeAudio(data.audioModel.mediaStoreAudio.id)
+                                }
+                            } catch (e: Throwable) {
+                                e.printStackTrace()
+                            }
+                        }
                     }
                 )
                 val emptyDataSource = DataSourceImpl<Unit>()
