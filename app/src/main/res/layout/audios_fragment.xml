@@ -175,18 +175,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="10dp"
-                    android:background="@color/gray_200" />
+                    android:background="@color/gray_200"
+                    android:visibility="gone"/>
 
                 <FrameLayout
                     android:id="@+id/custom_playlists_layout"
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
-                    android:foreground="?attr/selectableItemBackgroundBorderless">
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:visibility="gone">
 
                     <ImageView
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:src="@drawable/icon_playlist"
+                        android:src="@drawable/icon_audio_playlist"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="10dp"/>
 
@@ -270,16 +272,90 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:text="Artist-Album" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:id="@+id/audio_action_layout"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="3dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/audio_artist_album_tv">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/like_card"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:foreground="@drawable/audio_action_ripple_bg"
+                    app:cardCornerRadius="15dp"
+                    app:cardElevation="0dp">
+
+                    <ImageView
+                        android:id="@+id/like_iv"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/icon_favorite_unfill"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"/>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/playlist_card"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="5dp"
+                    android:foreground="@drawable/audio_action_ripple_bg"
+                    app:cardCornerRadius="15dp"
+                    app:cardElevation="0dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/icon_audio_playlist"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"/>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/play_type_card"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="5dp"
+                    android:foreground="@drawable/audio_action_ripple_bg"
+                    app:cardCornerRadius="15dp"
+                    app:cardElevation="0dp">
+
+                    <ImageView
+                        android:id="@+id/play_type_iv"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/icon_audio_single_loop_play"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"/>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/audio_control_layout"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:layout_marginTop="3dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/audio_artist_album_tv" >
+                app:layout_constraintTop_toBottomOf="@id/audio_action_layout" >
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/audio_center_act_card"
@@ -408,7 +484,7 @@
                 android:layout_marginEnd="10dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/audio_action_layout"
+                app:layout_constraintTop_toBottomOf="@id/audio_control_layout"
                 tools:progress="30"/>
 
             <TextView

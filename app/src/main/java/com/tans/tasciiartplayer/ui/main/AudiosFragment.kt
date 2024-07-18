@@ -11,6 +11,8 @@ import com.tans.tasciiartplayer.audio.AudioManager
 import com.tans.tasciiartplayer.audio.AudioPlayerManager
 import com.tans.tasciiartplayer.audio.AudioPlayerManagerState
 import com.tans.tasciiartplayer.audio.PlayListState
+import com.tans.tasciiartplayer.audio.PlayType.*
+import com.tans.tasciiartplayer.audio.getCurrentPlayAudio
 import com.tans.tasciiartplayer.databinding.AudiosFragmentBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Optional
 
 class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(AudioPlayerManagerState()) {
@@ -114,10 +117,25 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
                 val audio = it.get()
                 viewBinding.audioTitleTv.text = audio.mediaStoreAudio.title
                 viewBinding.audioArtistAlbumTv.text = "${audio.mediaStoreAudio.artist}-${audio.mediaStoreAudio.album}"
+                viewBinding.likeIv.setImageResource(if (audio.isLike) R.drawable.icon_favorite_fill else R.drawable.icon_favorite_unfill)
             } else {
                 viewBinding.audioTitleTv.text = ""
                 viewBinding.audioArtistAlbumTv.text = ""
+                viewBinding.likeIv.setImageResource(R.color.white)
             }
+        }
+
+        // Audio play type
+        renderStateNewCoroutine({ it.playType }) {
+            viewBinding.playTypeIv.setImageResource(
+                when (it) {
+                    ListSequentialPlay -> R.drawable.icon_audio_sequence_play
+                    ListLoopPlay -> R.drawable.icon_audio_list_loop_play
+                    ListRandomPlay -> R.drawable.icon_audio_random_play
+                    ListRandomLoopPlay -> R.drawable.icon_audio_random_play
+                    SingleLoopPlay -> R.drawable.icon_audio_single_loop_play
+                }
+            )
         }
 
         // Player State
@@ -150,7 +168,7 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
         // Player Next/Previous play
         renderStateNewCoroutine({
             val playListState = it.playListState as? PlayListState.SelectedPlayList
-            if (playListState != null) {
+            if (playListState != null && it.playType != SingleLoopPlay) {
                 (playListState.playedIndexes.size > 1) to (playListState.nextPlayIndex != null)
             } else {
                 false to false
@@ -183,6 +201,42 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
             viewBinding.audioSeekBar.progress = progressInPercent
         }
 
+        viewBinding.likeCard.clicks(this, 1000L) {
+            val audio = (AudioPlayerManager.stateFlow.value.playListState as? PlayListState.SelectedPlayList)?.getCurrentPlayAudio()
+            if (audio != null) {
+                withContext(Dispatchers.IO) {
+                    try {
+                        if (audio.isLike) {
+                            AudioManager.unlikeAudio(audio.mediaStoreAudio.id)
+                        } else {
+                            AudioManager.likeAudio(audio.mediaStoreAudio.id)
+                        }
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
+
+        viewBinding.playlistCard.clicks(this, 1000L) {
+            val listType = (AudioPlayerManager.stateFlow.value.playListState as? PlayListState.SelectedPlayList)?.audioList?.audioListType
+            if (listType != null) {
+                val d = AudioListDialog(listType)
+                d.showSafe(requireActivity().supportFragmentManager, "AudioListDialog${System.currentTimeMillis()}")
+            }
+        }
+
+        viewBinding.playTypeCard.clicks(this, 1000L) {
+            val currentPlayType = AudioPlayerManager.stateFlow.value.playType
+            val newPlayType = when (currentPlayType) {
+                ListSequentialPlay -> ListLoopPlay
+                ListLoopPlay -> ListRandomPlay
+                ListRandomPlay -> SingleLoopPlay
+                SingleLoopPlay -> ListSequentialPlay
+                ListRandomLoopPlay -> ListSequentialPlay
+            }
+            AudioPlayerManager.changePlayType(newPlayType)
+        }
 
         viewBinding.audioPreviousLayout.clicks(this, 1000L) {
             AudioPlayerManager.playPrevious()
