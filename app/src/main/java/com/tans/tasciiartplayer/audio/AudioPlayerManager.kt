@@ -56,7 +56,7 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                                 removeAudioList()
                             } else {
                                 val currentPlayAudio = playListState.getCurrentPlayAudio()
-                                val managerPlayAudio = managerState.audioIdToAudioMap[currentPlayAudio.mediaStoreAudio.id]
+                                val managerPlayAudio = managerPlayList.audios.find { it.mediaStoreAudio.id == currentPlayAudio.mediaStoreAudio.id }
                                 if (managerPlayAudio == null) {
                                     // Current play audio was removed from list.
                                     // Play first audio in the list.
@@ -300,6 +300,7 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
 
         if (state is tMediaPlayerState.Error) {
             AppLog.e(TAG, "Player error: $state")
+            removeAudioList()
         }
     }
 

@@ -5,6 +5,7 @@ import androidx.annotation.WorkerThread
 import com.tans.tasciiartplayer.AppLog
 import com.tans.tasciiartplayer.appGlobalCoroutineScope
 import com.tans.tasciiartplayer.database.dao.VideoDao
+import com.tans.tasciiartplayer.database.entity.VideoWatchHistory
 import com.tans.tasciiartplayer.glide.MediaImageModel
 import com.tans.tuiutils.mediastore.queryVideoFromMediaStore
 import com.tans.tuiutils.state.CoroutineState
@@ -48,7 +49,7 @@ object VideoManager : CoroutineState<VideoManagerState> by CoroutineState(VideoM
         val dao = getDaoOrError()
         launch {
             runCatching {
-                dao.upsertVideoWatchHistory(videoId, watchHistory)
+                dao.insertVideoWatchHistory(VideoWatchHistory(videoId = videoId, lastWatch = watchHistory, lastWatchTime = System.currentTimeMillis()))
             }.onSuccess {
                 AppLog.d(
                     TAG,

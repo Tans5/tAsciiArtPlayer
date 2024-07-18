@@ -9,7 +9,7 @@ import com.tans.tasciiartplayer.database.entity.AudioPlaylistCrossRef
 import com.tans.tasciiartplayer.database.entity.LikeAudio
 import com.tans.tasciiartplayer.database.entity.VideoWatchHistory
 
-@Database(entities = [VideoWatchHistory::class, AudioPlaylist::class, AudioPlaylistCrossRef::class, LikeAudio::class], version = 3)
+@Database(entities = [VideoWatchHistory::class, AudioPlaylist::class, AudioPlaylistCrossRef::class, LikeAudio::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun videoDao(): VideoDao
 

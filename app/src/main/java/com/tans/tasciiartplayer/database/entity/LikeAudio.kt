@@ -9,10 +9,13 @@ import androidx.room.PrimaryKey
 data class LikeAudio(
     @PrimaryKey
     @ColumnInfo(AUDIO_ID_COLUMN)
-    val audioId: Long
+    val audioId: Long,
+    @ColumnInfo(AUDIO_LIKE_TIME_COLUMN)
+    val likeTime: Long
 ) {
     companion object {
         const val TABLE_NAME = "like_audio"
         const val AUDIO_ID_COLUMN = "audio_id"
+        const val AUDIO_LIKE_TIME_COLUMN = "like_time"
     }
 }

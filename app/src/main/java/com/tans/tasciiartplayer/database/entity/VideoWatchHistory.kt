@@ -11,12 +11,15 @@ data class VideoWatchHistory(
     @ColumnInfo(name = VIDEO_ID_COLUMN)
     val videoId: Long,
     @ColumnInfo(name = LAST_WATCH_COLUMN)
-    val lastWatch: Long
+    val lastWatch: Long,
+    @ColumnInfo(name = LAST_WATCH_TIME_COLUMN)
+    val lastWatchTime: Long
 ) {
 
     companion object {
         const val TABLE_NAME = "video_watch_history"
         const val VIDEO_ID_COLUMN = "video_id"
         const val LAST_WATCH_COLUMN = "last_watch"
+        const val LAST_WATCH_TIME_COLUMN = "last_watch_time"
     }
 }

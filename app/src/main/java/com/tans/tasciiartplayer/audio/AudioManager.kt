@@ -50,7 +50,7 @@ object AudioManager : CoroutineState<AudioManagerState> by CoroutineState(AudioM
                             AudioManagerState(
                                 audioIdToAudioMap = newAudioIdToAudioMap,
                                 allAudioList = oldState.allAudioList.copy(audios = newAudioIdToAudioMap.values.toList()),
-                                likeAudioList = oldState.likeAudioList.copy(audios = newAudioIdToAudioMap.values.filter { it.isLike }),
+                                likeAudioList = oldState.likeAudioList.copy(audios = likeAudios.mapNotNull { newAudioIdToAudioMap[it.audioId] }),
                                 albumAudioLists = oldState.albumAudioLists.map(::updateListLikeState),
                                 artistAudioLists = oldState.artistAudioLists.map(::updateListLikeState),
                                 customAudioLists = oldState.customAudioLists.map(::updateListLikeState)
@@ -155,7 +155,7 @@ object AudioManager : CoroutineState<AudioManagerState> by CoroutineState(AudioM
     @WorkerThread
     suspend fun likeAudio(audioId: Long) {
         val dao = getDaoOrError()
-        dao.insertLikeAudio(LikeAudio(audioId))
+        dao.insertLikeAudio(LikeAudio(audioId = audioId, likeTime = System.currentTimeMillis()))
     }
 
     @WorkerThread

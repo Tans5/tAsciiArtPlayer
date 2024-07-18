@@ -44,10 +44,10 @@ interface AudioDao {
     @Query("DELETE FROM ${AudioPlaylistCrossRef.TABLE_NAME} WHERE ${AudioPlaylistCrossRef.AUDIO_ID_COLUMN} NOT IN (:activeAudioIds)")
     suspend fun deleteNotActivePlaylistRef(activeAudioIds: List<Long>)
 
-    @Query("SELECT * FROM ${LikeAudio.TABLE_NAME}")
+    @Query("SELECT * FROM ${LikeAudio.TABLE_NAME} ORDER BY ${LikeAudio.AUDIO_LIKE_TIME_COLUMN}")
     suspend fun queryAllLikeAudios(): List<LikeAudio>
 
-    @Query("SELECT * FROM ${LikeAudio.TABLE_NAME}")
+    @Query("SELECT * FROM ${LikeAudio.TABLE_NAME} ORDER BY ${LikeAudio.AUDIO_LIKE_TIME_COLUMN}")
     fun observeAllLikeAudios(): Flow<List<LikeAudio>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
