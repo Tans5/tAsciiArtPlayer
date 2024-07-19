@@ -92,15 +92,17 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
             }
         )
 
-        val emptyAdapterBuilder = SimpleAdapterBuilderImpl<Unit>(
-            itemViewCreator = SingleItemViewCreatorImpl(R.layout.empty_item_layout),
-            dataSource = FlowDataSourceImpl(stateFlow.map { if (it.videos.isEmpty()) listOf(Unit) else emptyList() }.debounce(200L)),
-            dataBinder = DataBinderImpl{ _, itemView, _ ->
-                val itemViewBinding = EmptyItemLayoutBinding.bind(itemView)
-                itemViewBinding.msgTv.text = itemView.context.getString(R.string.videos_fgt_no_video)
-            }
-        )
-        viewBinding.videosRv.adapter = (videoAdapterBuilder + emptyAdapterBuilder).build()
+//        val emptyAdapterBuilder = SimpleAdapterBuilderImpl<Unit>(
+//            itemViewCreator = SingleItemViewCreatorImpl(R.layout.empty_item_layout),
+//            dataSource = FlowDataSourceImpl(stateFlow.map { if (it.videos.isEmpty()) listOf(Unit) else emptyList() }.debounce(200L)),
+//            dataBinder = DataBinderImpl{ _, itemView, _ ->
+//                val itemViewBinding = EmptyItemLayoutBinding.bind(itemView)
+//                itemViewBinding.msgTv.text = itemView.context.getString(R.string.videos_fgt_no_video)
+//            }
+//        )
+//        viewBinding.videosRv.adapter = (videoAdapterBuilder + emptyAdapterBuilder).build()
+
+        viewBinding.videosRv.adapter = videoAdapterBuilder.build()
 
 //        viewBinding.videosRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 //            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
