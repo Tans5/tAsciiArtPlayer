@@ -10,10 +10,15 @@ import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.audio.audiolist.AudioListType
 import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
 import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManager
-import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManagerState
 import com.tans.tasciiartplayer.audio.audioplayer.PlayListState
 import com.tans.tasciiartplayer.audio.audioplayer.PlayType.*
 import com.tans.tasciiartplayer.audio.audioplayer.getCurrentPlayAudio
+import com.tans.tasciiartplayer.audio.audioplayer.observePlayTypeChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observePlayingAudioChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observePreviousAndNextSkipStateChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observeProgressAndDurationChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observeSelectedAudioListChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observetMediaPlayerStateChanged
 import com.tans.tasciiartplayer.databinding.AudiosFragmentBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
@@ -26,29 +31,14 @@ import com.tans.tuiutils.view.clicks
 import com.tans.tuiutils.view.refreshes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Optional
 
-class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(AudioPlayerManagerState()) {
+class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
 
     override val layoutId: Int = R.layout.audios_fragment
 
-    override fun CoroutineScope.firstLaunchInitDataCoroutine() {
-        launch {
-            AudioListManager.refreshMediaStoreAudios()
-        }
+    override fun CoroutineScope.firstLaunchInitDataCoroutine() {  }
 
-        launch {
-            AudioPlayerManager.stateFlow().collect { s -> updateState { s } }
-        }
-    }
-
-    @Suppress("OPT_IN_USAGE")
     @SuppressLint("SetTextI18n")
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
         val viewBinding = AudiosFragmentBinding.bind(contentView)
@@ -82,14 +72,11 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
         }
 
         // Playing audio
-        renderStateNewCoroutine({ it.playListState }) {
-            when (it) {
-                PlayListState.NoSelectedList -> {
-                    viewBinding.playCard.visibility = View.INVISIBLE
-                }
-                is PlayListState.SelectedPlayList -> {
-                    viewBinding.playCard.visibility = View.VISIBLE
-                }
+        observeSelectedAudioListChanged {
+            if (it == null) {
+                viewBinding.playCard.visibility = View.INVISIBLE
+            } else {
+                viewBinding.playCard.visibility = View.VISIBLE
             }
         }
 
@@ -104,18 +91,8 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
         }
 
         // Audio info.
-        renderStateNewCoroutine({
-            val playListState = it.playListState as? PlayListState.SelectedPlayList
-            val playIndex = playListState?.currentPlayIndex
-            val audio = if (playIndex != null) {
-                playListState.audioList.audios.getOrNull(playIndex)
-            } else {
-                null
-            }
-            Optional.ofNullable(audio)
-        }) {
-            if (it.isPresent) {
-                val audio = it.get()
+        observePlayingAudioChanged { audio ->
+            if (audio != null) {
                 viewBinding.audioTitleTv.text = audio.mediaStoreAudio.title
                 viewBinding.audioArtistAlbumTv.text = "${audio.mediaStoreAudio.artist}-${audio.mediaStoreAudio.album}"
                 viewBinding.likeIv.setImageResource(if (audio.isLike) R.drawable.icon_favorite_fill else R.drawable.icon_favorite_unfill)
@@ -127,7 +104,7 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
         }
 
         // Audio play type
-        renderStateNewCoroutine({ it.playType }) {
+        observePlayTypeChanged {
             viewBinding.playTypeIv.setImageResource(
                 when (it) {
                     ListSequentialPlay -> R.drawable.icon_audio_sequence_play
@@ -140,59 +117,34 @@ class AudiosFragment : BaseCoroutineStateFragment<AudioPlayerManagerState>(Audio
         }
 
         // Player State
-        launch {
-            stateFlow()
-                .map {
-                    val playerState = (it.playListState as? PlayListState.SelectedPlayList)?.playerState
-                    Optional.ofNullable(playerState)
+        observetMediaPlayerStateChanged { state ->
+            if (state != null) {
+                if (state is tMediaPlayerState.Playing) {
+                    viewBinding.audioPauseIv.visibility = View.VISIBLE
+                    viewBinding.audioPlayIv.visibility = View.GONE
+                } else {
+                    viewBinding.audioPauseIv.visibility = View.GONE
+                    viewBinding.audioPlayIv.visibility = View.VISIBLE
                 }
-                .distinctUntilChanged()
-                .debounce(100L)
-                .flowOn(Dispatchers.IO)
-                .collect {
-                    if (it.isPresent) {
-                        val state = it.get()
-                        if (state is tMediaPlayerState.Playing) {
-                            viewBinding.audioPauseIv.visibility = View.VISIBLE
-                            viewBinding.audioPlayIv.visibility = View.GONE
-                        } else {
-                            viewBinding.audioPauseIv.visibility = View.GONE
-                            viewBinding.audioPlayIv.visibility = View.VISIBLE
-                        }
-                    } else {
-                        viewBinding.audioPauseIv.visibility = View.GONE
-                        viewBinding.audioPlayIv.visibility = View.VISIBLE
-                    }
-                }
+            } else {
+                viewBinding.audioPauseIv.visibility = View.GONE
+                viewBinding.audioPlayIv.visibility = View.VISIBLE
+            }
         }
 
         // Player Next/Previous play
-        renderStateNewCoroutine({
-            val playListState = it.playListState as? PlayListState.SelectedPlayList
-            if (playListState != null && it.playType != SingleLoopPlay) {
-                (playListState.playedIndexes.size > 1) to (playListState.nextPlayIndex != null)
-            } else {
-                false to false
-            }
-        }) { (canPlayPrevious, canPlayNext) ->
-            viewBinding.audioPreviousLayout.isEnabled = canPlayPrevious
-            viewBinding.audioPreviousIv.isEnabled = canPlayPrevious
+        observePreviousAndNextSkipStateChanged { canSkipPrevious, canSkipNext ->
+            viewBinding.audioPreviousLayout.isEnabled = canSkipPrevious
+            viewBinding.audioPreviousIv.isEnabled = canSkipPrevious
 
-            viewBinding.audioNextLayout.isEnabled = canPlayNext
-            viewBinding.audioNextIv.isEnabled = canPlayNext
+            viewBinding.audioNextLayout.isEnabled = canSkipNext
+            viewBinding.audioNextIv.isEnabled = canSkipNext
         }
 
         var isPlayerSbInTouching = false
 
         // Player Progress/Duration
-        renderStateNewCoroutine({
-            val playListState = it.playListState as? PlayListState.SelectedPlayList
-            if (playListState!= null) {
-                playListState.playerProgress to playListState.playerDuration
-            } else {
-                0L to 0L
-            }
-        }) { (progress, duration) ->
+        observeProgressAndDurationChanged { progress, duration ->
             viewBinding.audioPlayingProgressTv.text = progress.formatDuration()
             viewBinding.audioDurationTv.text = duration.formatDuration()
 
