@@ -3,10 +3,6 @@ package com.tans.tasciiartplayer.audio.audioplayer
 import android.app.Application
 import android.content.Intent
 import android.os.SystemClock
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ProcessLifecycleOwner
 import com.tans.tasciiartplayer.AppLog
 import com.tans.tasciiartplayer.AppSettings
 import com.tans.tasciiartplayer.appGlobalCoroutineScope
@@ -21,7 +17,6 @@ import com.tans.tuiutils.state.CoroutineState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map

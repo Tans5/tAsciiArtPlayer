@@ -73,28 +73,13 @@ class AlbumsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
                     }
                 )
 
-                val emptyDataSource = DataSourceImpl<Unit>()
-                val emptyAdapterBuilder = SimpleAdapterBuilderImpl<Unit>(
-                    itemViewCreator = SingleItemViewCreatorImpl(R.layout.empty_item_layout),
-                    dataSource = emptyDataSource,
-                    dataBinder = DataBinderImpl{ _, itemView, _ ->
-                        val itemViewBinding = EmptyItemLayoutBinding.bind(itemView)
-                        itemViewBinding.msgTv.text = itemView.context.getString(R.string.audios_fgt_no_album)
-                    }
-                )
-
-                viewBinding.albumsRv.adapter = (dataAdapterBuilder + emptyAdapterBuilder).build()
+                viewBinding.albumsRv.adapter = dataAdapterBuilder.build()
                 AudioListManager.stateFlow()
                     .map { it.albumAudioLists }
                     .distinctUntilChanged()
                     .flowOn(Dispatchers.IO)
                     .collect {
                         dataSource.submitDataList(it)
-                        if (it.isEmpty()) {
-                            emptyDataSource.submitDataList(listOf(Unit))
-                        } else {
-                            emptyDataSource.submitDataList(emptyList())
-                        }
                     }
             }
 

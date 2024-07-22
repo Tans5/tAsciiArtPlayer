@@ -5,12 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    tools:context=".ui.main.MainActivity">
+    tools:context=".ui.main.MainActivity"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
+        android:fitsSystemWindows="false"
         android:background="@color/white">
 
         <androidx.appcompat.widget.Toolbar
