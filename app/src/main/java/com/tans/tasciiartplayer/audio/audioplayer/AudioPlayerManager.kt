@@ -112,35 +112,47 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
         }
 
         // Observe process lifecycle
-        val processLifecycleOwner = ProcessLifecycleOwner.get()
-        val processStateFlow = MutableStateFlow(true)
-        processLifecycleOwner.lifecycle.addObserver(object : LifecycleEventObserver {
-            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-                if (event == Lifecycle.Event.ON_START) {
-                    processStateFlow.value = true
-                }
-                if (event == Lifecycle.Event.ON_STOP) {
-                    processStateFlow.value = false
-                }
-            }
-        })
+//        val processLifecycleOwner = ProcessLifecycleOwner.get()
+//        val processStateFlow = MutableStateFlow(true)
+//        processLifecycleOwner.lifecycle.addObserver(object : LifecycleEventObserver {
+//            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+//                if (event == Lifecycle.Event.ON_START) {
+//                    processStateFlow.value = true
+//                }
+//                if (event == Lifecycle.Event.ON_STOP) {
+//                    processStateFlow.value = false
+//                }
+//            }
+//        })
         appGlobalCoroutineScope.launch(Dispatchers.Main) {
-            combine(
-                processStateFlow,
-                stateFlow().map { it.playListState is PlayListState.SelectedPlayList }) { isProgressForeground, isPlayListSelected ->
-                isProgressForeground to isPlayListSelected
-            }
+//            combine(
+//                processStateFlow,
+//                stateFlow().map { it.playListState is PlayListState.SelectedPlayList }) { isProgressForeground, isPlayListSelected ->
+//                isProgressForeground to isPlayListSelected
+//            }
+//                .distinctUntilChanged()
+//                .flowOn(Dispatchers.IO)
+//                .collect { (isProgressForeground, isPlayListSelected) ->
+//                    val startService = !isProgressForeground && isPlayListSelected
+//                    if (startService) {
+//                        application.startForegroundService(Intent(application, AudioPlaybackService::class.java))
+//                    } else {
+//                        application.stopService(Intent(application, AudioPlaybackService::class.java))
+//                    }
+//                }
+
+            stateFlow().map { it.playListState is PlayListState.SelectedPlayList }
                 .distinctUntilChanged()
                 .flowOn(Dispatchers.IO)
-                .collect { (isProgressForeground, isPlayListSelected) ->
-                    val startService = !isProgressForeground && isPlayListSelected
-                    if (startService) {
+                .collect {
+                    if (it) {
                         application.startForegroundService(Intent(application, AudioPlaybackService::class.java))
                     } else {
                         application.stopService(Intent(application, AudioPlaybackService::class.java))
                     }
                 }
         }
+
     }
 
     fun playPrevious() {
