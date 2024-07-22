@@ -20,8 +20,12 @@ import kotlinx.coroutines.launch
 
 class AudioPlaybackService : Service(), CoroutineScope by CoroutineScope(Dispatchers.Main) {
 
-    private val remoteViews: RemoteViews by lazy {
-        RemoteViews(this.packageName, R.layout.audio_play_notification_layout)
+    private val smallNotificationRemoteViews: RemoteViews by lazy {
+        RemoteViews(this.packageName, R.layout.audio_play_small_notification_layout)
+    }
+
+    private val bigNotificationRemoteViews: RemoteViews by lazy {
+        RemoteViews(this.packageName, R.layout.audio_play_big_notification_layout)
     }
 
     override fun onCreate() {
@@ -32,15 +36,18 @@ class AudioPlaybackService : Service(), CoroutineScope by CoroutineScope(Dispatc
         if (!isContainChannel) {
             notificationManager.createNotificationChannel(NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH))
         }
-        val notificationIntent = PendingIntent.getActivity(this, serviceHashCode, Intent(this, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
+        val notificationIntent = PendingIntent.getActivity(this, serviceHashCode, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
             // TODO: Replace it
             .setSmallIcon(R.mipmap.ic_launcher)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(notificationIntent)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setCustomContentView(remoteViews)
+            .setCustomContentView(smallNotificationRemoteViews)
+            .setCustomBigContentView(bigNotificationRemoteViews)
             .setSilent(true)
+            .setAutoCancel(false)
+            .setOngoing(true)
             .build()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(serviceHashCode, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)

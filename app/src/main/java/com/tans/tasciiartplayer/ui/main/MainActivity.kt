@@ -38,6 +38,7 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissionsNeed.add(Manifest.permission.READ_MEDIA_AUDIO)
             permissionsNeed.add(Manifest.permission.READ_MEDIA_VIDEO)
+            permissionsNeed.add(Manifest.permission.POST_NOTIFICATIONS)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 permissionsNeed.add(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
             }
