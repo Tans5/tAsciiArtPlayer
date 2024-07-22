@@ -31,13 +31,18 @@ import com.tans.tuiutils.view.clicks
 import com.tans.tuiutils.view.refreshes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
 
     override val layoutId: Int = R.layout.audios_fragment
 
-    override fun CoroutineScope.firstLaunchInitDataCoroutine() {  }
+    override fun CoroutineScope.firstLaunchInitDataCoroutine() {
+        launch(Dispatchers.IO) {
+            AudioListManager.refreshMediaStoreAudios()
+        }
+    }
 
     @SuppressLint("SetTextI18n")
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
