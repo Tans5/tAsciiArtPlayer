@@ -27,6 +27,8 @@
             android:screenOrientation="portrait"
             android:exported="true"
             android:configChanges="screenSize|orientation|uiMode"
+            android:taskAffinity=".tAsciiArtPlayer"
+            android:launchMode="singleTask"
             tools:ignore="DiscouragedApi,LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,16 +42,14 @@
             android:exported="false"
             android:screenOrientation="landscape"
             android:configChanges="screenSize|orientation|uiMode"
+            android:taskAffinity=".tAsciiArtPlayer"
+            android:launchMode="singleTask"
             tools:ignore="DiscouragedApi" />
 
         <service
             android:name=".audio.audioplayer.AudioPlaybackService"
             android:foregroundServiceType="mediaPlayback"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="androidx.media3.session.MediaSessionService"/>
-            </intent-filter>
-        </service>
+            android:exported="false" />
 
     </application>
 

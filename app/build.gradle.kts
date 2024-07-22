@@ -92,8 +92,4 @@ dependencies {
 
     // DataStore
     implementation(libs.androidx.datastore.sp)
-
-    // Media3
-    implementation(libs.androidx.media3.common)
-    implementation(libs.androidx.media3.session)
 }
