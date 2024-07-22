@@ -23,6 +23,6 @@ class App : Application() {
         AppSettings.init(this)
         VideoManager.init(this, database.videoDao())
         AudioListManager.init(this, database.audioDao())
-        AudioPlayerManager.init()
+        AudioPlayerManager.init(this)
     }
 }

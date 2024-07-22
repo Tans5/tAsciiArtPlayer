@@ -129,10 +129,6 @@ class AudioPlaybackService : Service(), CoroutineScope by CoroutineScope(Dispatc
             registerReceiver(broadcastReceiver, broadcastFilters)
         }
 
-        observeSelectedAudioListChanged {
-            if (it == null) { stopSelf() }
-        }
-
         observePlayingAudioChanged { audio ->
             if (audio != null) {
                 smallNotificationRemoteViews.setTextViewText(R.id.audio_title_tv, audio.mediaStoreAudio.title)

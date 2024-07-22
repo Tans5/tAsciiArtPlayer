@@ -1,6 +1,12 @@
 package com.tans.tasciiartplayer.audio.audioplayer
 
+import android.app.Application
+import android.content.Intent
 import android.os.SystemClock
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.tans.tasciiartplayer.AppLog
 import com.tans.tasciiartplayer.AppSettings
 import com.tans.tasciiartplayer.appGlobalCoroutineScope
@@ -12,9 +18,12 @@ import com.tans.tmediaplayer.player.tMediaPlayer
 import com.tans.tmediaplayer.player.tMediaPlayerListener
 import com.tans.tmediaplayer.player.tMediaPlayerState
 import com.tans.tuiutils.state.CoroutineState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicReference
@@ -30,7 +39,7 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
         AtomicReference()
     }
 
-    fun init() {
+    fun init(application: Application) {
         // Init player
         appGlobalCoroutineScope.launch {
             // This player never release.
@@ -98,6 +107,37 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                                 }
                             }
                         }
+                    }
+                }
+        }
+
+        // Observe process lifecycle
+        val processLifecycleOwner = ProcessLifecycleOwner.get()
+        val processStateFlow = MutableStateFlow(true)
+        processLifecycleOwner.lifecycle.addObserver(object : LifecycleEventObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                if (event == Lifecycle.Event.ON_START) {
+                    processStateFlow.value = true
+                }
+                if (event == Lifecycle.Event.ON_STOP) {
+                    processStateFlow.value = false
+                }
+            }
+        })
+        appGlobalCoroutineScope.launch(Dispatchers.Main) {
+            combine(
+                processStateFlow,
+                stateFlow().map { it.playListState is PlayListState.SelectedPlayList }) { isProgressForeground, isPlayListSelected ->
+                isProgressForeground to isPlayListSelected
+            }
+                .distinctUntilChanged()
+                .flowOn(Dispatchers.IO)
+                .collect { (isProgressForeground, isPlayListSelected) ->
+                    val startService = !isProgressForeground && isPlayListSelected
+                    if (startService) {
+                        application.startForegroundService(Intent(application, AudioPlaybackService::class.java))
+                    } else {
+                        application.stopService(Intent(application, AudioPlaybackService::class.java))
                     }
                 }
         }
