@@ -17,7 +17,7 @@
         android:layout_marginStart="?attr/dialogPreferredPadding"
         android:layout_marginTop="17dp"
         android:layout_width="0dp"
-        android:text="@string/app_setting_title"
+        android:text="@string/app_setting_dialog_title"
         android:textColor="@color/gray_900"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -48,7 +48,7 @@
                 android:textSize="14sp"
                 android:textColor="@color/gray_800"
                 android:textStyle="bold"
-                android:text="@string/app_setting_video_hardware_decoder"/>
+                android:text="@string/app_setting_dialog_video_hardware_decoder"/>
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/video_hw_decoder_sw"
@@ -62,7 +62,7 @@
                 android:textSize="14sp"
                 android:textColor="@color/gray_800"
                 android:textStyle="bold"
-                android:text="@string/app_setting_audio_output_channel" />
+                android:text="@string/app_setting_dialog_audio_output_channel" />
 
             <LinearLayout
                 android:id="@+id/output_channel_layout"
@@ -95,7 +95,7 @@
                 android:textSize="14sp"
                 android:textColor="@color/gray_800"
                 android:textStyle="bold"
-                android:text="@string/app_setting_audio_output_sample_rate"/>
+                android:text="@string/app_setting_dialog_audio_output_sample_rate"/>
 
             <LinearLayout
                 android:id="@+id/output_rate_layout"
@@ -128,7 +128,7 @@
                 android:textSize="14sp"
                 android:textColor="@color/gray_800"
                 android:textStyle="bold"
-                android:text="@string/app_setting_audio_output_sample_format"/>
+                android:text="@string/app_setting_dialog_audio_output_sample_format"/>
 
             <LinearLayout
                 android:id="@+id/output_format_layout"

@@ -151,9 +151,20 @@
             android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/anchor_1"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:textSize="16sp"
             android:lines="2" />
+
+        <TextView
+            android:id="@+id/anchor_3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/anchor_2"
+            android:textSize="14sp"
+            android:lines="1"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
         <TextView
             android:id="@+id/audio_title_tv"
             android:layout_width="0dp"
@@ -182,9 +193,21 @@
             app:layout_constraintTop_toBottomOf="@id/audio_title_tv"
             tools:text="Artist-Album" />
 
+        <TextView
+            android:id="@+id/next_play_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textSize="14sp"
+            android:textColor="@color/gray_500"
+            android:lines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/audio_artist_album_tv"
+            tools:text="@string/audio_player_act_list_play_end"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/audio_control_layout"
@@ -327,7 +350,7 @@
         android:id="@+id/audio_playing_progress_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
+        android:textSize="12sp"
         android:textColor="@color/gray_500"
         android:layout_marginStart="20dp"
         android:layout_marginBottom="12dp"
@@ -339,7 +362,7 @@
         android:id="@+id/audio_duration_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
+        android:textSize="12sp"
         android:textColor="@color/gray_500"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="12dp"

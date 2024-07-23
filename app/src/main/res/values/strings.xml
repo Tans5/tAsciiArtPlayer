@@ -2,43 +2,43 @@
     <string name="app_name">tAsciiArtPlayer</string>
 
     <!--region AppSettingsDialog -->
-    <string name="app_setting_title">Settings</string>
-    <string name="app_setting_video_hardware_decoder">Video Hardware Decoder: </string>
-    <string name="app_setting_audio_output_channel">Audio Output Channel: </string>
-    <string name="app_setting_audio_output_sample_rate">Audio Output Sample Rate: </string>
-    <string name="app_setting_audio_output_sample_format">Audio Output Sample Format: </string>
+    <string name="app_setting_dialog_title">Settings</string>
+    <string name="app_setting_dialog_video_hardware_decoder">Video Hardware Decoder: </string>
+    <string name="app_setting_dialog_audio_output_channel">Audio Output Channel: </string>
+    <string name="app_setting_dialog_audio_output_sample_rate">Audio Output Sample Rate: </string>
+    <string name="app_setting_dialog_audio_output_sample_format">Audio Output Sample Format: </string>
     <!--endregion -->
 
     <!--region MediaInfoDialog-->
-    <string name="media_info_metadata">Metadata:</string>
-    <string name="media_info_file_title">File</string>
-    <string name="media_info_file_path">FilePath: %s</string>
-    <string name="media_info_file_size">FileSize: %s</string>
-    <string name="media_info_file_format">FileFormat: %s</string>
-    <string name="media_info_video_title">Video</string>
-    <string name="media_info_audio_title">Audio</string>
-    <string name="media_info_decoder">Decoder: %s</string>
-    <string name="media_info_codec">Codec: %s</string>
-    <string name="media_info_resolution">Resolution: %s</string>
-    <string name="media_info_fps">Fps: %.1f</string>
-    <string name="media_info_pixel_depth">PixelBitDepth: %d bits</string>
-    <string name="media_info_pixel_format">PixelFormat: %s</string>
-    <string name="media_info_channels">Channels: %d</string>
-    <string name="media_info_simple_rate">SampleRate: %d Hz</string>
-    <string name="media_info_bitrate">Bitrate: %d kbps</string>
-    <string name="media_info_simple_depth">SampleBitDepth: %d bits</string>
-    <string name="media_info_simple_format">SimpleFormat: %s</string>
-    <string name="media_info_subtitle_title">Subtitle</string>
+    <string name="media_info_dialog_metadata">Metadata:</string>
+    <string name="media_info_dialog_file_title">File</string>
+    <string name="media_info_dialog_file_path">FilePath: %s</string>
+    <string name="media_info_dialog_file_size">FileSize: %s</string>
+    <string name="media_info_dialog_file_format">FileFormat: %s</string>
+    <string name="media_info_dialog_video_title">Video</string>
+    <string name="media_info_dialog_audio_title">Audio</string>
+    <string name="media_info_dialog_decoder">Decoder: %s</string>
+    <string name="media_info_dialog_codec">Codec: %s</string>
+    <string name="media_info_dialog_resolution">Resolution: %s</string>
+    <string name="media_info_dialog_fps">Fps: %.1f</string>
+    <string name="media_info_dialog_pixel_depth">PixelBitDepth: %d bits</string>
+    <string name="media_info_dialog_pixel_format">PixelFormat: %s</string>
+    <string name="media_info_dialog_channels">Channels: %d</string>
+    <string name="media_info_dialog_simple_rate">SampleRate: %d Hz</string>
+    <string name="media_info_dialog_bitrate">Bitrate: %d kbps</string>
+    <string name="media_info_dialog_simple_depth">SampleBitDepth: %d bits</string>
+    <string name="media_info_dialog_simple_format">SimpleFormat: %s</string>
+    <string name="media_info_dialog_subtitle_title">Subtitle</string>
     <!--endregion-->
 
     <!--region PlayerSettingsDialog-->
-    <string name="player_setting_crop_image">Crop Image: </string>
-    <string name="player_setting_ascii_filter">Ascii Filter: </string>
-    <string name="player_setting_ascii_filter_settings">Ascii Filter Settings: </string>
-    <string name="player_setting_ascii_char_reverse">Char Reverse: </string>
-    <string name="player_setting_ascii_color_reverse">Color Reverse: </string>
-    <string name="player_setting_ascii_char_width">Char Width: %d</string>
-    <string name="player_setting_ascii_image_color_fill_rate">Image Color Fill Rate: %d</string>
+    <string name="player_setting_dialog_crop_image">Crop Image: </string>
+    <string name="player_setting_dialog_ascii_filter">Ascii Filter: </string>
+    <string name="player_setting_dialog_ascii_filter_settings">Ascii Filter Settings: </string>
+    <string name="player_setting_dialog_ascii_char_reverse">Char Reverse: </string>
+    <string name="player_setting_dialog_ascii_color_reverse">Color Reverse: </string>
+    <string name="player_setting_dialog_ascii_char_width">Char Width: %d</string>
+    <string name="player_setting_dialog_ascii_image_color_fill_rate">Image Color Fill Rate: %d</string>
     <!--endregion-->
 
     <!--region MainActivity -->
@@ -63,6 +63,11 @@
     <!--endregion-->
 
     <!--region VideoPlayerActivity-->
-    <string name="video_player_error">An error occurred. T_T</string>
+    <string name="video_player_act_error">An error occurred. T_T</string>
+    <!--endregion -->
+
+    <!--region AudioPlayerActivity-->
+    <string name="audio_player_act_list_play_end">Play End</string>
+    <string name="audio_player_act_next_play">Next play: %s</string>
     <!--endregion -->
 </resources>

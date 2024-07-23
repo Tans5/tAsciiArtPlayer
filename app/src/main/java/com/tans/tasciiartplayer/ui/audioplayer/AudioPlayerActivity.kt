@@ -14,6 +14,7 @@ import com.tans.tasciiartplayer.audio.audioplayer.PlayType.ListRandomPlay
 import com.tans.tasciiartplayer.audio.audioplayer.PlayType.ListSequentialPlay
 import com.tans.tasciiartplayer.audio.audioplayer.PlayType.SingleLoopPlay
 import com.tans.tasciiartplayer.audio.audioplayer.getCurrentPlayAudio
+import com.tans.tasciiartplayer.audio.audioplayer.observeNextPlayAudio
 import com.tans.tasciiartplayer.audio.audioplayer.observePlayTypeChanged
 import com.tans.tasciiartplayer.audio.audioplayer.observePlayingAudioChanged
 import com.tans.tasciiartplayer.audio.audioplayer.observePreviousAndNextSkipStateChanged
@@ -119,6 +120,14 @@ class AudioPlayerActivity : BaseCoroutineStateActivity<Unit>(Unit) {
                     0
                 }
                 viewBinding.audioSeekBar.progress = progressInPercent
+            }
+        }
+
+        observeNextPlayAudio { nextPlayAudio ->
+            if (nextPlayAudio == null) {
+                viewBinding.nextPlayTv.text = getString(R.string.audio_player_act_list_play_end)
+            } else {
+                viewBinding.nextPlayTv.text = getString(R.string.audio_player_act_next_play, nextPlayAudio.mediaStoreAudio.title)
             }
         }
 

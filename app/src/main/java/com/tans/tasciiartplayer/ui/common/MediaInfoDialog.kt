@@ -61,13 +61,13 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
             itemViewCreator = SingleItemViewCreatorImpl(R.layout.media_info_item_layout),
             dataSource = FlowDataSourceImpl(flow {
                 val result = mutableListOf<String>()
-                result.add(ctx.getString(R.string.media_info_file_path, filePath))
+                result.add(ctx.getString(R.string.media_info_dialog_file_path, filePath))
                 val fileSizeStr = File(filePath).length().toSizeString()
-                result.add(ctx.getString(R.string.media_info_file_size, fileSizeStr))
-                result.add(ctx.getString(R.string.media_info_file_format, mediaInfo.containerName))
+                result.add(ctx.getString(R.string.media_info_dialog_file_size, fileSizeStr))
+                result.add(ctx.getString(R.string.media_info_dialog_file_format, mediaInfo.containerName))
                 if (mediaInfo.metadata.isNotEmpty()) {
                     result.add("")
-                    result.add(ctx.getString(R.string.media_info_metadata))
+                    result.add(ctx.getString(R.string.media_info_dialog_metadata))
                     for ((key, value) in mediaInfo.metadata) {
                         result.add(" $key: $value")
                     }
@@ -88,21 +88,21 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
                 itemViewCreator = SingleItemViewCreatorImpl(R.layout.media_info_item_layout),
                 dataSource = FlowDataSourceImpl(flow {
                     val result = mutableListOf<String>()
-                    result.add(ctx.getString(R.string.media_info_decoder, videoStreamInfo.videoDecoderName))
-                    result.add(ctx.getString(R.string.media_info_codec, videoStreamInfo.videoCodec.toString()))
-                    result.add(ctx.getString(R.string.media_info_resolution, "${videoStreamInfo.videoWidth}x${videoStreamInfo.videoHeight}"))
-                    result.add(ctx.getString(R.string.media_info_fps, videoStreamInfo.videoFps))
+                    result.add(ctx.getString(R.string.media_info_dialog_decoder, videoStreamInfo.videoDecoderName))
+                    result.add(ctx.getString(R.string.media_info_dialog_codec, videoStreamInfo.videoCodec.toString()))
+                    result.add(ctx.getString(R.string.media_info_dialog_resolution, "${videoStreamInfo.videoWidth}x${videoStreamInfo.videoHeight}"))
+                    result.add(ctx.getString(R.string.media_info_dialog_fps, videoStreamInfo.videoFps))
                     if (videoStreamInfo.videoBitrate > 0) {
-                        result.add(ctx.getString(R.string.media_info_bitrate, videoStreamInfo.videoBitrate / 1024))
+                        result.add(ctx.getString(R.string.media_info_dialog_bitrate, videoStreamInfo.videoBitrate / 1024))
                     }
                     if (videoStreamInfo.videoPixelBitDepth > 0) {
-                        result.add(ctx.getString(R.string.media_info_pixel_depth, videoStreamInfo.videoPixelBitDepth))
+                        result.add(ctx.getString(R.string.media_info_dialog_pixel_depth, videoStreamInfo.videoPixelBitDepth))
                     }
-                    result.add(ctx.getString(R.string.media_info_pixel_format, videoStreamInfo.videoPixelFormat.name))
+                    result.add(ctx.getString(R.string.media_info_dialog_pixel_format, videoStreamInfo.videoPixelFormat.name))
 
                     if (videoStreamInfo.videoStreamMetadata.isNotEmpty()) {
                         result.add("")
-                        result.add(ctx.getString(R.string.media_info_metadata))
+                        result.add(ctx.getString(R.string.media_info_dialog_metadata))
                         for ((key, value) in videoStreamInfo.videoStreamMetadata) {
                             result.add(" $key: $value")
                         }
@@ -126,21 +126,21 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
                 itemViewCreator = SingleItemViewCreatorImpl(R.layout.media_info_item_layout),
                 dataSource = FlowDataSourceImpl(flow {
                     val result = mutableListOf<String>()
-                    result.add(ctx.getString(R.string.media_info_decoder, audioStreamInfo.audioDecoderName))
-                    result.add(ctx.getString(R.string.media_info_codec, audioStreamInfo.audioCodec.toString()))
-                    result.add(ctx.getString(R.string.media_info_channels, audioStreamInfo.audioChannels))
-                    result.add(ctx.getString(R.string.media_info_simple_rate, audioStreamInfo.audioSimpleRate))
+                    result.add(ctx.getString(R.string.media_info_dialog_decoder, audioStreamInfo.audioDecoderName))
+                    result.add(ctx.getString(R.string.media_info_dialog_codec, audioStreamInfo.audioCodec.toString()))
+                    result.add(ctx.getString(R.string.media_info_dialog_channels, audioStreamInfo.audioChannels))
+                    result.add(ctx.getString(R.string.media_info_dialog_simple_rate, audioStreamInfo.audioSimpleRate))
                     if (audioStreamInfo.audioBitrate > 0) {
-                        result.add(ctx.getString(R.string.media_info_bitrate, audioStreamInfo.audioBitrate / 1024))
+                        result.add(ctx.getString(R.string.media_info_dialog_bitrate, audioStreamInfo.audioBitrate / 1024))
                     }
                     if (audioStreamInfo.audioSampleBitDepth > 0) {
-                        result.add(ctx.getString(R.string.media_info_simple_depth, audioStreamInfo.audioSampleBitDepth))
+                        result.add(ctx.getString(R.string.media_info_dialog_simple_depth, audioStreamInfo.audioSampleBitDepth))
                     }
-                    result.add(ctx.getString(R.string.media_info_simple_format, audioStreamInfo.audioSampleFormat.name))
+                    result.add(ctx.getString(R.string.media_info_dialog_simple_format, audioStreamInfo.audioSampleFormat.name))
 
                     if (audioStreamInfo.audioStreamMetadata.isNotEmpty()) {
                         result.add("")
-                        result.add(ctx.getString(R.string.media_info_metadata))
+                        result.add(ctx.getString(R.string.media_info_dialog_metadata))
                         for ((key, value) in audioStreamInfo.audioStreamMetadata) {
                             result.add(" $key: $value")
                         }

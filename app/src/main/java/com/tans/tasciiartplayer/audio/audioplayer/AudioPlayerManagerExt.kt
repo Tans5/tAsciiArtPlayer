@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -23,6 +24,7 @@ fun CoroutineScope.observetMediaPlayerStateChanged(handle: suspend (playerState:
                 val playerState = (it.playListState as? PlayListState.SelectedPlayList)?.playerState
                 Optional.ofNullable(playerState)
             }
+            .filter { it.getOrNull().let { s -> s != tMediaPlayerState.NoInit && s !is tMediaPlayerState.Prepared }}
             .distinctUntilChanged()
             .debounce(100L)
             .flowOn(Dispatchers.IO)
@@ -115,5 +117,26 @@ fun CoroutineScope.observePlayTypeChanged(handle: suspend (playType: PlayType) -
          .collect {
              handle(it)
          }
+    }
+}
+
+fun CoroutineScope.observeNextPlayAudio(handle: suspend (audio: AudioModel?) -> Unit) {
+    launch {
+        AudioPlayerManager.stateFlow()
+            .map {
+                val playListState = it.playListState as? PlayListState.SelectedPlayList
+                val playIndex = playListState?.nextPlayIndex
+                val audio = if (playIndex != null) {
+                    playListState.audioList.audios.getOrNull(playIndex)
+                } else {
+                    null
+                }
+                Optional.ofNullable(audio)
+            }
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+            .collect {
+                handle(it.getOrNull())
+            }
     }
 }

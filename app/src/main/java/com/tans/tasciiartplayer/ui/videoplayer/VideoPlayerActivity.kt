@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
-import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -87,7 +86,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
         launch {
             renderStateNewCoroutine({ it.playerState }) {
                 if (it is tMediaPlayerState.Error) {
-                    Toast.makeText(this@VideoPlayerActivity, R.string.video_player_error, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@VideoPlayerActivity, R.string.video_player_act_error, Toast.LENGTH_SHORT).show()
                     finish()
                 }
             }
