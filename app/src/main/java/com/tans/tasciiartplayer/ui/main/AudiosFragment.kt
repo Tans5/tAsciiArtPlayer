@@ -234,5 +234,13 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
                 }
             }
         })
+
+        viewBinding.closeCard.clicks(this, 1000L) {
+            AudioPlayerManager.removeAudioList()
+        }
+
+        viewBinding.playCard.clicks(this, 1000L) {
+            // TODO:
+        }
     }
 }
