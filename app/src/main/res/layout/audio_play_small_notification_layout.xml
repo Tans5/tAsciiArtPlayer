@@ -18,7 +18,7 @@
         android:textColor="@color/gray_900"
         android:textSize="14sp"
         android:lines="1"
-        android:text="Title" />
+        tools:text="Title" />
 
     <TextView
         android:id="@+id/audio_artist_album_tv"
@@ -31,6 +31,6 @@
         android:textSize="12sp"
         android:lines="1"
         android:ellipsize="end"
-        android:text="Artist-Album" />
+        tools:text="Artist-Album" />
 
 </LinearLayout>

@@ -80,6 +80,13 @@ class AlbumsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
                     .flowOn(Dispatchers.IO)
                     .collect {
                         dataSource.submitDataList(it)
+                        if (it.isEmpty()) {
+                            viewBinding.emptyTv.visibility = View.VISIBLE
+                            viewBinding.albumsRv.visibility = View.INVISIBLE
+                        } else {
+                            viewBinding.emptyTv.visibility = View.INVISIBLE
+                            viewBinding.albumsRv.visibility = View.VISIBLE
+                        }
                     }
             }
 

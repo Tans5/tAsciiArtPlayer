@@ -505,18 +505,26 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.appcompat.widget.AppCompatSeekBar
-                android:id="@+id/audio_seek_bar"
+            <FrameLayout
+                android:id="@+id/audio_seekbar_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:max="100"
+                android:clickable="true"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/audio_control_layout"
-                tools:progress="30"/>
+                app:layout_constraintTop_toBottomOf="@id/audio_control_layout">
+
+                <androidx.appcompat.widget.AppCompatSeekBar
+                    android:id="@+id/audio_seek_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:max="100"
+                    tools:progress="30" />
+
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/audio_playing_progress_tv"
@@ -526,7 +534,7 @@
                 android:textColor="@color/gray_500"
                 android:layout_marginStart="10dp"
                 android:layout_marginBottom="8dp"
-                app:layout_constraintTop_toBottomOf="@id/audio_seek_bar"
+                app:layout_constraintTop_toBottomOf="@id/audio_seekbar_layout"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 tools:text="00:00" />
@@ -539,7 +547,7 @@
                 android:textColor="@color/gray_500"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="8dp"
-                app:layout_constraintTop_toBottomOf="@id/audio_seek_bar"
+                app:layout_constraintTop_toBottomOf="@id/audio_seekbar_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 tools:text="05:00" />

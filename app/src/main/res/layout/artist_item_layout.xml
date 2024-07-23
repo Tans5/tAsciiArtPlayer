@@ -58,16 +58,16 @@
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:src="@drawable/icon_audio"
+            android:layout_marginTop="1dp"
             app:layout_constraintBottom_toBottomOf="@id/song_count_tv"
             app:layout_constraintTop_toTopOf="@id/song_count_tv"
-            app:layout_constraintEnd_toStartOf="@id/song_count_tv"/>
+            app:layout_constraintEnd_toStartOf="@id/song_count_tv" />
 
         <TextView
             android:id="@+id/song_count_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
-            android:layout_marginTop="2dp"
             android:textColor="@color/cyan_400"
             android:textSize="12sp"
             android:textStyle="bold"

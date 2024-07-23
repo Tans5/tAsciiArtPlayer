@@ -6,7 +6,6 @@ import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManager
-import com.tans.tasciiartplayer.databinding.EmptyItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.VideoItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.VideosFragmentBinding
 import com.tans.tasciiartplayer.formatDuration
@@ -14,7 +13,6 @@ import com.tans.tasciiartplayer.ui.videoplayer.VideoPlayerActivity
 import com.tans.tasciiartplayer.video.VideoManager
 import com.tans.tasciiartplayer.video.VideoModel
 import com.tans.tuiutils.adapter.impl.builders.SimpleAdapterBuilderImpl
-import com.tans.tuiutils.adapter.impl.builders.plus
 import com.tans.tuiutils.adapter.impl.databinders.DataBinderImpl
 import com.tans.tuiutils.adapter.impl.datasources.FlowDataSourceImpl
 import com.tans.tuiutils.adapter.impl.viewcreatators.SingleItemViewCreatorImpl
@@ -24,8 +22,10 @@ import com.tans.tuiutils.view.clicks
 import com.tans.tuiutils.view.refreshes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -47,6 +47,7 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
         }
     }
 
+    @OptIn(FlowPreview::class)
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
         val viewBinding = VideosFragmentBinding.bind(contentView)
         viewBinding.refreshLayout.refreshes(this, Dispatchers.IO) {
@@ -92,16 +93,6 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
             }
         )
 
-//        val emptyAdapterBuilder = SimpleAdapterBuilderImpl<Unit>(
-//            itemViewCreator = SingleItemViewCreatorImpl(R.layout.empty_item_layout),
-//            dataSource = FlowDataSourceImpl(stateFlow.map { if (it.videos.isEmpty()) listOf(Unit) else emptyList() }.debounce(200L)),
-//            dataBinder = DataBinderImpl{ _, itemView, _ ->
-//                val itemViewBinding = EmptyItemLayoutBinding.bind(itemView)
-//                itemViewBinding.msgTv.text = itemView.context.getString(R.string.videos_fgt_no_video)
-//            }
-//        )
-//        viewBinding.videosRv.adapter = (videoAdapterBuilder + emptyAdapterBuilder).build()
-
         viewBinding.videosRv.adapter = videoAdapterBuilder.build()
 
 //        viewBinding.videosRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -114,6 +105,22 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
 //                }
 //            }
 //        })
+        launch {
+            stateFlow()
+                .map { it.videos.isEmpty() }
+                .debounce(200L)
+                .distinctUntilChanged()
+                .flowOn(Dispatchers.IO)
+                .collect {
+                    if (it) {
+                        viewBinding.emptyTv.visibility = View.VISIBLE
+                        viewBinding.videosRv.visibility = View.INVISIBLE
+                    } else {
+                        viewBinding.emptyTv.visibility = View.INVISIBLE
+                        viewBinding.videosRv.visibility = View.VISIBLE
+                    }
+                }
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(viewBinding.videosRv) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

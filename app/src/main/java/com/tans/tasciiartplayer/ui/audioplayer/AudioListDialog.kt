@@ -193,6 +193,7 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
                         } else {
                             emptyDataSource.submitDataList(emptyList())
                         }
+                        viewBinding.songCountTv.text = it.size.toString()
                     }
             }
             ContentViewAndTask(view, task)
