@@ -1,18 +1,18 @@
-package com.tans.tasciiartplayer.ui.main
+package com.tans.tasciiartplayer.ui.audioplayer
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.view.View
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.SeekBar
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.bumptech.glide.Glide
 import com.tans.tasciiartplayer.R
-import com.tans.tasciiartplayer.audio.audiolist.AudioListType
 import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
 import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManager
 import com.tans.tasciiartplayer.audio.audioplayer.PlayListState
-import com.tans.tasciiartplayer.audio.audioplayer.PlayType.*
+import com.tans.tasciiartplayer.audio.audioplayer.PlayType.ListLoopPlay
+import com.tans.tasciiartplayer.audio.audioplayer.PlayType.ListRandomLoopPlay
+import com.tans.tasciiartplayer.audio.audioplayer.PlayType.ListRandomPlay
+import com.tans.tasciiartplayer.audio.audioplayer.PlayType.ListSequentialPlay
+import com.tans.tasciiartplayer.audio.audioplayer.PlayType.SingleLoopPlay
 import com.tans.tasciiartplayer.audio.audioplayer.getCurrentPlayAudio
 import com.tans.tasciiartplayer.audio.audioplayer.observePlayTypeChanged
 import com.tans.tasciiartplayer.audio.audioplayer.observePlayingAudioChanged
@@ -20,82 +20,35 @@ import com.tans.tasciiartplayer.audio.audioplayer.observePreviousAndNextSkipStat
 import com.tans.tasciiartplayer.audio.audioplayer.observeProgressAndDurationChanged
 import com.tans.tasciiartplayer.audio.audioplayer.observeSelectedAudioListChanged
 import com.tans.tasciiartplayer.audio.audioplayer.observetMediaPlayerStateChanged
-import com.tans.tasciiartplayer.databinding.AudiosFragmentBinding
+import com.tans.tasciiartplayer.databinding.AudioPlayerActivityBinding
 import com.tans.tasciiartplayer.formatDuration
-import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
-import com.tans.tasciiartplayer.ui.audioplayer.ArtistsDialog
-import com.tans.tasciiartplayer.ui.audioplayer.AudioListDialog
-import com.tans.tasciiartplayer.ui.audioplayer.AudioPlayerActivity
 import com.tans.tmediaplayer.player.tMediaPlayerState
-import com.tans.tuiutils.dialog.dp2px
-import com.tans.tuiutils.fragment.BaseCoroutineStateFragment
+import com.tans.tuiutils.activity.BaseCoroutineStateActivity
+import com.tans.tuiutils.systembar.annotation.SystemBarStyle
 import com.tans.tuiutils.view.clicks
-import com.tans.tuiutils.view.refreshes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
+@SystemBarStyle(statusBarThemeStyle = 1, navigationBarThemeStyle = 1)
+class AudioPlayerActivity : BaseCoroutineStateActivity<Unit>(Unit) {
 
-    override val layoutId: Int = R.layout.audios_fragment
+    override val layoutId: Int = R.layout.audio_player_activity
 
     override fun CoroutineScope.firstLaunchInitDataCoroutine() {
-        launch(Dispatchers.IO) {
-            AudioListManager.refreshMediaStoreAudios()
+        launch(Dispatchers.Main) {
+            observeSelectedAudioListChanged {
+                if (it == null) {
+                    finish()
+                }
+            }
         }
     }
 
     @SuppressLint("SetTextI18n")
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
-        val viewBinding = AudiosFragmentBinding.bind(contentView)
-
-        viewBinding.swipeRefreshLayout.refreshes(this, Dispatchers.IO) {
-            AudioListManager.refreshMediaStoreAudios()
-        }
-
-        viewBinding.allAudiosLayout.clicks(this) {
-            val d = AudioListDialog(AudioListType.AllAudios)
-            d.showSafe(requireActivity().supportFragmentManager, "AudioListDialog#${System.currentTimeMillis()}")
-        }
-
-        viewBinding.myFavoritesLayout.clicks(this) {
-            val d = AudioListDialog(AudioListType.LikeAudios)
-            d.showSafe(requireActivity().supportFragmentManager, "AudioListDialog#${System.currentTimeMillis()}")
-        }
-
-        viewBinding.albumsLayout.clicks(this) {
-            val d = AlbumsDialog()
-            d.showSafe(requireActivity().supportFragmentManager, "AlbumsDialog#${System.currentTimeMillis()}")
-        }
-
-        viewBinding.artistsLayout.clicks(this) {
-            val d = ArtistsDialog()
-            d.showSafe(requireActivity().supportFragmentManager, "ArtistsDialog#${System.currentTimeMillis()}")
-        }
-
-        viewBinding.customPlaylistsLayout.clicks(this) {
-            // TODO:
-        }
-
-        // Playing audio
-        observeSelectedAudioListChanged {
-            if (it == null) {
-                viewBinding.playCard.visibility = View.INVISIBLE
-            } else {
-                viewBinding.playCard.visibility = View.VISIBLE
-            }
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(viewBinding.playCard) { v, insets ->
-            val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val lp = v.layoutParams as? MarginLayoutParams
-            if (lp != null) {
-                lp.bottomMargin = systemInsets.bottom + v.context.dp2px(10)
-                v.layoutParams = lp
-            }
-            insets
-        }
+        val viewBinding = AudioPlayerActivityBinding.bind(contentView)
 
         // Audio info.
         observePlayingAudioChanged { audio ->
@@ -103,6 +56,10 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
                 viewBinding.audioTitleTv.text = audio.mediaStoreAudio.title
                 viewBinding.audioArtistAlbumTv.text = "${audio.mediaStoreAudio.artist}-${audio.mediaStoreAudio.album}"
                 viewBinding.likeIv.setImageResource(if (audio.isLike) R.drawable.icon_favorite_fill else R.drawable.icon_favorite_unfill)
+                Glide.with(this@AudioPlayerActivity)
+                    .load(audio.glideLoadModel)
+                    .error(R.drawable.icon_audio)
+                    .into(viewBinding.audioIv)
             } else {
                 viewBinding.audioTitleTv.text = ""
                 viewBinding.audioArtistAlbumTv.text = ""
@@ -186,7 +143,7 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
             val listType = (AudioPlayerManager.stateFlow.value.playListState as? PlayListState.SelectedPlayList)?.audioList?.audioListType
             if (listType != null) {
                 val d = AudioListDialog(listType)
-                d.showSafe(requireActivity().supportFragmentManager, "AudioListDialog${System.currentTimeMillis()}")
+                d.showSafe(this@AudioPlayerActivity.supportFragmentManager, "AudioListDialog${System.currentTimeMillis()}")
             }
         }
 
@@ -200,6 +157,10 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
                 ListRandomLoopPlay -> ListSequentialPlay
             }
             AudioPlayerManager.changePlayType(newPlayType)
+        }
+
+        viewBinding.audioInfoCard.clicks(this, 1000L) {
+            // TODO: Audio info
         }
 
         viewBinding.audioPreviousLayout.clicks(this, 1000L, Dispatchers.IO) {
@@ -236,13 +197,11 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
                 }
             }
         })
-
-        viewBinding.closeCard.clicks(this, 1000L) {
-            AudioPlayerManager.removeAudioList()
-        }
-
-        viewBinding.playCard.clicks(this, 1000L) {
-            requireActivity().startActivity(Intent(requireActivity(), AudioPlayerActivity::class.java))
-        }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        AudioListDialog.removeCacheContentViewAndTask(this)
+    }
+
 }

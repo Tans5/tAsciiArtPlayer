@@ -47,6 +47,15 @@
             android:launchMode="singleTask"
             tools:ignore="DiscouragedApi" />
 
+        <activity
+            android:name=".ui.audioplayer.AudioPlayerActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:configChanges="screenSize|orientation|uiMode"
+            android:taskAffinity=".tAsciiArtPlayer"
+            android:launchMode="singleTask"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity" />
+
         <service
             android:name=".audio.audioplayer.AudioPlaybackService"
             android:foregroundServiceType="mediaPlayback"

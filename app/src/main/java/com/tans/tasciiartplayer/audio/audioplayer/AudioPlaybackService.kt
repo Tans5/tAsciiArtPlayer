@@ -10,7 +10,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import com.tans.tasciiartplayer.R
-import com.tans.tasciiartplayer.ui.main.MainActivity
+import com.tans.tasciiartplayer.ui.audioplayer.AudioPlayerActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -91,7 +91,7 @@ class AudioPlaybackService : Service(), CoroutineScope by CoroutineScope(Dispatc
 //        bigNotificationRemoteViews.setOnClickPendingIntent(R.id.like_card, buildPendingIntent(BroadcastAction.LikeOrDislike))
 //        bigNotificationRemoteViews.setOnClickPendingIntent(R.id.play_type_card, buildPendingIntent(BroadcastAction.ChangePlayType))
 
-        val notificationIntent = PendingIntent.getActivity(this, serviceHashCode, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+        val notificationIntent = PendingIntent.getActivity(this, serviceHashCode, Intent(this, AudioPlayerActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.icon_notification)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
