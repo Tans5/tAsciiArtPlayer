@@ -94,7 +94,6 @@ class AudioPlaybackService : Service(), CoroutineScope by CoroutineScope(Dispatc
 
         val notificationIntent = PendingIntent.getActivity(this, serviceHashCode, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         val notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            // TODO: Replace it
             .setSmallIcon(R.drawable.icon_notification)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(notificationIntent)
