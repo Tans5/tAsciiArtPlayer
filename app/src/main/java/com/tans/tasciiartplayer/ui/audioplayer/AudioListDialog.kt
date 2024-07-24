@@ -62,8 +62,17 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
 
     override fun firstLaunchInitData() {  }
 
+    var contentView: View? = null
+
     override fun bindContentView(view: View) {
         type ?: dismiss()
+        contentView = view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        (contentView?.parent as? ViewGroup)?.removeAllViews()
+        contentView = null
     }
 
     companion object {

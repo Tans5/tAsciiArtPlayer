@@ -42,7 +42,17 @@ class ArtistsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
 
     override fun firstLaunchInitData() {  }
 
-    override fun bindContentView(view: View) {  }
+    var contentView: View? = null
+
+    override fun bindContentView(view: View) {
+        contentView = view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        (contentView?.parent as? ViewGroup)?.removeAllViews()
+        contentView = null
+    }
 
 
     companion object {
