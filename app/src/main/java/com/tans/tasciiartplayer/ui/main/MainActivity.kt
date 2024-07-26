@@ -18,6 +18,7 @@ import com.tans.tuiutils.systembar.annotation.SystemBarStyle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+
 @SystemBarStyle(statusBarThemeStyle = 1, navigationBarThemeStyle = 1)
 class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(State()) {
 
@@ -77,6 +78,11 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
             viewBinding.toolBar.menu.findItem(R.id.app_settings).setOnMenuItemClickListener {
                 val settingsDialog = AppSettingsDialog()
                 settingsDialog.showSafe(supportFragmentManager, "AppSettingsDialog#${System.currentTimeMillis()}")
+                true
+            }
+
+            viewBinding.toolBar.menu.findItem(R.id.video_audio_search).setOnMenuItemClickListener {
+                // TODO: Search
                 true
             }
         }

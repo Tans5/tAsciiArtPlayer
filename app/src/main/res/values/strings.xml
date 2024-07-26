@@ -9,6 +9,11 @@
     <string name="app_setting_dialog_audio_output_sample_format">Audio Output Sample Format: </string>
     <!--endregion -->
 
+    <!--region VideoAudioSearchDialog-->
+    <string name="video_audio_search_dialog_title">Search</string>
+    <string name="video_audio_search_dialog_searching">Searching&#8230;</string>
+    <!--endregion-->
+
     <!--region MediaInfoDialog-->
     <string name="media_info_dialog_metadata">Metadata:</string>
     <string name="media_info_dialog_file_title">File</string>
