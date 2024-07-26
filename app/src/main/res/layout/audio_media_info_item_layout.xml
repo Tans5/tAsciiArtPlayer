@@ -1,23 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView android:id="@+id/key_value_tv"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="2dp"
-    android:paddingBottom="2dp"
+    android:textColor="@color/gray_900"
+    android:textSize="12sp"
+    android:layout_marginTop="2dp"
+    android:layout_marginBottom="2dp"
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <TextView
-        android:id="@+id/key_value_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/gray_900"
-        android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="Key: Value"/>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    tools:text="Key: Value"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android" />
