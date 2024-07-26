@@ -13,7 +13,6 @@
         android:id="@+id/media_info_rv"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:overScrollMode="never"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
         android:scrollbars="vertical"
