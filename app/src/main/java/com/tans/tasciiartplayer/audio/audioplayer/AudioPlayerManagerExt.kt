@@ -3,10 +3,13 @@ package com.tans.tasciiartplayer.audio.audioplayer
 import com.tans.tasciiartplayer.audio.audiolist.AudioList
 import com.tans.tasciiartplayer.audio.audiolist.AudioModel
 import com.tans.tasciiartplayer.audio.audioplayer.PlayType.SingleLoopPlay
+import com.tans.tasciiartplayer.glide.MediaImageModel
 import com.tans.tmediaplayer.player.tMediaPlayerState
+import com.tans.tuiutils.mediastore.MediaStoreAudio
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -17,7 +20,7 @@ import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
 
 @OptIn(FlowPreview::class)
-fun CoroutineScope.observetMediaPlayerStateChanged(handle: suspend (playerState: tMediaPlayerState?) -> Unit) {
+fun CoroutineScope.observePlayingtMediaPlayerStateChanged(handle: suspend (playerState: tMediaPlayerState?) -> Unit) {
     launch {
         AudioPlayerManager.stateFlow()
             .map {
@@ -53,7 +56,7 @@ fun CoroutineScope.observePreviousAndNextSkipStateChanged(handle: suspend (canSk
     }
 }
 
-fun CoroutineScope.observeProgressAndDurationChanged(handle: suspend (progress: Long, duration: Long) -> Unit) {
+fun CoroutineScope.observePlayingProgressAndDurationChanged(handle: suspend (progress: Long, duration: Long) -> Unit) {
     launch {
         AudioPlayerManager.stateFlow()
             .map {
@@ -87,17 +90,23 @@ fun CoroutineScope.observeSelectedAudioListChanged(handle: suspend (audioList: A
     }
 }
 
-fun CoroutineScope.observePlayingAudioChanged(handle: suspend (audioModel: AudioModel?) -> Unit) {
+fun playingAudioChangedFlow(): Flow<Optional<AudioModel>> = AudioPlayerManager.stateFlow()
+    .map {
+        val playListState = it.playListState as? PlayListState.SelectedPlayList
+        val playIndex = playListState?.currentPlayIndex
+        val audio = if (playIndex != null) {
+            playListState.audioList.audios.getOrNull(playIndex)
+        } else {
+            null
+        }
+        Optional.ofNullable(audio)
+    }
+
+fun CoroutineScope.observePlayingMediaStoreAudioChanged(handle: suspend (audioModel: MediaStoreAudio?) -> Unit) {
     launch {
-        AudioPlayerManager.stateFlow()
+        playingAudioChangedFlow()
             .map {
-                val playListState = it.playListState as? PlayListState.SelectedPlayList
-                val playIndex = playListState?.currentPlayIndex
-                val audio = if (playIndex != null) {
-                    playListState.audioList.audios.getOrNull(playIndex)
-                } else {
-                    null
-                }
+                val audio = it.getOrNull()?.mediaStoreAudio
                 Optional.ofNullable(audio)
             }
             .distinctUntilChanged()
@@ -108,7 +117,35 @@ fun CoroutineScope.observePlayingAudioChanged(handle: suspend (audioModel: Audio
     }
 }
 
-fun CoroutineScope.observePlayTypeChanged(handle: suspend (playType: PlayType) -> Unit) {
+fun CoroutineScope.observePlayingLikeStateChanged(handle: suspend (isLike: Boolean) -> Unit) {
+    launch {
+        playingAudioChangedFlow()
+            .map {
+                it.getOrNull()?.isLike ?: false
+            }
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+            .collect{
+                handle(it)
+            }
+    }
+}
+
+fun CoroutineScope.observePlayingImageModelChanged(handle: suspend (imageModel: MediaImageModel?) -> Unit) {
+    launch {
+        playingAudioChangedFlow()
+            .map {
+                Optional.ofNullable(it.getOrNull()?.glideLoadModel)
+            }
+            .distinctUntilChanged()
+            .flowOn(Dispatchers.IO)
+            .collect {
+                handle(it.getOrNull())
+            }
+    }
+}
+
+fun CoroutineScope.observeSelectedAudioListPlayTypeChanged(handle: suspend (playType: PlayType) -> Unit) {
     launch {
         AudioPlayerManager.stateFlow()
          .map { it.playType }
@@ -120,14 +157,14 @@ fun CoroutineScope.observePlayTypeChanged(handle: suspend (playType: PlayType) -
     }
 }
 
-fun CoroutineScope.observeNextPlayAudio(handle: suspend (audio: AudioModel?) -> Unit) {
+fun CoroutineScope.observePlayingNextPlayAudio(handle: suspend (audio: MediaStoreAudio?) -> Unit) {
     launch {
         AudioPlayerManager.stateFlow()
             .map {
                 val playListState = it.playListState as? PlayListState.SelectedPlayList
                 val playIndex = playListState?.nextPlayIndex
                 val audio = if (playIndex != null) {
-                    playListState.audioList.audios.getOrNull(playIndex)
+                    playListState.audioList.audios.getOrNull(playIndex)?.mediaStoreAudio
                 } else {
                     null
                 }

@@ -14,13 +14,15 @@ import com.tans.tasciiartplayer.audio.audioplayer.PlayType.ListRandomPlay
 import com.tans.tasciiartplayer.audio.audioplayer.PlayType.ListSequentialPlay
 import com.tans.tasciiartplayer.audio.audioplayer.PlayType.SingleLoopPlay
 import com.tans.tasciiartplayer.audio.audioplayer.getCurrentPlayAudio
-import com.tans.tasciiartplayer.audio.audioplayer.observeNextPlayAudio
-import com.tans.tasciiartplayer.audio.audioplayer.observePlayTypeChanged
-import com.tans.tasciiartplayer.audio.audioplayer.observePlayingAudioChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observePlayingImageModelChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observePlayingLikeStateChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observePlayingNextPlayAudio
+import com.tans.tasciiartplayer.audio.audioplayer.observeSelectedAudioListPlayTypeChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observePlayingMediaStoreAudioChanged
 import com.tans.tasciiartplayer.audio.audioplayer.observePreviousAndNextSkipStateChanged
-import com.tans.tasciiartplayer.audio.audioplayer.observeProgressAndDurationChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observePlayingProgressAndDurationChanged
 import com.tans.tasciiartplayer.audio.audioplayer.observeSelectedAudioListChanged
-import com.tans.tasciiartplayer.audio.audioplayer.observetMediaPlayerStateChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observePlayingtMediaPlayerStateChanged
 import com.tans.tasciiartplayer.databinding.AudioPlayerActivityBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tmediaplayer.player.tMediaPlayerState
@@ -52,24 +54,36 @@ class AudioPlayerActivity : BaseCoroutineStateActivity<Unit>(Unit) {
         val viewBinding = AudioPlayerActivityBinding.bind(contentView)
 
         // Audio info.
-        observePlayingAudioChanged { audio ->
+        observePlayingMediaStoreAudioChanged { audio ->
             if (audio != null) {
-                viewBinding.audioTitleTv.text = audio.mediaStoreAudio.title
-                viewBinding.audioArtistAlbumTv.text = "${audio.mediaStoreAudio.artist}-${audio.mediaStoreAudio.album}"
-                viewBinding.likeIv.setImageResource(if (audio.isLike) R.drawable.icon_favorite_fill else R.drawable.icon_favorite_unfill)
-                Glide.with(this@AudioPlayerActivity)
-                    .load(audio.glideLoadModel)
-                    .error(R.drawable.icon_audio)
-                    .into(viewBinding.audioIv)
+                viewBinding.audioTitleTv.text = audio.title
+                viewBinding.audioArtistAlbumTv.text = "${audio.artist}-${audio.album}"
             } else {
                 viewBinding.audioTitleTv.text = ""
                 viewBinding.audioArtistAlbumTv.text = ""
+
+            }
+        }
+
+        // Audio like
+        observePlayingLikeStateChanged {
+            viewBinding.likeIv.setImageResource(if (it) R.drawable.icon_favorite_fill else R.drawable.icon_favorite_unfill)
+        }
+
+        // Audio image
+        observePlayingImageModelChanged {
+            if (it != null) {
+                Glide.with(this@AudioPlayerActivity)
+                    .load(it)
+                    .error(R.drawable.icon_audio)
+                    .into(viewBinding.audioIv)
+            } else {
                 viewBinding.likeIv.setImageResource(R.color.white)
             }
         }
 
         // Audio play type
-        observePlayTypeChanged {
+        observeSelectedAudioListPlayTypeChanged {
             viewBinding.playTypeIv.setImageResource(
                 when (it) {
                     ListSequentialPlay -> R.drawable.icon_audio_sequence_play
@@ -82,7 +96,7 @@ class AudioPlayerActivity : BaseCoroutineStateActivity<Unit>(Unit) {
         }
 
         // Player State
-        observetMediaPlayerStateChanged { state ->
+        observePlayingtMediaPlayerStateChanged { state ->
             if (state != null) {
                 if (state is tMediaPlayerState.Playing) {
                     viewBinding.audioPauseIv.visibility = View.VISIBLE
@@ -109,7 +123,7 @@ class AudioPlayerActivity : BaseCoroutineStateActivity<Unit>(Unit) {
         var isPlayerSbInTouching = false
 
         // Player Progress/Duration
-        observeProgressAndDurationChanged { progress, duration ->
+        observePlayingProgressAndDurationChanged { progress, duration ->
             viewBinding.audioPlayingProgressTv.text = progress.formatDuration()
             viewBinding.audioDurationTv.text = duration.formatDuration()
 
@@ -123,11 +137,11 @@ class AudioPlayerActivity : BaseCoroutineStateActivity<Unit>(Unit) {
             }
         }
 
-        observeNextPlayAudio { nextPlayAudio ->
+        observePlayingNextPlayAudio { nextPlayAudio ->
             if (nextPlayAudio == null) {
                 viewBinding.nextPlayTv.text = getString(R.string.audio_player_act_list_play_end)
             } else {
-                viewBinding.nextPlayTv.text = getString(R.string.audio_player_act_next_play, nextPlayAudio.mediaStoreAudio.title)
+                viewBinding.nextPlayTv.text = getString(R.string.audio_player_act_next_play, nextPlayAudio.title)
             }
         }
 

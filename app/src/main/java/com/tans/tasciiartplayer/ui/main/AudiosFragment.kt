@@ -14,12 +14,13 @@ import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManager
 import com.tans.tasciiartplayer.audio.audioplayer.PlayListState
 import com.tans.tasciiartplayer.audio.audioplayer.PlayType.*
 import com.tans.tasciiartplayer.audio.audioplayer.getCurrentPlayAudio
-import com.tans.tasciiartplayer.audio.audioplayer.observePlayTypeChanged
-import com.tans.tasciiartplayer.audio.audioplayer.observePlayingAudioChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observePlayingLikeStateChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observeSelectedAudioListPlayTypeChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observePlayingMediaStoreAudioChanged
 import com.tans.tasciiartplayer.audio.audioplayer.observePreviousAndNextSkipStateChanged
-import com.tans.tasciiartplayer.audio.audioplayer.observeProgressAndDurationChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observePlayingProgressAndDurationChanged
 import com.tans.tasciiartplayer.audio.audioplayer.observeSelectedAudioListChanged
-import com.tans.tasciiartplayer.audio.audioplayer.observetMediaPlayerStateChanged
+import com.tans.tasciiartplayer.audio.audioplayer.observePlayingtMediaPlayerStateChanged
 import com.tans.tasciiartplayer.databinding.AudiosFragmentBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
@@ -98,20 +99,22 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
         }
 
         // Audio info.
-        observePlayingAudioChanged { audio ->
+        observePlayingMediaStoreAudioChanged { audio ->
             if (audio != null) {
-                viewBinding.audioTitleTv.text = audio.mediaStoreAudio.title
-                viewBinding.audioArtistAlbumTv.text = "${audio.mediaStoreAudio.artist}-${audio.mediaStoreAudio.album}"
-                viewBinding.likeIv.setImageResource(if (audio.isLike) R.drawable.icon_favorite_fill else R.drawable.icon_favorite_unfill)
+                viewBinding.audioTitleTv.text = audio.title
+                viewBinding.audioArtistAlbumTv.text = "${audio.artist}-${audio.album}"
             } else {
                 viewBinding.audioTitleTv.text = ""
                 viewBinding.audioArtistAlbumTv.text = ""
-                viewBinding.likeIv.setImageResource(R.color.white)
             }
         }
 
+        observePlayingLikeStateChanged {
+            viewBinding.likeIv.setImageResource(if (it) R.drawable.icon_favorite_fill else R.drawable.icon_favorite_unfill)
+        }
+
         // Audio play type
-        observePlayTypeChanged {
+        observeSelectedAudioListPlayTypeChanged {
             viewBinding.playTypeIv.setImageResource(
                 when (it) {
                     ListSequentialPlay -> R.drawable.icon_audio_sequence_play
@@ -124,7 +127,7 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
         }
 
         // Player State
-        observetMediaPlayerStateChanged { state ->
+        observePlayingtMediaPlayerStateChanged { state ->
             if (state != null) {
                 if (state is tMediaPlayerState.Playing) {
                     viewBinding.audioPauseIv.visibility = View.VISIBLE
@@ -151,7 +154,7 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
         var isPlayerSbInTouching = false
 
         // Player Progress/Duration
-        observeProgressAndDurationChanged { progress, duration ->
+        observePlayingProgressAndDurationChanged { progress, duration ->
             viewBinding.audioPlayingProgressTv.text = progress.formatDuration()
             viewBinding.audioDurationTv.text = duration.formatDuration()
 

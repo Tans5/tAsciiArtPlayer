@@ -103,15 +103,14 @@ class AudioPlaybackService : Service(), CoroutineScope by CoroutineScope(Dispatc
             .setAutoCancel(false)
             .setOngoing(true)
         startForeground(serviceHashCode, notificationBuilder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
-        observePlayingAudioChanged { audio ->
+        observePlayingMediaStoreAudioChanged { audio ->
             if (audio != null) {
-                notificationBuilder.setContentTitle(audio.mediaStoreAudio.title)
-                notificationBuilder.setContentText("${audio.mediaStoreAudio.artist}-${audio.mediaStoreAudio.album}")
+                notificationBuilder.setContentTitle(audio.title)
+                notificationBuilder.setContentText("${audio.artist}-${audio.album}")
+                notificationManager.notify(serviceHashCode, notificationBuilder.build())
             } else {
-                notificationBuilder.setContentTitle("")
-                notificationBuilder.setContentText("")
+                notificationManager.cancel(serviceHashCode)
             }
-            notificationManager.notify(serviceHashCode, notificationBuilder.build())
         }
 
         observeSelectedAudioListChanged {
