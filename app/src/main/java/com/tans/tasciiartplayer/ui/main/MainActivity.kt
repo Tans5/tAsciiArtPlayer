@@ -12,7 +12,6 @@ import com.tans.tasciiartplayer.databinding.MainActivityBinding
 import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.ArtistsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.AudioListDialog
-import com.tans.tasciiartplayer.ui.common.AppSettingsDialog
 import com.tans.tuiutils.activity.BaseCoroutineStateActivity
 import com.tans.tuiutils.permission.permissionsRequestSuspend
 import com.tans.tuiutils.systembar.annotation.SystemBarStyle

@@ -183,7 +183,7 @@ class AudioPlayerActivity : BaseCoroutineStateActivity<Unit>(Unit) {
         }
 
         viewBinding.audioInfoCard.clicks(this, 1000L) {
-            // TODO: Audio info
+            AudioMediaInfoDialog().showSafe(supportFragmentManager, "AudioMediaInfoDialog#${System.currentTimeMillis()}")
         }
 
         viewBinding.audioPreviousLayout.clicks(this, 1000L, Dispatchers.IO) {

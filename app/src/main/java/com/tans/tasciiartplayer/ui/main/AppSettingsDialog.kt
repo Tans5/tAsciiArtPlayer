@@ -1,4 +1,4 @@
-package com.tans.tasciiartplayer.ui.common
+package com.tans.tasciiartplayer.ui.main
 
 import android.content.Context
 import android.graphics.Color

@@ -1,4 +1,4 @@
-package com.tans.tasciiartplayer.ui.common
+package com.tans.tasciiartplayer.ui.videoplayer
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -7,8 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.tans.tasciiartplayer.R
-import com.tans.tasciiartplayer.databinding.MediaInfoDialogBinding
-import com.tans.tasciiartplayer.databinding.MediaInfoItemLayoutBinding
+import com.tans.tasciiartplayer.databinding.VideoMediaInfoDialogBinding
+import com.tans.tasciiartplayer.databinding.VideoMediaInfoItemLayoutBinding
 import com.tans.tasciiartplayer.toSizeString
 import com.tans.tmediaplayer.player.model.MediaInfo
 import com.tans.tuiutils.adapter.impl.builders.SimpleAdapterBuilderImpl
@@ -20,7 +20,7 @@ import com.tans.tuiutils.dialog.createDefaultDialog
 import kotlinx.coroutines.flow.flow
 import java.io.File
 
-class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
+class VideoMediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
 
     private val mediaInfo: MediaInfo?
 
@@ -39,7 +39,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
     override val contentViewWidthInScreenRatio: Float = 0.5f
 
     override fun createContentView(context: Context, parent: ViewGroup): View {
-       return LayoutInflater.from(context).inflate(R.layout.media_info_dialog, parent, false)
+       return LayoutInflater.from(context).inflate(R.layout.video_media_info_dialog, parent, false)
     }
 
     override fun createDialog(contentView: View): Dialog {
@@ -54,11 +54,11 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
     override fun bindContentView(view: View) {
         val mediaInfo = this.mediaInfo ?: return
         val filePath = this.filePath ?: return
-        val viewBinding = MediaInfoDialogBinding.bind(view)
+        val viewBinding = VideoMediaInfoDialogBinding.bind(view)
         val ctx = requireContext()
 
         viewBinding.fileRv.adapter = SimpleAdapterBuilderImpl<String>(
-            itemViewCreator = SingleItemViewCreatorImpl(R.layout.media_info_item_layout),
+            itemViewCreator = SingleItemViewCreatorImpl(R.layout.video_media_info_item_layout),
             dataSource = FlowDataSourceImpl(flow {
                 val result = mutableListOf<String>()
                 result.add(ctx.getString(R.string.media_info_dialog_file_path, filePath))
@@ -75,7 +75,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
                 emit(result)
             }),
             dataBinder = DataBinderImpl { data, itemView, _ ->
-                val itemViewBinding = MediaInfoItemLayoutBinding.bind(itemView)
+                val itemViewBinding = VideoMediaInfoItemLayoutBinding.bind(itemView)
                 itemViewBinding.keyValueTv.text = data
             }
         ).build()
@@ -85,7 +85,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
         if (videoStreamInfo != null) {
             viewBinding.videoGroup.visibility = View.VISIBLE
             viewBinding.videoRv.adapter = SimpleAdapterBuilderImpl<String>(
-                itemViewCreator = SingleItemViewCreatorImpl(R.layout.media_info_item_layout),
+                itemViewCreator = SingleItemViewCreatorImpl(R.layout.video_media_info_item_layout),
                 dataSource = FlowDataSourceImpl(flow {
                     val result = mutableListOf<String>()
                     result.add(ctx.getString(R.string.media_info_dialog_decoder, videoStreamInfo.videoDecoderName))
@@ -110,7 +110,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
                     emit(result)
                 }),
                 dataBinder = DataBinderImpl { data, itemView, _ ->
-                    val itemViewBinding = MediaInfoItemLayoutBinding.bind(itemView)
+                    val itemViewBinding = VideoMediaInfoItemLayoutBinding.bind(itemView)
                     itemViewBinding.keyValueTv.text = data
                 }
             ).build()
@@ -123,7 +123,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
         if (audioStreamInfo != null) {
             viewBinding.audioGroup.visibility = View.VISIBLE
             viewBinding.audioRv.adapter = SimpleAdapterBuilderImpl<String>(
-                itemViewCreator = SingleItemViewCreatorImpl(R.layout.media_info_item_layout),
+                itemViewCreator = SingleItemViewCreatorImpl(R.layout.video_media_info_item_layout),
                 dataSource = FlowDataSourceImpl(flow {
                     val result = mutableListOf<String>()
                     result.add(ctx.getString(R.string.media_info_dialog_decoder, audioStreamInfo.audioDecoderName))
@@ -148,7 +148,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
                     emit(result)
                 }),
                 dataBinder = DataBinderImpl { data, itemView, _ ->
-                    val itemViewBinding = MediaInfoItemLayoutBinding.bind(itemView)
+                    val itemViewBinding = VideoMediaInfoItemLayoutBinding.bind(itemView)
                     itemViewBinding.keyValueTv.text = data
                 }
             ).build()
@@ -161,7 +161,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
         if (subtitleStreams.isNotEmpty()) {
             viewBinding.subtitleGroup.visibility = View.VISIBLE
             viewBinding.subtitleRv.adapter = SimpleAdapterBuilderImpl<String>(
-                itemViewCreator = SingleItemViewCreatorImpl(R.layout.media_info_item_layout),
+                itemViewCreator = SingleItemViewCreatorImpl(R.layout.video_media_info_item_layout),
                 dataSource = FlowDataSourceImpl(flow {
                     val result = mutableListOf<String>()
                     for (subtitle in mediaInfo.subtitleStreams) {
@@ -173,7 +173,7 @@ class MediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
                     emit(result)
                 }),
                 dataBinder = DataBinderImpl { data, itemView, _ ->
-                    val itemViewBinding = MediaInfoItemLayoutBinding.bind(itemView)
+                    val itemViewBinding = VideoMediaInfoItemLayoutBinding.bind(itemView)
                     itemViewBinding.keyValueTv.text = data
                 }
             ).build()

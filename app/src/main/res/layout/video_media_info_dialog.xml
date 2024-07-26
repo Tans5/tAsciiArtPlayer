@@ -46,7 +46,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/file_title_tv"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/media_info_item_layout"
+                tools:listitem="@layout/video_media_info_item_layout"
                 tools:itemCount="3"/>
 
             <androidx.constraintlayout.widget.Group
@@ -89,7 +89,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/video_title_tv"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/media_info_item_layout"
+                tools:listitem="@layout/video_media_info_item_layout"
                 tools:itemCount="3"/>
 
             <androidx.constraintlayout.widget.Group
@@ -131,7 +131,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/audio_title_tv"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/media_info_item_layout"
+                tools:listitem="@layout/video_media_info_item_layout"
                 tools:itemCount="3"/>
 
             <androidx.constraintlayout.widget.Group
@@ -173,7 +173,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/subtitle_title_tv"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/media_info_item_layout"
+                tools:listitem="@layout/video_media_info_item_layout"
                 tools:itemCount="3"/>
 
             <androidx.constraintlayout.widget.Group

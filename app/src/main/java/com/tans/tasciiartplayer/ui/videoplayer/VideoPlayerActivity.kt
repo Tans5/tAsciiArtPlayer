@@ -15,8 +15,6 @@ import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.video.VideoManager
 import com.tans.tasciiartplayer.databinding.VideoPlayerActivityBinding
 import com.tans.tasciiartplayer.formatDuration
-import com.tans.tasciiartplayer.ui.common.MediaInfoDialog
-import com.tans.tasciiartplayer.ui.common.PlayerSettingsDialog
 import com.tans.tmediaplayer.player.model.OptResult
 import com.tans.tmediaplayer.player.tMediaPlayer
 import com.tans.tmediaplayer.player.tMediaPlayerListener
@@ -182,7 +180,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 val info = mediaPlayer.getMediaInfo()
                 if (info != null) {
                     viewBinding.actionLayout.hide()
-                    val d = MediaInfoDialog(info, intent.getMediaFileExtra())
+                    val d = VideoMediaInfoDialog(info, intent.getMediaFileExtra())
                     d.showSafe(supportFragmentManager, "MediaInfoDialog#${System.currentTimeMillis()}")
                 }
 
@@ -190,7 +188,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
             viewBinding.settingsIv.clicks(this) {
                 viewBinding.actionLayout.hide()
-                val d = PlayerSettingsDialog(playerView = viewBinding.playerView, player = mediaPlayer)
+                val d = VideoPlayerSettingsDialog(playerView = viewBinding.playerView, player = mediaPlayer)
                 d.showSafe(supportFragmentManager, "PlayerSettingsDialog#${System.currentTimeMillis()}}")
             }
             val subtitleStreams = mediaPlayer.getMediaInfo()?.subtitleStreams ?: emptyList()

@@ -1,4 +1,4 @@
-package com.tans.tasciiartplayer.ui.common
+package com.tans.tasciiartplayer.ui.videoplayer
 
 import android.app.Dialog
 import android.content.Context
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import com.tans.tasciiartplayer.R
-import com.tans.tasciiartplayer.databinding.PlayerSettingsDialogBinding
+import com.tans.tasciiartplayer.databinding.VideoPlayerSettingsDialogBinding
 import com.tans.tmediaplayer.player.playerview.filter.AsciiArtImageFilter
 import com.tans.tmediaplayer.player.playerview.tMediaPlayerView
 import com.tans.tmediaplayer.player.tMediaPlayer
@@ -15,7 +15,7 @@ import com.tans.tmediaplayer.player.tMediaPlayerState
 import com.tans.tuiutils.dialog.BaseCoroutineStateDialogFragment
 import com.tans.tuiutils.dialog.createDefaultDialog
 
-class PlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
+class VideoPlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
 
     private val playerView: tMediaPlayerView?
 
@@ -34,7 +34,7 @@ class PlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
     override val contentViewWidthInScreenRatio: Float = 0.5f
 
     override fun createContentView(context: Context, parent: ViewGroup): View {
-        return LayoutInflater.from(context).inflate(R.layout.player_settings_dialog, parent, false)
+        return LayoutInflater.from(context).inflate(R.layout.video_player_settings_dialog, parent, false)
     }
 
     override fun createDialog(contentView: View): Dialog {
@@ -46,7 +46,7 @@ class PlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
     override fun bindContentView(view: View) {
         val playerView = this.playerView ?: return
         val player = this.player ?: return
-        val viewBinding = PlayerSettingsDialogBinding.bind(view)
+        val viewBinding = VideoPlayerSettingsDialogBinding.bind(view)
         val ctx = requireContext()
         fun requestRender() {
             val info = player.getMediaInfo()
