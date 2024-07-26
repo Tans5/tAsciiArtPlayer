@@ -26,6 +26,7 @@ import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.ArtistsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.AudioListDialog
+import com.tans.tasciiartplayer.ui.audioplayer.AudioMediaInfoDialog
 import com.tans.tasciiartplayer.ui.audioplayer.AudioPlayerActivity
 import com.tans.tmediaplayer.player.tMediaPlayerState
 import com.tans.tuiutils.dialog.dp2px
@@ -203,6 +204,10 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
                 ListRandomLoopPlay -> ListSequentialPlay
             }
             AudioPlayerManager.changePlayType(newPlayType)
+        }
+
+        viewBinding.audioInfoCard.clicks(this, 1000L) {
+            AudioMediaInfoDialog().showSafe(requireActivity().supportFragmentManager, "AudioMediaInfoDialog#${System.currentTimeMillis()}")
         }
 
         viewBinding.audioPreviousLayout.clicks(this, 1000L, Dispatchers.IO) {

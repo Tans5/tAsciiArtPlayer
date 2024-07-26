@@ -16,7 +16,9 @@ import com.tans.tasciiartplayer.audio.audioplayer.getCurrentPlayAudio
 import com.tans.tasciiartplayer.databinding.AudioMediaInfoDialogBinding
 import com.tans.tasciiartplayer.databinding.AudioMediaInfoItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.AudioMediaInfoTitleLayoutBinding
-import com.tans.tasciiartplayer.toSizeString
+import com.tans.tasciiartplayer.ui.videoplayer.getAudioStreamInfoStrings
+import com.tans.tasciiartplayer.ui.videoplayer.getFileInfoStrings
+import com.tans.tasciiartplayer.ui.videoplayer.getVideoStreamInfoStrings
 import com.tans.tuiutils.adapter.impl.builders.SimpleAdapterBuilderImpl
 import com.tans.tuiutils.adapter.impl.builders.plus
 import com.tans.tuiutils.adapter.impl.databinders.DataBinderImpl
@@ -82,75 +84,22 @@ class AudioMediaInfoDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
         } else {
             val ctx = requireContext()
             // File
-            val fileKeyValue = mutableListOf<String>()
-            fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_path, audioFile.canonicalPath))
-            val fileSizeStr = audioFile.length().toSizeString()
-            fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_size, fileSizeStr))
-            fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_format, audioMediaInfo.containerName))
-            if (audioMediaInfo.metadata.isNotEmpty()) {
-                fileKeyValue.add("")
-                fileKeyValue.add(ctx.getString(R.string.media_info_dialog_metadata))
-                for ((key, value) in audioMediaInfo.metadata) {
-                    fileKeyValue.add(" $key: $value")
-                }
-            }
-            var adapterBuilder = createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_file_title)) + createKeyValueAdapterBuilder(fileKeyValue)
-
+            var adapterBuilder = createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_file_title)) + createKeyValueAdapterBuilder(audioMediaInfo.getFileInfoStrings(ctx, audioFile.canonicalPath))
 
             // Video Stream
             val videoStreamInfo = audioMediaInfo.videoStreamInfo
             if (videoStreamInfo != null) {
-                val videoKeyValue = mutableListOf<String>()
-                videoKeyValue.add(ctx.getString(R.string.media_info_dialog_decoder, videoStreamInfo.videoDecoderName))
-                videoKeyValue.add(ctx.getString(R.string.media_info_dialog_codec, videoStreamInfo.videoCodec.toString()))
-                videoKeyValue.add(ctx.getString(R.string.media_info_dialog_resolution, "${videoStreamInfo.videoWidth}x${videoStreamInfo.videoHeight}"))
-                videoKeyValue.add(ctx.getString(R.string.media_info_dialog_fps, videoStreamInfo.videoFps))
-                if (videoStreamInfo.videoBitrate > 0) {
-                    videoKeyValue.add(ctx.getString(R.string.media_info_dialog_bitrate, videoStreamInfo.videoBitrate / 1024))
-                }
-                if (videoStreamInfo.videoPixelBitDepth > 0) {
-                    videoKeyValue.add(ctx.getString(R.string.media_info_dialog_pixel_depth, videoStreamInfo.videoPixelBitDepth))
-                }
-                videoKeyValue.add(ctx.getString(R.string.media_info_dialog_pixel_format, videoStreamInfo.videoPixelFormat.name))
-
-                if (videoStreamInfo.videoStreamMetadata.isNotEmpty()) {
-                    videoKeyValue.add("")
-                    videoKeyValue.add(ctx.getString(R.string.media_info_dialog_metadata))
-                    for ((key, value) in videoStreamInfo.videoStreamMetadata) {
-                        videoKeyValue.add(" $key: $value")
-                    }
-                }
                 adapterBuilder += createLineAdapterBuilder()
                 adapterBuilder += createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_video_title))
-                adapterBuilder += createKeyValueAdapterBuilder(videoKeyValue)
+                adapterBuilder += createKeyValueAdapterBuilder(videoStreamInfo.getVideoStreamInfoStrings(ctx))
             }
 
             // Audio Stream
             val audioStreamInfo = audioMediaInfo.audioStreamInfo
             if (audioStreamInfo != null) {
-                val audioKeyValue = mutableListOf<String>()
-                audioKeyValue.add(ctx.getString(R.string.media_info_dialog_decoder, audioStreamInfo.audioDecoderName))
-                audioKeyValue.add(ctx.getString(R.string.media_info_dialog_codec, audioStreamInfo.audioCodec.toString()))
-                audioKeyValue.add(ctx.getString(R.string.media_info_dialog_channels, audioStreamInfo.audioChannels))
-                audioKeyValue.add(ctx.getString(R.string.media_info_dialog_simple_rate, audioStreamInfo.audioSimpleRate))
-                if (audioStreamInfo.audioBitrate > 0) {
-                    audioKeyValue.add(ctx.getString(R.string.media_info_dialog_bitrate, audioStreamInfo.audioBitrate / 1024))
-                }
-                if (audioStreamInfo.audioSampleBitDepth > 0) {
-                    audioKeyValue.add(ctx.getString(R.string.media_info_dialog_simple_depth, audioStreamInfo.audioSampleBitDepth))
-                }
-                audioKeyValue.add(ctx.getString(R.string.media_info_dialog_simple_format, audioStreamInfo.audioSampleFormat.name))
-
-                if (audioStreamInfo.audioStreamMetadata.isNotEmpty()) {
-                    audioKeyValue.add("")
-                    audioKeyValue.add(ctx.getString(R.string.media_info_dialog_metadata))
-                    for ((key, value) in audioStreamInfo.audioStreamMetadata) {
-                        audioKeyValue.add(" $key: $value")
-                    }
-                }
                 adapterBuilder += createLineAdapterBuilder()
                 adapterBuilder += createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_audio_title))
-                adapterBuilder += createKeyValueAdapterBuilder(audioKeyValue)
+                adapterBuilder += createKeyValueAdapterBuilder(audioStreamInfo.getAudioStreamInfoStrings(ctx))
             }
             viewBinding.mediaInfoRv.adapter = adapterBuilder.build()
         }
