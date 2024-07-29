@@ -6,6 +6,7 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
 import com.tans.tasciiartplayer.AppLog
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
@@ -14,8 +15,10 @@ import com.tans.tasciiartplayer.video.VideoManager
 import com.tans.tuiutils.dialog.BaseCoroutineStateCancelableResultDialogFragment
 import com.tans.tuiutils.dialog.DialogCancelableResultCallback
 import com.tans.tuiutils.view.clicks
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import java.util.Locale
 import kotlin.system.measureTimeMillis
@@ -31,7 +34,7 @@ class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<
     }
 
     override fun firstLaunchInitData() {
-        launch {
+        launch(Dispatchers.IO) {
             if (VideoManager.stateFlow.value.videos.isEmpty()) {
                 kotlin.runCatching {
                     VideoManager.refreshMediaStoreVideos()
@@ -42,18 +45,18 @@ class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<
                     AudioListManager.refreshMediaStoreAudios()
                 }
             }
-            val currentVideos = VideoManager.stateFlow.value.videos.mapNotNull { it.mediaStoreVideo.file?.canonicalFile }.toHashSet()
-            val currentAudios = AudioListManager.stateFlow.value.audioIdToAudioMap.mapNotNull { it.value.mediaStoreAudio.file?.canonicalFile }.toHashSet()
-            val foundNewVideos = mutableListOf<Pair<File, String>>()
-            val foundNewAudios = mutableListOf<Pair<File, String>>()
+            val currentVideos = VideoManager.stateFlow.value.videos.mapNotNull { it.mediaStoreVideo.file?.canonicalPath }.toHashSet()
+            val currentAudios = AudioListManager.stateFlow.value.audioIdToAudioMap.mapNotNull { it.value.mediaStoreAudio.file?.canonicalPath }.toHashSet()
+            val foundNewVideos = mutableListOf<Pair<String, String>>()
+            val foundNewAudios = mutableListOf<Pair<String, String>>()
             val scanFileCost = measureTimeMillis {
                 scanFiles(Environment.getExternalStorageDirectory()) { f ->
-                    if (!currentVideos.contains(f) && !currentAudios.contains(f)) {
+                    if (!currentVideos.contains(f.canonicalPath) && !currentAudios.contains(f.canonicalPath)) {
                         val mimeTypeAndMediaType = getMediaMimeTypeWithFileName(f.name)
                         if (mimeTypeAndMediaType != null) {
                             when (mimeTypeAndMediaType.second) {
-                                MediaType.Video -> foundNewVideos.add(f to mimeTypeAndMediaType.first)
-                                MediaType.Audio -> foundNewAudios.add(f to mimeTypeAndMediaType.first)
+                                MediaType.Video -> foundNewVideos.add(f.canonicalPath to mimeTypeAndMediaType.first)
+                                MediaType.Audio -> foundNewAudios.add(f.canonicalPath to mimeTypeAndMediaType.first)
                             }
                         }
                     }
@@ -61,12 +64,12 @@ class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<
             }
             AppLog.d(TAG, "Scan files cost: $scanFileCost ms.")
             if ((foundNewVideos.isNotEmpty() || foundNewAudios.isNotEmpty()) && isActive) {
-                AppLog.d(TAG, "Found ${foundNewVideos.size} new videos and ${foundNewAudios.size} new audios.")
+                AppLog.d(TAG, "Found ${foundNewVideos.size} new video files and ${foundNewAudios.size} new audio files.")
                 if (foundNewVideos.isNotEmpty()) {
-                    MediaScannerConnection.scanFile(requireContext(), foundNewVideos.map { it.first.canonicalPath }.toTypedArray(), foundNewVideos.map { it.second }.toTypedArray(), null)
+                    MediaScannerConnection.scanFile(requireContext(), foundNewVideos.map { it.first }.toTypedArray(), foundNewVideos.map { it.second }.toTypedArray(), null)
                 }
                 if (foundNewAudios.isNotEmpty()) {
-                    MediaScannerConnection.scanFile(requireContext(), foundNewAudios.map { it.first.canonicalPath }.toTypedArray(), foundNewAudios.map { it.second }.toTypedArray(), null)
+                    MediaScannerConnection.scanFile(requireContext(), foundNewAudios.map { it.first }.toTypedArray(), foundNewAudios.map { it.second }.toTypedArray(), null)
                 }
                 kotlin.runCatching {
                     if (foundNewVideos.isNotEmpty()) {
@@ -76,6 +79,7 @@ class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<
                         AudioListManager.refreshMediaStoreAudios()
                     }
                 }
+                onResult(foundNewVideos.size to foundNewAudios.size)
             } else {
                 AppLog.d(TAG, "Do not find new video and audio.")
                 onResult(0 to 0)
@@ -160,5 +164,12 @@ class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<
                 }
             }
         }
+    }
+}
+
+suspend fun FragmentManager.showVideoAudioSearchDialogSuspend(): Pair<Int, Int>? {
+    return suspendCancellableCoroutine<Pair<Int, Int>?> { cont ->
+        val d = VideoAudioSearchDialog(CoroutineDialogCancelableResultCallback(cont))
+        coroutineShowSafe(d, "VideoAudioSearchDialog#${System.currentTimeMillis()}", cont)
     }
 }

@@ -50,6 +50,11 @@
     <!--region MainActivity -->
     <string name="main_act_videos_tab">VIDEOS</string>
     <string name="main_act_audios_tab">AUDIOS</string>
+    <string name="main_act_storage_permission_request_title">Request Permission</string>
+    <string name="main_act_storage_permission_request_body">tAsciiArtPlayer needs storage permission to scan new video and audio files.</string>
+    <string name="main_act_storage_permission_request_accept">YES</string>
+    <string name="main_act_storage_permission_request_deny">NO</string>
+    <string name="main_act_found_new_videos_audios">Found %d new videos and %d new audios.</string>
     <!--endregion MainActivity -->
 
     <!--region VideosFragment-->
