@@ -12,6 +12,7 @@
     <!--region VideoAudioSearchDialog-->
     <string name="video_audio_search_dialog_title">Search</string>
     <string name="video_audio_search_dialog_searching">Searching&#8230;</string>
+    <string name="video_audio_search_dialog_cancel_search">Cancel</string>
     <!--endregion-->
 
     <!--region MediaInfoDialog-->
