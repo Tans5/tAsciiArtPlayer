@@ -21,6 +21,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import java.util.Locale
+import kotlin.coroutines.resume
+import kotlin.math.max
 import kotlin.system.measureTimeMillis
 
 class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<Unit, Pair<Int, Int>> {
@@ -45,13 +47,13 @@ class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<
                     AudioListManager.refreshMediaStoreAudios()
                 }
             }
-            val currentVideos = VideoManager.stateFlow.value.videos.mapNotNull { it.mediaStoreVideo.file?.canonicalPath }.toHashSet()
-            val currentAudios = AudioListManager.stateFlow.value.audioIdToAudioMap.mapNotNull { it.value.mediaStoreAudio.file?.canonicalPath }.toHashSet()
+            val beforeUpdateVideos = VideoManager.stateFlow.value.videos.mapNotNull { it.mediaStoreVideo.file?.canonicalPath }.toHashSet()
+            val beforeUpdateAudios = AudioListManager.stateFlow.value.audioIdToAudioMap.mapNotNull { it.value.mediaStoreAudio.file?.canonicalPath }.toHashSet()
             val foundNewVideos = mutableListOf<Pair<String, String>>()
             val foundNewAudios = mutableListOf<Pair<String, String>>()
             val scanFileCost = measureTimeMillis {
                 scanFiles(Environment.getExternalStorageDirectory()) { f ->
-                    if (!currentVideos.contains(f.canonicalPath) && !currentAudios.contains(f.canonicalPath)) {
+                    if (!beforeUpdateVideos.contains(f.canonicalPath) && !beforeUpdateAudios.contains(f.canonicalPath)) {
                         val mimeTypeAndMediaType = getMediaMimeTypeWithFileName(f.name)
                         if (mimeTypeAndMediaType != null) {
                             when (mimeTypeAndMediaType.second) {
@@ -62,14 +64,19 @@ class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<
                     }
                 }
             }
-            AppLog.d(TAG, "Scan files cost: $scanFileCost ms.")
+            AppLog.d(TAG, "Scan files cost: $scanFileCost ms, found ${foundNewVideos.size} new video files and ${foundNewAudios.size} new audio files")
             if ((foundNewVideos.isNotEmpty() || foundNewAudios.isNotEmpty()) && isActive) {
-                AppLog.d(TAG, "Found ${foundNewVideos.size} new video files and ${foundNewAudios.size} new audio files.")
-                if (foundNewVideos.isNotEmpty()) {
-                    MediaScannerConnection.scanFile(requireContext(), foundNewVideos.map { it.first }.toTypedArray(), foundNewVideos.map { it.second }.toTypedArray(), null)
-                }
-                if (foundNewAudios.isNotEmpty()) {
-                    MediaScannerConnection.scanFile(requireContext(), foundNewAudios.map { it.first }.toTypedArray(), foundNewAudios.map { it.second }.toTypedArray(), null)
+                measureTimeMillis {
+                    for (v in foundNewVideos) {
+                        insertToMediaStore(v.first, v.second)
+                        AppLog.d(TAG, "Insert video file: ${v.first}")
+                    }
+                    for (a in foundNewAudios) {
+                        insertToMediaStore(a.first, a.second)
+                        AppLog.d(TAG, "Insert audio file: ${a.first}")
+                    }
+                }.let {
+                    AppLog.d(TAG, "Insert to media store cost: $it ms.")
                 }
                 kotlin.runCatching {
                     if (foundNewVideos.isNotEmpty()) {
@@ -79,7 +86,9 @@ class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<
                         AudioListManager.refreshMediaStoreAudios()
                     }
                 }
-                onResult(foundNewVideos.size to foundNewAudios.size)
+                val insertVideoSize = VideoManager.currentState().videos.size - beforeUpdateVideos.size
+                val insertAudioSize = AudioListManager.currentState().audioIdToAudioMap.size - beforeUpdateAudios.size
+                onResult(max(0, insertVideoSize) to max(0, insertAudioSize))
             } else {
                 AppLog.d(TAG, "Do not find new video and audio.")
                 onResult(0 to 0)
@@ -103,6 +112,20 @@ class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<
                 val children = file.listFiles() ?: emptyArray<File>()
                 for (c in children) {
                     scanFiles(c, handle)
+                }
+            }
+        }
+    }
+
+    private suspend fun insertToMediaStore(file: String, mimeType: String) {
+        return suspendCancellableCoroutine<Unit> { cont ->
+            MediaScannerConnection.scanFile(
+                requireContext(),
+                arrayOf(file),
+                arrayOf(mimeType)
+            ) { _, _ ->
+                if (cont.isActive) {
+                    cont.resume(Unit)
                 }
             }
         }
