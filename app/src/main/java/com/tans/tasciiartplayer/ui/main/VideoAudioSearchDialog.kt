@@ -19,8 +19,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeout
 import java.io.File
 import java.util.Locale
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
 import kotlin.math.max
 import kotlin.system.measureTimeMillis
@@ -67,13 +69,12 @@ class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<
             AppLog.d(TAG, "Scan files cost: $scanFileCost ms, found ${foundNewVideos.size} new video files and ${foundNewAudios.size} new audio files")
             if ((foundNewVideos.isNotEmpty() || foundNewAudios.isNotEmpty()) && isActive) {
                 measureTimeMillis {
-                    for (v in foundNewVideos) {
-                        insertToMediaStore(v.first, v.second)
-                        AppLog.d(TAG, "Insert video file: ${v.first}")
-                    }
-                    for (a in foundNewAudios) {
-                        insertToMediaStore(a.first, a.second)
-                        AppLog.d(TAG, "Insert audio file: ${a.first}")
+                    kotlin.runCatching {
+                        withTimeout(5000L) {
+                            insertToMediaStore(foundNewVideos + foundNewAudios)
+                        }
+                    }.onFailure {
+                        AppLog.e(TAG, "Insert to media store fail: ${it.message}", it)
                     }
                 }.let {
                     AppLog.d(TAG, "Insert to media store cost: $it ms.")
@@ -117,15 +118,21 @@ class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<
         }
     }
 
-    private suspend fun insertToMediaStore(file: String, mimeType: String) {
-        return suspendCancellableCoroutine<Unit> { cont ->
+    private suspend fun insertToMediaStore(fileAndMimeType: List<Pair<String, String>>) {
+        return suspendCancellableCoroutine { cont ->
+            val insertCount = AtomicInteger(0)
             MediaScannerConnection.scanFile(
                 requireContext(),
-                arrayOf(file),
-                arrayOf(mimeType)
-            ) { _, _ ->
-                if (cont.isActive) {
-                    cont.resume(Unit)
+                fileAndMimeType.map { it.first }.toTypedArray(),
+                fileAndMimeType.map { it.second }.toTypedArray()
+            ) { file, _ ->
+                val size = insertCount.addAndGet(1)
+                AppLog.d(TAG, "Save file to media store, file=$file, size=$size")
+                if (size >= fileAndMimeType.size) {
+                    AppLog.d(TAG, "Save file to media store finished.")
+                    if (cont.isActive) {
+                        cont.resume(Unit)
+                    }
                 }
             }
         }
