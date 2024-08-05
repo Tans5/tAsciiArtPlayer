@@ -9,6 +9,7 @@ import com.tans.tasciiartplayer.appGlobalCoroutineScope
 import com.tans.tasciiartplayer.audio.audiolist.AudioList
 import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
 import com.tans.tasciiartplayer.audio.audiolist.getAllPlayList
+import com.tans.tasciiartplayer.hwevent.HeadsetObserver
 import com.tans.tmediaplayer.player.model.OptResult
 import com.tans.tmediaplayer.player.tMediaPlayer
 import com.tans.tmediaplayer.player.tMediaPlayerListener
@@ -117,6 +118,19 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                         application.startForegroundService(Intent(application, AudioPlaybackService::class.java))
                     }
                 }
+        }
+
+        // Observe headset
+        appGlobalCoroutineScope.launch {
+            HeadsetObserver.observeEvent()
+            .distinctUntilChanged()
+            .collect {
+                val playerState = player.get()?.getState()
+                if (playerState is tMediaPlayerState.Playing && (it == HeadsetObserver.HeadsetEvent.WireHeadsetDisconnected || it == HeadsetObserver.HeadsetEvent.BluetoothHeadsetDisconnected)) {
+                    player.get()?.pause()
+                }
+            }
+
         }
 
     }

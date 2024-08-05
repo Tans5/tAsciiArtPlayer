@@ -15,6 +15,7 @@ import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.video.VideoManager
 import com.tans.tasciiartplayer.databinding.VideoPlayerActivityBinding
 import com.tans.tasciiartplayer.formatDuration
+import com.tans.tasciiartplayer.hwevent.HeadsetObserver
 import com.tans.tmediaplayer.player.model.OptResult
 import com.tans.tmediaplayer.player.tMediaPlayer
 import com.tans.tmediaplayer.player.tMediaPlayerListener
@@ -25,6 +26,7 @@ import com.tans.tuiutils.view.clicks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -67,6 +69,16 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             when (loadResult) {
                 OptResult.Success -> {
                     updateState { it.copy(loadStatus = PlayerLoadStatus.Prepared(mediaPlayer)) }
+                    launch {
+                        HeadsetObserver.observeEvent()
+                            .distinctUntilChanged()
+                            .collect {
+                                val playerState = mediaPlayer.getState()
+                                if (playerState is tMediaPlayerState.Playing && (it == HeadsetObserver.HeadsetEvent.WireHeadsetDisconnected || it == HeadsetObserver.HeadsetEvent.BluetoothHeadsetDisconnected)) {
+                                    mediaPlayer.pause()
+                                }
+                            }
+                    }
                     Log.d(TAG, "Load media file success.")
                 }
 
