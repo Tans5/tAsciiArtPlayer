@@ -6,6 +6,7 @@ import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
 import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManager
 import com.tans.tasciiartplayer.database.AppDatabase
 import com.tans.tasciiartplayer.hwevent.HeadsetObserver
+import com.tans.tasciiartplayer.hwevent.PhoneObserver
 import com.tans.tasciiartplayer.video.VideoManager
 import com.tans.tuiutils.systembar.AutoApplySystemBarAnnotation
 
@@ -26,5 +27,6 @@ class App : Application() {
         AudioListManager.init(this, database.audioDao())
         AudioPlayerManager.init(this)
         HeadsetObserver.init(this)
+        PhoneObserver.init(this)
     }
 }

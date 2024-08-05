@@ -16,6 +16,7 @@ import com.tans.tasciiartplayer.video.VideoManager
 import com.tans.tasciiartplayer.databinding.VideoPlayerActivityBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.hwevent.HeadsetObserver
+import com.tans.tasciiartplayer.hwevent.PhoneObserver
 import com.tans.tmediaplayer.player.model.OptResult
 import com.tans.tmediaplayer.player.tMediaPlayer
 import com.tans.tmediaplayer.player.tMediaPlayerListener
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -70,14 +72,19 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 OptResult.Success -> {
                     updateState { it.copy(loadStatus = PlayerLoadStatus.Prepared(mediaPlayer)) }
                     launch {
-                        HeadsetObserver.observeEvent()
-                            .distinctUntilChanged()
-                            .collect {
+                        merge(
+                            HeadsetObserver.observeEvent()
+                                .map { it == HeadsetObserver.HeadsetEvent.WireHeadsetDisconnected || it == HeadsetObserver.HeadsetEvent.BluetoothHeadsetDisconnected },
+                            PhoneObserver.observeEvent()
+                                .map { it == PhoneObserver.PhoneEvent.PhoneRinging }
+                        ).collect {
+                            if (it) {
                                 val playerState = mediaPlayer.getState()
-                                if (playerState is tMediaPlayerState.Playing && (it == HeadsetObserver.HeadsetEvent.WireHeadsetDisconnected || it == HeadsetObserver.HeadsetEvent.BluetoothHeadsetDisconnected)) {
+                                if (playerState is tMediaPlayerState.Playing) {
                                     mediaPlayer.pause()
                                 }
                             }
+                        }
                     }
                     Log.d(TAG, "Load media file success.")
                 }

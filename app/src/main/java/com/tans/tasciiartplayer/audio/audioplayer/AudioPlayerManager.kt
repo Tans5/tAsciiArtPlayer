@@ -10,6 +10,7 @@ import com.tans.tasciiartplayer.audio.audiolist.AudioList
 import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
 import com.tans.tasciiartplayer.audio.audiolist.getAllPlayList
 import com.tans.tasciiartplayer.hwevent.HeadsetObserver
+import com.tans.tasciiartplayer.hwevent.PhoneObserver
 import com.tans.tmediaplayer.player.model.OptResult
 import com.tans.tmediaplayer.player.tMediaPlayer
 import com.tans.tmediaplayer.player.tMediaPlayerListener
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.random.Random
@@ -122,12 +124,17 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
 
         // Observe headset
         appGlobalCoroutineScope.launch {
-            HeadsetObserver.observeEvent()
-            .distinctUntilChanged()
-            .collect {
-                val playerState = player.get()?.getState()
-                if (playerState is tMediaPlayerState.Playing && (it == HeadsetObserver.HeadsetEvent.WireHeadsetDisconnected || it == HeadsetObserver.HeadsetEvent.BluetoothHeadsetDisconnected)) {
-                    player.get()?.pause()
+            merge(
+                HeadsetObserver.observeEvent()
+                    .map { it == HeadsetObserver.HeadsetEvent.WireHeadsetDisconnected || it == HeadsetObserver.HeadsetEvent.BluetoothHeadsetDisconnected },
+                PhoneObserver.observeEvent()
+                    .map { it == PhoneObserver.PhoneEvent.PhoneRinging }
+            ).collect {
+                if (it) {
+                    val playerState = player.get()?.getState()
+                    if (playerState is tMediaPlayerState.Playing) {
+                        player.get()?.pause()
+                    }
                 }
             }
 
