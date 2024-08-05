@@ -51,6 +51,7 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
         } else {
             permissionsNeed.add(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
+        permissionsNeed.add(Manifest.permission.READ_PHONE_STATE)
         launch {
             runCatching {
                 permissionsRequestSuspend(*permissionsNeed.toTypedArray())
