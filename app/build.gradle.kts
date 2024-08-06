@@ -18,6 +18,14 @@ android {
         setProperty("archivesBaseName", "tasciiartplayer-${properties["VERSION_NAME"].toString()}")
     }
 
+    splits {
+        abi {
+            isEnable = true
+            include("x86", "armeabi-v7a", "arm64-v8a", "x86_64")
+            isUniversalApk = false
+        }
+    }
+
     signingConfigs {
         val debugConfig = this.getByName("debug")
         with(debugConfig) {
