@@ -8,14 +8,15 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
 import com.tans.tasciiartplayer.AppLog
-import kotlinx.coroutines.channels.BufferOverflow
+import com.tans.tasciiartplayer.appGlobalCoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 
 object HeadsetObserver {
 
     private val eventSubject: MutableSharedFlow<HeadsetEvent> by lazy {
-        MutableSharedFlow(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+        MutableSharedFlow()
     }
 
     private val receiver: BroadcastReceiver by lazy {
@@ -30,11 +31,15 @@ object HeadsetObserver {
                             when (state) {
                                 0 -> {
                                     AppLog.d(TAG, "Wire headset disconnected.")
-                                    eventSubject.tryEmit(HeadsetEvent.WireHeadsetDisconnected)
+                                    appGlobalCoroutineScope.launch {
+                                        eventSubject.emit(HeadsetEvent.WireHeadsetDisconnected)
+                                    }
                                 }
                                 1 -> {
                                     AppLog.d(TAG, "Wire headset connected.")
-                                    eventSubject.tryEmit(HeadsetEvent.WireHeadsetConnected)
+                                    appGlobalCoroutineScope.launch {
+                                        eventSubject.emit(HeadsetEvent.WireHeadsetConnected)
+                                    }
                                 }
                             }
                         }
@@ -45,11 +50,15 @@ object HeadsetObserver {
                             when (state) {
                                 BluetoothHeadset.STATE_DISCONNECTED -> {
                                     AppLog.d(TAG, "Bluetooth headset disconnected")
-                                    eventSubject.tryEmit(HeadsetEvent.BluetoothHeadsetDisconnected)
+                                    appGlobalCoroutineScope.launch {
+                                        eventSubject.emit(HeadsetEvent.BluetoothHeadsetDisconnected)
+                                    }
                                 }
                                 BluetoothHeadset.STATE_CONNECTED -> {
                                     AppLog.d(TAG, "Bluetooth headset connected")
-                                    eventSubject.tryEmit(HeadsetEvent.BluetoothHeadsetConnected)
+                                    appGlobalCoroutineScope.launch {
+                                        eventSubject.emit(HeadsetEvent.BluetoothHeadsetConnected)
+                                    }
                                 }
                             }
                         }

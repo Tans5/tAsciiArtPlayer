@@ -7,14 +7,15 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.telephony.TelephonyManager
 import com.tans.tasciiartplayer.AppLog
-import kotlinx.coroutines.channels.BufferOverflow
+import com.tans.tasciiartplayer.appGlobalCoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 
 object PhoneObserver {
 
     private val eventSubject: MutableSharedFlow<PhoneEvent> by lazy {
-        MutableSharedFlow(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+        MutableSharedFlow()
     }
 
     private val receiver: BroadcastReceiver by lazy {
@@ -25,15 +26,21 @@ object PhoneObserver {
                     when (state) {
                         TelephonyManager.EXTRA_STATE_RINGING -> {
                             AppLog.d(TAG, "Phone ringing.")
-                            eventSubject.tryEmit(PhoneEvent.PhoneRinging)
+                            appGlobalCoroutineScope.launch {
+                                eventSubject.emit(PhoneEvent.PhoneRinging)
+                            }
                         }
                         TelephonyManager.EXTRA_STATE_IDLE -> {
                             AppLog.d(TAG, "Phone idle.")
-                            eventSubject.tryEmit(PhoneEvent.PhoneIdle)
+                            appGlobalCoroutineScope.launch {
+                                eventSubject.emit(PhoneEvent.PhoneIdle)
+                            }
                         }
                         TelephonyManager.EXTRA_STATE_OFFHOOK -> {
                             AppLog.d(TAG, "Phone off hook.")
-                            eventSubject.tryEmit(PhoneEvent.PhoneOffHook)
+                            appGlobalCoroutineScope.launch {
+                                eventSubject.emit(PhoneEvent.PhoneOffHook)
+                            }
                         }
                     }
                 }
