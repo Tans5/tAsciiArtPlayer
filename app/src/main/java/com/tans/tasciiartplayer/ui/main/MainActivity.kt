@@ -9,7 +9,6 @@ import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -50,6 +49,9 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
             }
         } else {
             permissionsNeed.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissionsNeed.add(Manifest.permission.BLUETOOTH_CONNECT)
         }
         permissionsNeed.add(Manifest.permission.READ_PHONE_STATE)
         launch {
