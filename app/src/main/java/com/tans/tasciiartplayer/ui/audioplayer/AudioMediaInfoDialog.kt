@@ -19,15 +19,16 @@ import com.tans.tasciiartplayer.databinding.AudioMediaInfoTitleLayoutBinding
 import com.tans.tasciiartplayer.ui.videoplayer.getAudioStreamInfoStrings
 import com.tans.tasciiartplayer.ui.videoplayer.getFileInfoStrings
 import com.tans.tasciiartplayer.ui.videoplayer.getVideoStreamInfoStrings
+import com.tans.tuiutils.adapter.AdapterBuilder
+import com.tans.tuiutils.adapter.impl.builders.CombinedAdapterBuilderImpl
 import com.tans.tuiutils.adapter.impl.builders.SimpleAdapterBuilderImpl
 import com.tans.tuiutils.adapter.impl.builders.plus
 import com.tans.tuiutils.adapter.impl.databinders.DataBinderImpl
-import com.tans.tuiutils.adapter.impl.datasources.FlowDataSourceImpl
+import com.tans.tuiutils.adapter.impl.datasources.DataSourceImpl
 import com.tans.tuiutils.adapter.impl.viewcreatators.SingleItemViewCreatorImpl
 import com.tans.tuiutils.dialog.BaseCoroutineStateDialogFragment
 import com.tans.tuiutils.dialog.createBottomSheetDialog
 import com.tans.tuiutils.systembar.SystemBarThemeStyle
-import kotlinx.coroutines.flow.flow
 
 class AudioMediaInfoDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
 
@@ -83,61 +84,76 @@ class AudioMediaInfoDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
             dismissSafe()
         } else {
             val ctx = requireContext()
+            val dataSourceRunnable = mutableListOf<Runnable>()
             // File
-            var adapterBuilder = createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_file_title)) + createKeyValueAdapterBuilder(audioMediaInfo.getFileInfoStrings(ctx, audioFile.canonicalPath))
+            var adapterBuilder = createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_file_title)).let { dataSourceRunnable.add(it.second);it.first }+ createKeyValueAdapterBuilder(audioMediaInfo.getFileInfoStrings(ctx, audioFile.canonicalPath)).let { dataSourceRunnable.add(it.second);it.first }
 
             // Video Stream
             val videoStreamInfo = audioMediaInfo.videoStreamInfo
             if (videoStreamInfo != null) {
-                adapterBuilder += createLineAdapterBuilder()
-                adapterBuilder += createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_video_title))
-                adapterBuilder += createKeyValueAdapterBuilder(videoStreamInfo.getVideoStreamInfoStrings(ctx))
+                adapterBuilder = createLineAdapterBuilder().combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
+                adapterBuilder = createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_video_title)).combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
+                adapterBuilder = createKeyValueAdapterBuilder(videoStreamInfo.getVideoStreamInfoStrings(ctx)).combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
             }
 
             // Audio Stream
             val audioStreamInfo = audioMediaInfo.audioStreamInfo
             if (audioStreamInfo != null) {
-                adapterBuilder += createLineAdapterBuilder()
-                adapterBuilder += createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_audio_title))
-                adapterBuilder += createKeyValueAdapterBuilder(audioStreamInfo.getAudioStreamInfoStrings(ctx))
+                adapterBuilder = createLineAdapterBuilder().combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
+                adapterBuilder = createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_audio_title)).combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
+                adapterBuilder = createKeyValueAdapterBuilder(audioStreamInfo.getAudioStreamInfoStrings(ctx)).combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
             }
             viewBinding.mediaInfoRv.adapter = adapterBuilder.build()
+            for (r in dataSourceRunnable) {
+                r.run()
+            }
         }
     }
 
-    private fun createTitleAdapterBuilder(title: String): SimpleAdapterBuilderImpl<*> {
-        return SimpleAdapterBuilderImpl<String>(
+    private fun createTitleAdapterBuilder(title: String): Pair<AdapterBuilder<*>, Runnable> {
+        val dataSource = DataSourceImpl<String>()
+        val dataSourceUpdater = Runnable {
+            dataSource.submitDataList(listOf(title))
+        }
+        return SimpleAdapterBuilderImpl(
             itemViewCreator = SingleItemViewCreatorImpl(R.layout.audio_media_info_title_layout),
-            dataSource = FlowDataSourceImpl<String>(flow {
-                emit(listOf(title))
-            }),
+            dataSource = dataSource,
             dataBinder = DataBinderImpl { data, itemView, _ ->
                 val itemViewBinding = AudioMediaInfoTitleLayoutBinding.bind(itemView)
                 itemViewBinding.titleTv.text = data
             }
-        )
+        ) to dataSourceUpdater
     }
 
-    private fun createLineAdapterBuilder(): SimpleAdapterBuilderImpl<*> {
-        return SimpleAdapterBuilderImpl<Unit>(
+    private fun createLineAdapterBuilder(): Pair<AdapterBuilder<*>, Runnable> {
+        val dataSource = DataSourceImpl<Unit>()
+        val dataSourceUpdater = Runnable {
+            dataSource.submitDataList(listOf(Unit))
+        }
+        return SimpleAdapterBuilderImpl(
             itemViewCreator = SingleItemViewCreatorImpl(R.layout.audio_media_info_line_layout),
-            dataSource = FlowDataSourceImpl<Unit>(flow {
-                emit(listOf(Unit))
-            }),
+            dataSource = dataSource,
             dataBinder = DataBinderImpl { _, _, _ -> }
-        )
+        ) to dataSourceUpdater
     }
 
-    private fun createKeyValueAdapterBuilder(keyAndValues: List<String>): SimpleAdapterBuilderImpl<*> {
-        return SimpleAdapterBuilderImpl<String>(
+    private fun createKeyValueAdapterBuilder(keyAndValues: List<String>): Pair<AdapterBuilder<*>, Runnable> {
+        val dataSource = DataSourceImpl<String>()
+        val dataSourceUpdater = Runnable {
+            dataSource.submitDataList(keyAndValues)
+        }
+        return SimpleAdapterBuilderImpl(
             itemViewCreator = SingleItemViewCreatorImpl(R.layout.audio_media_info_item_layout),
-            dataSource = FlowDataSourceImpl<String>(flow {
-                emit(keyAndValues)
-            }),
+            dataSource = dataSource,
             dataBinder = DataBinderImpl { data, itemView, _ ->
                 val itemViewBinding = AudioMediaInfoItemLayoutBinding.bind(itemView)
                 itemViewBinding.keyValueTv.text = data
             }
-        )
+        ) to dataSourceUpdater
+    }
+
+    private fun Pair<AdapterBuilder<*>, Runnable>.combineAdapterBuilder(combined: CombinedAdapterBuilderImpl, updaters: MutableList<Runnable>): CombinedAdapterBuilderImpl {
+        updaters.add(this.second)
+        return combined + first
     }
 }
