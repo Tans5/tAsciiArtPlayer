@@ -46,7 +46,7 @@ object HeadsetObserver {
 
                         // Bluetooth headset
                         BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED -> {
-                            val state = intent.getIntExtra(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED, BluetoothHeadset.STATE_DISCONNECTED)
+                            val state = intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, -1)
                             when (state) {
                                 BluetoothHeadset.STATE_DISCONNECTED -> {
                                     AppLog.d(TAG, "Bluetooth headset disconnected")
