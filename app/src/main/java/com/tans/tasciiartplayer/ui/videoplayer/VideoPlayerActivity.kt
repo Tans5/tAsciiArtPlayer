@@ -16,6 +16,7 @@ import com.tans.tasciiartplayer.video.VideoManager
 import com.tans.tasciiartplayer.databinding.VideoPlayerActivityBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.hwevent.HeadsetObserver
+import com.tans.tasciiartplayer.hwevent.MediaKeyObserver
 import com.tans.tasciiartplayer.hwevent.PhoneObserver
 import com.tans.tmediaplayer.player.model.OptResult
 import com.tans.tmediaplayer.player.tMediaPlayer
@@ -27,7 +28,6 @@ import com.tans.tuiutils.view.clicks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -71,6 +71,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             when (loadResult) {
                 OptResult.Success -> {
                     updateState { it.copy(loadStatus = PlayerLoadStatus.Prepared(mediaPlayer)) }
+                    // Observe headset
                     launch {
                         merge(
                             HeadsetObserver.observeEvent()
@@ -85,6 +86,51 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                                 }
                             }
                         }
+                    }
+
+                    // Observe MediaKeyEvent
+                    launch {
+                        MediaKeyObserver.observeEvent()
+                            .collect { keyEvent ->
+                                val playerState = mediaPlayer.getState()
+                                if (playerState is tMediaPlayerState.Playing ||
+                                    playerState is tMediaPlayerState.Paused ||
+                                    playerState is tMediaPlayerState.PlayEnd ||
+                                    playerState is tMediaPlayerState.Stopped) {
+                                    when (keyEvent) {
+                                        MediaKeyObserver.MediaKeyEvent.Play -> {
+                                            if (playerState !is tMediaPlayerState.Playing) {
+                                                mediaPlayer.play()
+                                            }
+                                        }
+
+                                        MediaKeyObserver.MediaKeyEvent.Pause -> {
+                                            if (playerState is tMediaPlayerState.Playing) {
+                                                mediaPlayer.pause()
+                                            }
+                                        }
+
+                                        MediaKeyObserver.MediaKeyEvent.PlayOrPause -> {
+                                            if (playerState is tMediaPlayerState.Playing) {
+                                                mediaPlayer.pause()
+                                            } else {
+                                                mediaPlayer.play()
+                                            }
+                                        }
+
+                                        MediaKeyObserver.MediaKeyEvent.Stop -> {
+                                            if (playerState !is tMediaPlayerState.Stopped &&
+                                                playerState !is tMediaPlayerState.PlayEnd
+                                            ) {
+                                                mediaPlayer.stop()
+                                            }
+                                        }
+                                        else -> {
+                                            // DO nothing
+                                        }
+                                    }
+                                }
+                            }
                     }
                     Log.d(TAG, "Load media file success.")
                 }
