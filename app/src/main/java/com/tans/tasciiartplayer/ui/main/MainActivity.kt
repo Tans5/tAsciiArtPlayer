@@ -1,13 +1,8 @@
 package com.tans.tasciiartplayer.ui.main
 
 import android.Manifest
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
-import android.os.Environment
-import android.provider.Settings
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
@@ -90,33 +85,34 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
                 true
             }
 
-            viewBinding.toolBar.menu.findItem(R.id.video_audio_search).setOnMenuItemClickListener {
-                this@bindContentViewCoroutine.launch {
-                    try {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-                            val grant = this@MainActivity.supportFragmentManager.showOptionalDialogSuspend(
-                                title = getString(R.string.main_act_storage_permission_request_title),
-                                message = getString(R.string.main_act_storage_permission_request_body),
-                                positiveButtonText = getString(R.string.main_act_storage_permission_request_accept),
-                                negativeButtonText = getString(R.string.main_act_storage_permission_request_deny)
-                            )
-                            if (grant == true) {
-                                val i = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                                i.data = Uri.fromParts("package", packageName, null)
-                                startActivity(i)
-                            }
-                        } else {
-                            val scanResult = this@MainActivity.supportFragmentManager.showVideoAudioSearchDialogSuspend()
-                            if (scanResult != null && (scanResult.first > 0 || scanResult.second > 0)) {
-                                Toast.makeText(this@MainActivity, getString(R.string.main_act_found_new_videos_audios, scanResult.first, scanResult.second), Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    } catch (e: Throwable) {
-                        e.printStackTrace()
-                    }
-                }
-                true
-            }
+            // Remove search media files for google play check.
+//            viewBinding.toolBar.menu.findItem(R.id.video_audio_search).setOnMenuItemClickListener {
+//                this@bindContentViewCoroutine.launch {
+//                    try {
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+//                            val grant = this@MainActivity.supportFragmentManager.showOptionalDialogSuspend(
+//                                title = getString(R.string.main_act_storage_permission_request_title),
+//                                message = getString(R.string.main_act_storage_permission_request_body),
+//                                positiveButtonText = getString(R.string.main_act_storage_permission_request_accept),
+//                                negativeButtonText = getString(R.string.main_act_storage_permission_request_deny)
+//                            )
+//                            if (grant == true) {
+//                                val i = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+//                                i.data = Uri.fromParts("package", packageName, null)
+//                                startActivity(i)
+//                            }
+//                        } else {
+//                            val scanResult = this@MainActivity.supportFragmentManager.showVideoAudioSearchDialogSuspend()
+//                            if (scanResult != null && (scanResult.first > 0 || scanResult.second > 0)) {
+//                                Toast.makeText(this@MainActivity, getString(R.string.main_act_found_new_videos_audios, scanResult.first, scanResult.second), Toast.LENGTH_SHORT).show()
+//                            }
+//                        }
+//                    } catch (e: Throwable) {
+//                        e.printStackTrace()
+//                    }
+//                }
+//                true
+//            }
         }
     }
 

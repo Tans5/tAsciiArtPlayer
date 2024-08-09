@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/video_audio_search"
-        android:title="@string/video_audio_search_dialog_title"
-        android:icon="@drawable/icon_search"
-        app:showAsAction="ifRoom"/>
+<!--    <item android:id="@+id/video_audio_search"-->
+<!--        android:title="@string/video_audio_search_dialog_title"-->
+<!--        android:icon="@drawable/icon_search"-->
+<!--        app:showAsAction="ifRoom"/>-->
 
     <item android:id="@+id/app_settings"
           android:title="@string/app_setting_dialog_title"
