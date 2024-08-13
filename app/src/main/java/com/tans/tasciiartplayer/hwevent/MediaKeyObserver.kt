@@ -1,12 +1,11 @@
+
+
 package com.tans.tasciiartplayer.hwevent
 
-import android.annotation.SuppressLint
 import android.app.Application
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
+import android.support.v4.media.session.MediaSessionCompat
 import android.view.KeyEvent
 import com.tans.tasciiartplayer.AppLog
 import com.tans.tasciiartplayer.appGlobalCoroutineScope
@@ -20,12 +19,13 @@ object MediaKeyObserver {
         MutableSharedFlow()
     }
 
-    private val receiver: BroadcastReceiver by lazy {
-        object : BroadcastReceiver() {
+    @Suppress("DEPRECATION")
+    fun init(application: Application) {
+        val mediaSession = MediaSessionCompat(application, "tAsciiArtMediaPlayer")
+        mediaSession.setCallback(object : MediaSessionCompat.Callback() {
 
-            @Suppress("DEPRECATION")
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (intent?.action == Intent.ACTION_MEDIA_BUTTON) {
+            override fun onMediaButtonEvent(intent: Intent?): Boolean {
+                return if (intent?.action == Intent.ACTION_MEDIA_BUTTON) {
                     val keyEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT, KeyEvent::class.java)
                     } else {
@@ -47,23 +47,21 @@ object MediaKeyObserver {
                                 appGlobalCoroutineScope.launch {
                                     eventSubject.emit(mediaKeyEvent)
                                 }
+                                true
+                            } else {
+                                false
                             }
+                        } else {
+                            false
                         }
+                    } else {
+                        false
                     }
+                } else {
+                    false
                 }
             }
-        }
-    }
-
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    fun init(application: Application) {
-        val filter = IntentFilter()
-        filter.addAction(Intent.ACTION_MEDIA_BUTTON)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            application.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
-        } else {
-            application.registerReceiver(receiver, filter)
-        }
+        })
     }
 
     fun observeEvent(): Flow<MediaKeyEvent> = eventSubject

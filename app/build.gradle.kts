@@ -100,4 +100,7 @@ dependencies {
 
     // DataStore
     implementation(libs.androidx.datastore.sp)
+
+    // Media
+    implementation(libs.androidx.media)
 }
