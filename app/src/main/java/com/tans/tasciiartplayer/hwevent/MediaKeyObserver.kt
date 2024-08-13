@@ -1,5 +1,3 @@
-
-
 package com.tans.tasciiartplayer.hwevent
 
 import android.app.Application
