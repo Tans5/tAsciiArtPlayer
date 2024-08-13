@@ -90,6 +90,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
                     // Observe MediaKeyEvent
                     launch {
+                        MediaKeyObserver.sessionActive(true)
                         MediaKeyObserver.observeEvent()
                             .collect { keyEvent ->
                                 val playerState = mediaPlayer.getState()
