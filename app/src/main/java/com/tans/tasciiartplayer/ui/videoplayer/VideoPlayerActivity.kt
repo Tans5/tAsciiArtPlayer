@@ -4,6 +4,8 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -303,6 +305,15 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             viewBinding.actionLayout.clicks(this) {
                 viewBinding.actionLayout.hide()
             }
+
+            viewBinding.changeScreenOrientationIv.clicks(this) {
+                requestedOrientation = if (this@VideoPlayerActivity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                } else {
+                    ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                }
+            }
+
             launch {
                 // Show last watch history
                 if (mediaInfo != null && intent.getInputMediaType() == InputMediaType.MediaStore) {

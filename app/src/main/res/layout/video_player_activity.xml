@@ -116,6 +116,15 @@
             app:layout_constraintTop_toBottomOf="@id/info_iv"
             tools:visibility="visible"/>
 
+        <ImageView
+            android:id="@+id/change_screen_orientation_iv"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:padding="10dp"
+            android:src="@drawable/icon_change_orientation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/subtitle_iv" />
+
         <FrameLayout
             android:id="@+id/play_pause_layout"
             android:layout_width="70dp"
@@ -172,7 +181,7 @@
             android:textSize="14sp"
             android:textColor="@color/white"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="35dp"
+            android:layout_marginStart="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="15dp"
             tools:text="00:00" />
@@ -185,7 +194,7 @@
             android:textColor="@color/white"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="35dp"
+            android:layout_marginEnd="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="15dp"
             tools:text="00:00"
