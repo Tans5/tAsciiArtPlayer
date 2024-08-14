@@ -9,6 +9,7 @@ import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.databinding.VideoMediaInfoDialogBinding
 import com.tans.tasciiartplayer.databinding.VideoMediaInfoItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.VideoMediaInfoTitleLayoutBinding
+import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.toSizeString
 import com.tans.tmediaplayer.player.model.AudioStreamInfo
 import com.tans.tmediaplayer.player.model.MediaInfo
@@ -29,16 +30,12 @@ class VideoMediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
 
     private val mediaInfo: MediaInfo?
 
-    private val filePath: String?
-
     constructor() : super(Unit) {
         this.mediaInfo = null
-        this.filePath = null
     }
 
-    constructor(mediaInfo: MediaInfo, filePath: String) : super(Unit) {
+    constructor(mediaInfo: MediaInfo) : super(Unit) {
         this.mediaInfo = mediaInfo
-        this.filePath = filePath
     }
 
     override val contentViewWidthInScreenRatio: Float = 0.5f
@@ -57,13 +54,12 @@ class VideoMediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
 
     override fun bindContentView(view: View) {
         val mediaInfo = this.mediaInfo ?: return
-        val filePath = this.filePath ?: return
         val viewBinding = VideoMediaInfoDialogBinding.bind(view)
         val ctx = requireContext()
 
         val dataSourceRunnable = mutableListOf<Runnable>()
         // File
-        var adapterBuilder = createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_file_title)).let { dataSourceRunnable.add(it.second);it.first }+ createKeyValueAdapterBuilder(mediaInfo.getFileInfoStrings(ctx, filePath)).let { dataSourceRunnable.add(it.second);it.first }
+        var adapterBuilder = createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_file_title)).let { dataSourceRunnable.add(it.second);it.first }+ createKeyValueAdapterBuilder(mediaInfo.getFileInfoStrings(ctx)).let { dataSourceRunnable.add(it.second);it.first }
 
         // Video Stream
         val videoStreamInfo = mediaInfo.videoStreamInfo
@@ -142,11 +138,13 @@ class VideoMediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
     }
 }
 
-fun MediaInfo.getFileInfoStrings(ctx: Context, filePath: String): List<String> {
+fun MediaInfo.getFileInfoStrings(ctx: Context): List<String> {
     val fileKeyValue = mutableListOf<String>()
-    fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_path, filePath))
-    val fileSizeStr = File(filePath).length().toSizeString()
-    fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_size, fileSizeStr))
+    fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_path, file))
+    val f = File(file)
+    if (f.isFile && f.canRead()) {
+        fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_size, f.length().formatDuration()))
+    }
     fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_format, containerName))
     if (metadata.isNotEmpty()) {
         fileKeyValue.add("")

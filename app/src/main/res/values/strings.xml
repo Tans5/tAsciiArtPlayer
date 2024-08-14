@@ -81,4 +81,11 @@
     <string name="audio_player_act_list_play_end">Play End</string>
     <string name="audio_player_act_next_play">Next play: %s</string>
     <!--endregion -->
+
+    <!--region MediaLinkDialog-->
+    <string name="media_link_dialog_title">MediaLink</string>
+    <string name="media_link_dialog_input_hint">Input a media link.</string>
+    <string name="media_link_dialog_ok">OK</string>
+    <string name="media_link_dialog_cancel">CANCEL</string>
+    <!--endregion-->
 </resources>

@@ -63,6 +63,27 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/play_type_card"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="5dp"
+            android:foreground="@drawable/audio_action_ripple_bg"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:id="@+id/play_type_iv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/icon_audio_sequence_play"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"/>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
             android:id="@+id/playlist_card"
             android:layout_width="35dp"
             android:layout_height="35dp"
@@ -83,7 +104,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/play_type_card"
+            android:id="@+id/artist_card"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginStart="5dp"
@@ -92,10 +113,29 @@
             app:cardElevation="0dp">
 
             <ImageView
-                android:id="@+id/play_type_iv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/icon_audio_sequence_play"
+                android:src="@drawable/icon_artist"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"/>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/album_card"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="5dp"
+            android:foreground="@drawable/audio_action_ripple_bg"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/icon_album"
                 android:layout_marginStart="6dp"
                 android:layout_marginEnd="6dp"
                 android:layout_marginTop="6dp"

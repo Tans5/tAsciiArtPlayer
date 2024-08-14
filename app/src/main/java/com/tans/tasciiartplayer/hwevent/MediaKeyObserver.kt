@@ -1,5 +1,3 @@
-
-
 package com.tans.tasciiartplayer.hwevent
 
 import android.app.Application
@@ -12,6 +10,7 @@ import com.tans.tasciiartplayer.appGlobalCoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicReference
 
 object MediaKeyObserver {
 
@@ -19,11 +18,13 @@ object MediaKeyObserver {
         MutableSharedFlow()
     }
 
-    @Suppress("DEPRECATION")
-    fun init(application: Application) {
-        val mediaSession = MediaSessionCompat(application, "tAsciiArtMediaPlayer")
-        mediaSession.setCallback(object : MediaSessionCompat.Callback() {
+    private val mediaSession: AtomicReference<MediaSessionCompat?> by lazy {
+        AtomicReference()
+    }
 
+    private val mediaSessionCallback: MediaSessionCompat.Callback by lazy {
+        object : MediaSessionCompat.Callback() {
+            @Suppress("DEPRECATION")
             override fun onMediaButtonEvent(intent: Intent?): Boolean {
                 return if (intent?.action == Intent.ACTION_MEDIA_BUTTON) {
                     val keyEvent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -61,7 +62,19 @@ object MediaKeyObserver {
                     false
                 }
             }
-        })
+        }
+    }
+
+
+    fun init(application: Application) {
+        val newSession = MediaSessionCompat(application, "tAsciiArtMediaPlayer")
+        newSession.isActive = true
+        newSession.setCallback(mediaSessionCallback)
+        mediaSession.getAndSet(newSession)?.release()
+    }
+
+    fun sessionActive(isActive: Boolean) {
+        mediaSession.get()?.isActive = isActive
     }
 
     fun observeEvent(): Flow<MediaKeyEvent> = eventSubject

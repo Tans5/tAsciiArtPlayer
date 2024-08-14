@@ -23,6 +23,9 @@ import com.tans.tasciiartplayer.audio.audioplayer.observePreviousAndNextSkipStat
 import com.tans.tasciiartplayer.audio.audioplayer.observePlayingProgressAndDurationChanged
 import com.tans.tasciiartplayer.audio.audioplayer.observeSelectedAudioListChanged
 import com.tans.tasciiartplayer.audio.audioplayer.observePlayingtMediaPlayerStateChanged
+import com.tans.tasciiartplayer.audio.audioplayer.playingAudioAlbumList
+import com.tans.tasciiartplayer.audio.audioplayer.playingAudioArtistList
+import com.tans.tasciiartplayer.audio.audioplayer.playingAudioChangedFlow
 import com.tans.tasciiartplayer.databinding.AudioPlayerActivityBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tmediaplayer.player.tMediaPlayerState
@@ -31,8 +34,10 @@ import com.tans.tuiutils.systembar.annotation.SystemBarStyle
 import com.tans.tuiutils.view.clicks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.jvm.optionals.getOrNull
 
 @SystemBarStyle(statusBarThemeStyle = 1, navigationBarThemeStyle = 1)
 class AudioPlayerActivity : BaseCoroutineStateActivity<Unit>(Unit) {
@@ -162,14 +167,6 @@ class AudioPlayerActivity : BaseCoroutineStateActivity<Unit>(Unit) {
             }
         }
 
-        viewBinding.playlistCard.clicks(this, 1000L) {
-            val listType = (AudioPlayerManager.stateFlow.value.playListState as? PlayListState.SelectedPlayList)?.audioList?.audioListType
-            if (listType != null) {
-                val d = AudioListDialog(listType)
-                d.showSafe(this@AudioPlayerActivity.supportFragmentManager, "AudioListDialog${System.currentTimeMillis()}")
-            }
-        }
-
         viewBinding.playTypeCard.clicks(this, 500L) {
             val currentPlayType = AudioPlayerManager.stateFlow.value.playType
             val newPlayType = when (currentPlayType) {
@@ -180,6 +177,30 @@ class AudioPlayerActivity : BaseCoroutineStateActivity<Unit>(Unit) {
                 ListRandomLoopPlay -> ListSequentialPlay
             }
             AudioPlayerManager.changePlayType(newPlayType)
+        }
+
+        viewBinding.playlistCard.clicks(this, 1000L) {
+            val listType = (AudioPlayerManager.stateFlow.value.playListState as? PlayListState.SelectedPlayList)?.audioList?.audioListType
+            if (listType != null) {
+                val d = AudioListDialog(listType)
+                d.showSafe(this@AudioPlayerActivity.supportFragmentManager, "AudioListDialog${System.currentTimeMillis()}")
+            }
+        }
+
+        viewBinding.artistCard.clicks(this, 1000L) {
+            val audioList = playingAudioArtistList()
+            if (audioList != null) {
+                val d = AudioListDialog(audioList.audioListType)
+                d.showSafe(this@AudioPlayerActivity.supportFragmentManager, "AudioListDialog${System.currentTimeMillis()}")
+            }
+        }
+
+        viewBinding.albumCard.clicks(this, 1000L) {
+            val audioList = playingAudioAlbumList()
+            if (audioList != null) {
+                val d = AudioListDialog(audioList.audioListType)
+                d.showSafe(this@AudioPlayerActivity.supportFragmentManager, "AudioListDialog${System.currentTimeMillis()}")
+            }
         }
 
         viewBinding.audioInfoCard.clicks(this, 1000L) {

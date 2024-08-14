@@ -3,6 +3,8 @@ package com.tans.tasciiartplayer.ui.main
 import android.Manifest
 import android.os.Build
 import android.view.View
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
@@ -12,6 +14,7 @@ import com.tans.tasciiartplayer.databinding.MainActivityBinding
 import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.ArtistsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.AudioListDialog
+import com.tans.tasciiartplayer.ui.videoplayer.VideoPlayerActivity
 import com.tans.tuiutils.activity.BaseCoroutineStateActivity
 import com.tans.tuiutils.permission.permissionsRequestSuspend
 import com.tans.tuiutils.systembar.annotation.SystemBarStyle
@@ -113,6 +116,22 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
 //                }
 //                true
 //            }
+
+            viewBinding.toolBar.menu.findItem(R.id.media_link).setOnMenuItemClickListener {
+                this@bindContentViewCoroutine.launch {
+                    val mediaLink = supportFragmentManager.showMediaLinkDialogSuspend()
+                    if (!mediaLink.isNullOrBlank()) {
+                        startActivity(VideoPlayerActivity.createIntent(this@MainActivity, mediaLink))
+                    }
+                }
+                true
+            }
+
+            ViewCompat.setOnApplyWindowInsetsListener(viewBinding.root) { v, insets ->
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                v.setPadding(0, systemBars.top, 0, 0)
+                insets
+            }
         }
     }
 

@@ -61,6 +61,7 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                     val state = stateFlow.value
                     val playListState = state.playListState
                     if (playListState is PlayListState.SelectedPlayList) {
+                        MediaKeyObserver.sessionActive(true)
                         val minePlayList = playListState.audioList
                         val managerPlayList = allPlayList[minePlayList.audioListType]
                         if (managerPlayList != minePlayList) {
