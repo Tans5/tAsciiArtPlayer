@@ -1,6 +1,8 @@
 package com.tans.tasciiartplayer.audio.audioplayer
 
 import com.tans.tasciiartplayer.audio.audiolist.AudioList
+import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
+import com.tans.tasciiartplayer.audio.audiolist.AudioListType
 import com.tans.tasciiartplayer.audio.audiolist.AudioModel
 import com.tans.tasciiartplayer.audio.audioplayer.PlayType.SingleLoopPlay
 import com.tans.tasciiartplayer.glide.MediaImageModel
@@ -13,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -101,6 +104,24 @@ fun playingAudioChangedFlow(): Flow<Optional<AudioModel>> = AudioPlayerManager.s
         }
         Optional.ofNullable(audio)
     }
+
+suspend fun playingAudioArtistList(): AudioList? {
+    val audio = playingAudioChangedFlow().firstOrNull()?.getOrNull()
+    return if (audio != null) {
+        AudioListManager.stateFlow.value.artistAudioLists.find { (it.audioListType as AudioListType.ArtistAudios).artistId == audio.mediaStoreAudio.artistId }
+    } else {
+        null
+    }
+}
+
+suspend fun playingAudioAlbumList(): AudioList? {
+    val audio = playingAudioChangedFlow().firstOrNull()?.getOrNull()
+    return if (audio != null) {
+        AudioListManager.stateFlow.value.albumAudioLists.find { (it.audioListType as AudioListType.AlbumAudios).albumId == audio.mediaStoreAudio.albumId }
+    } else {
+        null
+    }
+}
 
 fun CoroutineScope.observePlayingMediaStoreAudioChanged(handle: suspend (audioModel: MediaStoreAudio?) -> Unit) {
     launch {

@@ -21,6 +21,8 @@ import com.tans.tasciiartplayer.audio.audioplayer.observePreviousAndNextSkipStat
 import com.tans.tasciiartplayer.audio.audioplayer.observePlayingProgressAndDurationChanged
 import com.tans.tasciiartplayer.audio.audioplayer.observeSelectedAudioListChanged
 import com.tans.tasciiartplayer.audio.audioplayer.observePlayingtMediaPlayerStateChanged
+import com.tans.tasciiartplayer.audio.audioplayer.playingAudioAlbumList
+import com.tans.tasciiartplayer.audio.audioplayer.playingAudioArtistList
 import com.tans.tasciiartplayer.databinding.AudiosFragmentBinding
 import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
@@ -186,14 +188,6 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
             }
         }
 
-        viewBinding.playlistCard.clicks(this, 1000L) {
-            val listType = (AudioPlayerManager.stateFlow.value.playListState as? PlayListState.SelectedPlayList)?.audioList?.audioListType
-            if (listType != null) {
-                val d = AudioListDialog(listType)
-                d.showSafe(requireActivity().supportFragmentManager, "AudioListDialog${System.currentTimeMillis()}")
-            }
-        }
-
         viewBinding.playTypeCard.clicks(this, 500L) {
             val currentPlayType = AudioPlayerManager.stateFlow.value.playType
             val newPlayType = when (currentPlayType) {
@@ -204,6 +198,30 @@ class AudiosFragment : BaseCoroutineStateFragment<Unit>(Unit) {
                 ListRandomLoopPlay -> ListSequentialPlay
             }
             AudioPlayerManager.changePlayType(newPlayType)
+        }
+
+        viewBinding.playlistCard.clicks(this, 1000L) {
+            val listType = (AudioPlayerManager.stateFlow.value.playListState as? PlayListState.SelectedPlayList)?.audioList?.audioListType
+            if (listType != null) {
+                val d = AudioListDialog(listType)
+                d.showSafe(requireActivity().supportFragmentManager, "AudioListDialog${System.currentTimeMillis()}")
+            }
+        }
+
+        viewBinding.artistCard.clicks(this, 1000L) {
+            val audioList = playingAudioArtistList()
+            if (audioList != null) {
+                val d = AudioListDialog(audioList.audioListType)
+                d.showSafe(requireActivity().supportFragmentManager, "AudioListDialog${System.currentTimeMillis()}")
+            }
+        }
+
+        viewBinding.albumCard.clicks(this, 1000L) {
+            val audioList = playingAudioAlbumList()
+            if (audioList != null) {
+                val d = AudioListDialog(audioList.audioListType)
+                d.showSafe(requireActivity().supportFragmentManager, "AudioListDialog${System.currentTimeMillis()}")
+            }
         }
 
         viewBinding.audioInfoCard.clicks(this, 1000L) {
