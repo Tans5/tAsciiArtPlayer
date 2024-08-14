@@ -8,6 +8,8 @@ import android.os.Environment
 import android.provider.Settings
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
@@ -116,6 +118,12 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
                     }
                 }
                 true
+            }
+
+            ViewCompat.setOnApplyWindowInsetsListener(viewBinding.root) { v, insets ->
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                v.setPadding(0, systemBars.top, 0, 0)
+                insets
             }
         }
     }

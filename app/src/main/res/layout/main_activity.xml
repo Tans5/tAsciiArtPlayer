@@ -6,7 +6,7 @@
     android:background="@color/white"
     xmlns:android="http://schemas.android.com/apk/res/android"
     tools:context=".ui.main.MainActivity"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="false">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
