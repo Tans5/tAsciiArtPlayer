@@ -1,7 +1,7 @@
 
 ## Summery
 
-Simple local video and audio files player. Support ascii art filter, subtitle render and so on. Base on [tMediaPlayer](https://github.com/Tans5/tMediaPlayer).
+Simple video and audio player. Support stream media load, ascii art filter, subtitle render and so on. Base on [tMediaPlayer](https://github.com/Tans5/tMediaPlayer).
 
 [![](icons/google-play.png)](https://play.google.com/store/apps/details?id=com.tans.tasciiartplayer)
 
