@@ -19,6 +19,7 @@ import com.tans.tasciiartplayer.databinding.MainActivityBinding
 import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.ArtistsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.AudioListDialog
+import com.tans.tasciiartplayer.ui.videoplayer.VideoPlayerActivity
 import com.tans.tuiutils.activity.BaseCoroutineStateActivity
 import com.tans.tuiutils.permission.permissionsRequestSuspend
 import com.tans.tuiutils.systembar.annotation.SystemBarStyle
@@ -115,6 +116,16 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
                         }
                     } catch (e: Throwable) {
                         e.printStackTrace()
+                    }
+                }
+                true
+            }
+
+            viewBinding.toolBar.menu.findItem(R.id.media_link).setOnMenuItemClickListener {
+                this@bindContentViewCoroutine.launch {
+                    val mediaLink = supportFragmentManager.showMediaLinkDialogSuspend()
+                    if (!mediaLink.isNullOrBlank()) {
+                        startActivity(VideoPlayerActivity.createIntent(this@MainActivity, mediaLink))
                     }
                 }
                 true
