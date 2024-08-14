@@ -12,7 +12,6 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManager
 import com.tans.tasciiartplayer.audio.audioplayer.PlayListState
-import com.tans.tasciiartplayer.audio.audioplayer.getCurrentPlayAudio
 import com.tans.tasciiartplayer.databinding.AudioMediaInfoDialogBinding
 import com.tans.tasciiartplayer.databinding.AudioMediaInfoItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.AudioMediaInfoTitleLayoutBinding
@@ -78,15 +77,14 @@ class AudioMediaInfoDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
     override fun bindContentView(view: View) {
         val viewBinding = AudioMediaInfoDialogBinding.bind(view)
         val selectedPlayList = (AudioPlayerManager.stateFlow.value.playListState as? PlayListState.SelectedPlayList)
-        val audioFile = selectedPlayList?.getCurrentPlayAudio()?.mediaStoreAudio?.file
         val audioMediaInfo = selectedPlayList?.playerMediaInfo
-        if (audioFile == null || audioMediaInfo == null) {
+        if (audioMediaInfo == null) {
             dismissSafe()
         } else {
             val ctx = requireContext()
             val dataSourceRunnable = mutableListOf<Runnable>()
             // File
-            var adapterBuilder = createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_file_title)).let { dataSourceRunnable.add(it.second);it.first }+ createKeyValueAdapterBuilder(audioMediaInfo.getFileInfoStrings(ctx, audioFile.canonicalPath)).let { dataSourceRunnable.add(it.second);it.first }
+            var adapterBuilder = createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_file_title)).let { dataSourceRunnable.add(it.second);it.first }+ createKeyValueAdapterBuilder(audioMediaInfo.getFileInfoStrings(ctx)).let { dataSourceRunnable.add(it.second);it.first }
 
             // Video Stream
             val videoStreamInfo = audioMediaInfo.videoStreamInfo
