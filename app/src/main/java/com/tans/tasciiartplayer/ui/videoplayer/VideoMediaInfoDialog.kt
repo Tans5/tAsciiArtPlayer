@@ -81,7 +81,7 @@ class VideoMediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
         if (subtitleStreams.isNotEmpty()) {
             adapterBuilder = createLineAdapterBuilder().combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
             adapterBuilder = createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_subtitle_title)).combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
-            adapterBuilder = createKeyValueAdapterBuilder(subtitleStreams.getSubtitlesStreamInfoStrings(ctx)).combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
+            adapterBuilder = createKeyValueAdapterBuilder(subtitleStreams.getSubtitlesStreamInfoStrings()).combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
         }
         viewBinding.mediaInfoRv.adapter = adapterBuilder.build()
         for (r in dataSourceRunnable) {
@@ -203,7 +203,7 @@ fun AudioStreamInfo.getAudioStreamInfoStrings(ctx: Context): List<String> {
     return audioKeyValue
 }
 
-fun List<SubtitleStreamInfo>.getSubtitlesStreamInfoStrings(ctx: Context): List<String> {
+fun List<SubtitleStreamInfo>.getSubtitlesStreamInfoStrings(): List<String> {
     val subtitlesKeyValue = mutableListOf<String>()
     for (subtitle in this) {
         for ((key, value) in subtitle.metadata) {
