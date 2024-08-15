@@ -9,7 +9,6 @@ import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.databinding.VideoMediaInfoDialogBinding
 import com.tans.tasciiartplayer.databinding.VideoMediaInfoItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.VideoMediaInfoTitleLayoutBinding
-import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.toSizeString
 import com.tans.tmediaplayer.player.model.AudioStreamInfo
 import com.tans.tmediaplayer.player.model.MediaInfo
@@ -143,7 +142,7 @@ fun MediaInfo.getFileInfoStrings(ctx: Context): List<String> {
     fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_path, file))
     val f = File(file)
     if (f.isFile && f.canRead()) {
-        fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_size, f.length().formatDuration()))
+        fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_size, f.length().toSizeString()))
     }
     fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_format, containerName))
     if (metadata.isNotEmpty()) {
