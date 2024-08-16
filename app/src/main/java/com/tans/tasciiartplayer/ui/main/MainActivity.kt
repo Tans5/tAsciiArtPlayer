@@ -15,6 +15,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.tans.tasciiartplayer.R
+import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManager
 import com.tans.tasciiartplayer.databinding.MainActivityBinding
 import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.ArtistsDialog
@@ -125,6 +126,7 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
                 this@bindContentViewCoroutine.launch {
                     val mediaLink = supportFragmentManager.showMediaLinkDialogSuspend()
                     if (!mediaLink.isNullOrBlank()) {
+                        AudioPlayerManager.removeAudioList()
                         startActivity(VideoPlayerActivity.createIntent(this@MainActivity, mediaLink))
                     }
                 }
