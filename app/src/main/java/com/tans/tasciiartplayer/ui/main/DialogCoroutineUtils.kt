@@ -1,7 +1,7 @@
 package com.tans.tasciiartplayer.ui.main
 
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import com.tans.tuiutils.dialog.BaseDialogFragment
 import com.tans.tuiutils.dialog.DialogCancelableResultCallback
 import com.tans.tuiutils.dialog.DialogForceResultCallback
 import kotlinx.coroutines.CancellableContinuation
@@ -44,13 +44,13 @@ class CoroutineDialogForceResultCallback<T : Any>(
 
 }
 
-fun FragmentManager.coroutineShowSafe(dialog: DialogFragment, tag: String, cont: CancellableContinuation<*>): Boolean {
+fun FragmentManager.coroutineShowSafe(dialog: BaseDialogFragment, tag: String, cont: CancellableContinuation<*>): Boolean {
     return if (!isDestroyed) {
         dialog.show(this, tag)
         val wd = WeakReference(dialog)
         cont.invokeOnCancellation {
             if (!isDestroyed) {
-                wd.get()?.dismissAllowingStateLoss()
+                wd.get()?.dismissSafe()
             }
         }
         true
