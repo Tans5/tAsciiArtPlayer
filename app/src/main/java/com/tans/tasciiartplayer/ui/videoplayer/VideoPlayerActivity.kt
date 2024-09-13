@@ -63,11 +63,15 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
             mediaPlayer.setListener(object : tMediaPlayerListener {
                 override fun onPlayerState(state: tMediaPlayerState) {
-                    updateState { it.copy(playerState = state) }
+                    this@firstLaunchInitDataCoroutine.launch {
+                        updateState { it.copy(playerState = state) }
+                    }
                 }
 
                 override fun onProgressUpdate(progress: Long, duration: Long) {
-                    updateState { it.copy(progress = Progress(progress = progress, duration = duration)) }
+                    this@firstLaunchInitDataCoroutine.launch {
+                        updateState { it.copy(progress = Progress(progress = progress, duration = duration)) }
+                    }
                 }
             })
 
@@ -88,7 +92,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 OptResult.Success -> {
                     updateState { it.copy(loadStatus = PlayerLoadStatus.Prepared(mediaPlayer)) }
                     // Observe headset
-                    launch {
+                    this@firstLaunchInitDataCoroutine.launch {
                         merge(
                             HeadsetObserver.observeEvent()
                                 .map { it == HeadsetObserver.HeadsetEvent.WireHeadsetDisconnected || it == HeadsetObserver.HeadsetEvent.BluetoothHeadsetDisconnected },
@@ -105,7 +109,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                     }
 
                     // Observe MediaKeyEvent
-                    launch {
+                    this@firstLaunchInitDataCoroutine.launch {
                         MediaKeyObserver.sessionActive(true)
                         MediaKeyObserver.observeEvent()
                             .collect { keyEvent ->
@@ -163,12 +167,10 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
         val viewBinding = VideoPlayerActivityBinding.bind(contentView)
 
-        launch {
-            renderStateNewCoroutine({ it.playerState }) {
-                if (it is tMediaPlayerState.Error) {
-                    Toast.makeText(this@VideoPlayerActivity, R.string.video_player_act_error, Toast.LENGTH_SHORT).show()
-                    finish()
-                }
+        renderStateNewCoroutine({ it.playerState }) {
+            if (it is tMediaPlayerState.Error) {
+                Toast.makeText(this@VideoPlayerActivity, R.string.video_player_act_error, Toast.LENGTH_SHORT).show()
+                finish()
             }
         }
 
@@ -184,13 +186,13 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             if (mediaInfo != null && mediaInfo.isSeekable) {
                 // Seekable
                 viewBinding.durationTv.visibility = View.VISIBLE
-                renderStateNewCoroutine({ it.progress.duration }) { duration ->
+                this@bindContentViewCoroutine.renderStateNewCoroutine({ it.progress.duration }) { duration ->
                     viewBinding.durationTv.text = duration.formatDuration()
                 }
 
                 var isPlayerSbInTouching = false
                 viewBinding.playerSb.visibility = View.VISIBLE
-                renderStateNewCoroutine({ it.progress }) { (progress, duration) ->
+                this@bindContentViewCoroutine.renderStateNewCoroutine({ it.progress }) { (progress, duration) ->
                     if (!isPlayerSbInTouching && mediaPlayer.getState() !is tMediaPlayerState.Seeking) {
                         val progressInPercent = ((progress - mediaInfo.startTime).toFloat() * 100.0 / duration.toFloat() + 0.5f).toInt()
                         viewBinding.playerSb.progress = progressInPercent
@@ -218,11 +220,11 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 viewBinding.playerSb.visibility = View.GONE
             }
 
-            renderStateNewCoroutine({ it.progress.progress }) { progress ->
+            this@bindContentViewCoroutine.renderStateNewCoroutine({ it.progress.progress }) { progress ->
                 viewBinding.progressTv.text = progress.formatDuration()
             }
 
-            renderStateNewCoroutine({ it.playerState }) { playerState ->
+            this@bindContentViewCoroutine.renderStateNewCoroutine({ it.playerState }) { playerState ->
 
                 if (playerState is tMediaPlayerState.Seeking) {
                     viewBinding.seekingLoadingPb.show()
@@ -257,19 +259,19 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 }
             }
 
-            viewBinding.playIv.clicks(this) {
+            viewBinding.playIv.clicks(this@bindContentViewCoroutine) {
                 mediaPlayer.play()
             }
 
-            viewBinding.pauseIv.clicks(this) {
+            viewBinding.pauseIv.clicks(this@bindContentViewCoroutine) {
                 mediaPlayer.pause()
             }
 
-            viewBinding.replayIv.clicks(this) {
+            viewBinding.replayIv.clicks(this@bindContentViewCoroutine) {
                 mediaPlayer.play()
             }
 
-            viewBinding.infoIv.clicks(this) {
+            viewBinding.infoIv.clicks(this@bindContentViewCoroutine) {
                 val info = mediaPlayer.getMediaInfo()
                 if (info != null) {
                     viewBinding.actionLayout.hide()
@@ -279,7 +281,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
             }
 
-            viewBinding.settingsIv.clicks(this) {
+            viewBinding.settingsIv.clicks(this@bindContentViewCoroutine) {
                 viewBinding.actionLayout.hide()
                 val d = VideoPlayerSettingsDialog(playerView = viewBinding.playerView, player = mediaPlayer)
                 d.showSafe(supportFragmentManager, "PlayerSettingsDialog#${System.currentTimeMillis()}}")
@@ -287,7 +289,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             val subtitleStreams = mediaPlayer.getMediaInfo()?.subtitleStreams ?: emptyList()
             if (subtitleStreams.isNotEmpty()) {
                 viewBinding.subtitleIv.show()
-                viewBinding.subtitleIv.clicks(this) {
+                viewBinding.subtitleIv.clicks(this@bindContentViewCoroutine) {
                     viewBinding.actionLayout.hide()
                     val d = SubtitleSelectDialog(player = mediaPlayer)
                     d.showSafe(supportFragmentManager, "SubtitleSelectDialog#${System.currentTimeMillis()}")
@@ -297,16 +299,16 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             }
 
             viewBinding.playerView.setOnTouchListener(PlayerClickTouchListener())
-            viewBinding.playerView.clicks(this) {
+            viewBinding.playerView.clicks(this@bindContentViewCoroutine) {
                 viewBinding.actionLayout.show()
             }
 
             viewBinding.actionLayout.setOnTouchListener(PlayerClickTouchListener())
-            viewBinding.actionLayout.clicks(this) {
+            viewBinding.actionLayout.clicks(this@bindContentViewCoroutine) {
                 viewBinding.actionLayout.hide()
             }
 
-            viewBinding.changeScreenOrientationIv.clicks(this) {
+            viewBinding.changeScreenOrientationIv.clicks(this@bindContentViewCoroutine) {
                 requestedOrientation = if (this@VideoPlayerActivity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                 } else {
@@ -314,7 +316,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 }
             }
 
-            launch {
+            this@bindContentViewCoroutine.launch {
                 // Show last watch history
                 if (mediaInfo != null && intent.getInputMediaType() == InputMediaType.MediaStore) {
                     val lastWatch = intent.getMediaLastWatch()
@@ -354,7 +356,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                             viewBinding.lastWatchLayout.hide()
                         }
 
-                        viewBinding.lastWatchLayout.clicks(this) {
+                        viewBinding.lastWatchLayout.clicks(this@bindContentViewCoroutine) {
                             mediaPlayer.seekTo(targetSeekTime)
                             viewBinding.lastWatchLayout.hide()
                             animatorJob.cancel()
