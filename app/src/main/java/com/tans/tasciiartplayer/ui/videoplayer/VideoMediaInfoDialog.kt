@@ -9,7 +9,6 @@ import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.databinding.VideoMediaInfoDialogBinding
 import com.tans.tasciiartplayer.databinding.VideoMediaInfoItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.VideoMediaInfoTitleLayoutBinding
-import com.tans.tasciiartplayer.formatDuration
 import com.tans.tasciiartplayer.toSizeString
 import com.tans.tmediaplayer.player.model.AudioStreamInfo
 import com.tans.tmediaplayer.player.model.MediaInfo
@@ -82,7 +81,7 @@ class VideoMediaInfoDialog : BaseCoroutineStateDialogFragment<Unit> {
         if (subtitleStreams.isNotEmpty()) {
             adapterBuilder = createLineAdapterBuilder().combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
             adapterBuilder = createTitleAdapterBuilder(ctx.getString(R.string.media_info_dialog_subtitle_title)).combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
-            adapterBuilder = createKeyValueAdapterBuilder(subtitleStreams.getSubtitlesStreamInfoStrings(ctx)).combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
+            adapterBuilder = createKeyValueAdapterBuilder(subtitleStreams.getSubtitlesStreamInfoStrings()).combineAdapterBuilder(adapterBuilder, dataSourceRunnable)
         }
         viewBinding.mediaInfoRv.adapter = adapterBuilder.build()
         for (r in dataSourceRunnable) {
@@ -143,7 +142,7 @@ fun MediaInfo.getFileInfoStrings(ctx: Context): List<String> {
     fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_path, file))
     val f = File(file)
     if (f.isFile && f.canRead()) {
-        fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_size, f.length().formatDuration()))
+        fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_size, f.length().toSizeString()))
     }
     fileKeyValue.add(ctx.getString(R.string.media_info_dialog_file_format, containerName))
     if (metadata.isNotEmpty()) {
@@ -204,7 +203,7 @@ fun AudioStreamInfo.getAudioStreamInfoStrings(ctx: Context): List<String> {
     return audioKeyValue
 }
 
-fun List<SubtitleStreamInfo>.getSubtitlesStreamInfoStrings(ctx: Context): List<String> {
+fun List<SubtitleStreamInfo>.getSubtitlesStreamInfoStrings(): List<String> {
     val subtitlesKeyValue = mutableListOf<String>()
     for (subtitle in this) {
         for ((key, value) in subtitle.metadata) {
