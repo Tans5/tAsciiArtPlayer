@@ -21,3 +21,5 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class com.google.android.material.bottomsheet.BottomSheetBehavior { *; }
+
+-keep class androidx.viewpager2.adapter.FragmentStateAdapter {*;}

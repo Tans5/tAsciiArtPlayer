@@ -3,6 +3,7 @@ package com.tans.tasciiartplayer.ui.main
 import android.Manifest
 import android.os.Build
 import android.view.View
+import androidx.collection.LongSparseArray
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -59,10 +60,23 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
             }
             val viewBinding = MainActivityBinding.bind(contentView)
 
-            viewBinding.viewPager.adapter = object : FragmentStateAdapter(this@MainActivity) {
+            val fragmentsAdapter = object : FragmentStateAdapter(this@MainActivity) {
                 override fun getItemCount(): Int = fragments.size
                 override fun createFragment(position: Int): Fragment = fragments[TabType.entries[position]]!!
             }
+            // To fix act restart cause crash.
+            try {
+                val fragmentsField = FragmentStateAdapter::class.java.getDeclaredField("mFragments")
+                fragmentsField.isAccessible = true
+                val fragments = fragmentsField.get(fragmentsAdapter) as LongSparseArray<Fragment>
+                fragments.clear()
+                for ((i, f) in this@MainActivity.fragments.map { it.value }.withIndex()) {
+                    fragments.put(i.toLong(), f)
+                }
+            } catch (e: Throwable) {
+                e.printStackTrace()
+            }
+            viewBinding.viewPager.adapter = fragmentsAdapter
             viewBinding.viewPager.isSaveEnabled = false
             viewBinding.viewPager.offscreenPageLimit = fragments.size
             viewBinding.tabLayout.addOnTabSelectedListener(object :
