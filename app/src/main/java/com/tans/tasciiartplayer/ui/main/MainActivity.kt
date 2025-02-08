@@ -23,6 +23,7 @@ import com.tans.tasciiartplayer.ui.audioplayer.ArtistsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.AudioListDialog
 import com.tans.tasciiartplayer.ui.videoplayer.VideoPlayerActivity
 import com.tans.tuiutils.activity.BaseCoroutineStateActivity
+import com.tans.tuiutils.dialog.showSimpleCancelableCoroutineResultDialogSuspend
 import com.tans.tuiutils.permission.permissionsRequestSuspend
 import com.tans.tuiutils.systembar.annotation.SystemBarStyle
 import kotlinx.coroutines.CoroutineScope
@@ -112,19 +113,20 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
                 this@bindContentViewCoroutine.launch {
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-                            val grant = this@MainActivity.supportFragmentManager.showOptionalDialogSuspend(
+                            val d = OptionalDialog(
                                 title = getString(R.string.main_act_storage_permission_request_title),
                                 message = getString(R.string.main_act_storage_permission_request_body),
                                 positiveButtonText = getString(R.string.main_act_storage_permission_request_accept),
                                 negativeButtonText = getString(R.string.main_act_storage_permission_request_deny)
                             )
+                            val grant = this@MainActivity.supportFragmentManager.showSimpleCancelableCoroutineResultDialogSuspend(d)
                             if (grant == true) {
                                 val i = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
                                 i.data = Uri.fromParts("package", packageName, null)
                                 startActivity(i)
                             }
                         } else {
-                            val scanResult = this@MainActivity.supportFragmentManager.showVideoAudioSearchDialogSuspend()
+                            val scanResult = this@MainActivity.supportFragmentManager.showSimpleCancelableCoroutineResultDialogSuspend(VideoAudioSearchDialog())
                             if (scanResult != null && (scanResult.first > 0 || scanResult.second > 0)) {
                                 Toast.makeText(this@MainActivity, getString(R.string.main_act_found_new_videos_audios, scanResult.first, scanResult.second), Toast.LENGTH_SHORT).show()
                             }
@@ -138,7 +140,7 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
 
             viewBinding.toolBar.menu.findItem(R.id.media_link).setOnMenuItemClickListener {
                 this@bindContentViewCoroutine.launch {
-                    val mediaLink = supportFragmentManager.showMediaLinkDialogSuspend()
+                    val mediaLink = supportFragmentManager.showSimpleCancelableCoroutineResultDialogSuspend(MediaLinkDialog())
                     if (!mediaLink.isNullOrBlank()) {
                         AudioPlayerManager.removeAudioList()
                         startActivity(VideoPlayerActivity.createIntent(this@MainActivity, mediaLink))

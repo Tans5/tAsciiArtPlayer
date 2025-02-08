@@ -33,9 +33,7 @@ class AudioMediaInfoDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
 
     override val contentViewHeightInScreenRatio: Float = 0.55f
 
-    override fun createContentView(context: Context, parent: ViewGroup): View {
-        return LayoutInflater.from(context).inflate(R.layout.audio_media_info_dialog, parent, false)
-    }
+    override val layoutId: Int = R.layout.audio_media_info_dialog
 
     override fun createDialog(contentView: View): Dialog {
         return requireActivity().createBottomSheetDialog(

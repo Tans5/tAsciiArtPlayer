@@ -5,11 +5,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import java.util.concurrent.ConcurrentHashMap
 
-class ContextMultiViewAndTaskCache<Type : Any>(private val createNew: (type: Type, context: FragmentActivity, viewGroup: ViewGroup) -> ContentViewAndTask) {
+class ContextMultiViewAndTaskCache<Type : Any>(private val createNew: (type: Type, context: FragmentActivity, viewGroup: ViewGroup?) -> ContentViewAndTask) {
 
     private val caches: ConcurrentHashMap<FragmentActivity, ConcurrentHashMap<Type, ContentViewAndTask>> = ConcurrentHashMap()
 
-    fun getFromCacheOrCreateNew(type: Type, context: Context, viewGroup: ViewGroup): ContentViewAndTask? {
+    fun getFromCacheOrCreateNew(type: Type, context: Context, viewGroup: ViewGroup?): ContentViewAndTask? {
         return if (context is FragmentActivity && !context.isDestroyed && !context.isFinishing) {
             val cacheMap = caches.getOrPut(context) { ConcurrentHashMap() }
             val cache = cacheMap[type]

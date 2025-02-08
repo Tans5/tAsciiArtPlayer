@@ -1,19 +1,14 @@
 package com.tans.tasciiartplayer.ui.main
 
-import android.content.Context
 import android.media.MediaScannerConnection
 import android.os.Environment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.FragmentManager
 import com.tans.tasciiartplayer.AppLog
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
 import com.tans.tasciiartplayer.databinding.VideoAudioSearchDialogBinding
 import com.tans.tasciiartplayer.video.VideoManager
-import com.tans.tuiutils.dialog.BaseCoroutineStateCancelableResultDialogFragment
-import com.tans.tuiutils.dialog.DialogCancelableResultCallback
+import com.tans.tuiutils.dialog.BaseSimpleCoroutineResultCancelableDialogFragment
 import com.tans.tuiutils.view.clicks
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
@@ -27,15 +22,9 @@ import kotlin.coroutines.resume
 import kotlin.math.max
 import kotlin.system.measureTimeMillis
 
-class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<Unit, Pair<Int, Int>> {
+class VideoAudioSearchDialog : BaseSimpleCoroutineResultCancelableDialogFragment<Unit, Pair<Int, Int>>(Unit) {
 
-    constructor() : super(Unit, null)
-
-    constructor(callback: DialogCancelableResultCallback<Pair<Int, Int>>) : super(Unit, callback)
-
-    override fun createContentView(context: Context, parent: ViewGroup): View {
-        return LayoutInflater.from(context).inflate(R.layout.video_audio_search_dialog, parent, false)
-    }
+    override val layoutId: Int = R.layout.video_audio_search_dialog
 
     override fun firstLaunchInitData() {
         launch(Dispatchers.IO) {
@@ -194,12 +183,5 @@ class VideoAudioSearchDialog : BaseCoroutineStateCancelableResultDialogFragment<
                 }
             }
         }
-    }
-}
-
-suspend fun FragmentManager.showVideoAudioSearchDialogSuspend(): Pair<Int, Int>? {
-    return suspendCancellableCoroutine<Pair<Int, Int>?> { cont ->
-        val d = VideoAudioSearchDialog(CoroutineDialogCancelableResultCallback(cont))
-        coroutineShowSafe(d, "VideoAudioSearchDialog#${System.currentTimeMillis()}", cont)
     }
 }

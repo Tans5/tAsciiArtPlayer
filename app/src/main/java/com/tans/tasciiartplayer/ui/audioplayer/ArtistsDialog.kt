@@ -31,9 +31,8 @@ class ArtistsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
 
     override val contentViewHeightInScreenRatio: Float = 1.0f
 
-
-    override fun createContentView(context: Context, parent: ViewGroup): View {
-        return createContentViewOrGetFromCache(context, parent)
+    override fun createContentView(context: Context, parentView: ViewGroup?): View {
+        return createContentViewOrGetFromCache(context, parentView)
     }
 
     override fun createDialog(contentView: View): Dialog {
@@ -114,7 +113,7 @@ class ArtistsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
 
         private fun createContentViewOrGetFromCache(
             context: Context,
-            parent: ViewGroup): View {
+            parent: ViewGroup?): View {
             return cache.getFromCacheOrCreateNew(context, parent)?.view ?: View(context)
         }
 

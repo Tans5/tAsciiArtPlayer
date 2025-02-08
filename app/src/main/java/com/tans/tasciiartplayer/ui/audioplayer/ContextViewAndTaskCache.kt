@@ -6,12 +6,12 @@ import androidx.fragment.app.FragmentActivity
 import java.util.concurrent.ConcurrentHashMap
 
 class ContextViewAndTaskCache(
-    private val createNew: (context: FragmentActivity, viewGroup: ViewGroup) -> ContentViewAndTask
+    private val createNew: (context: FragmentActivity, viewGroup: ViewGroup?) -> ContentViewAndTask
 ) {
 
     private val caches: ConcurrentHashMap<FragmentActivity, ContentViewAndTask> = ConcurrentHashMap()
 
-    fun getFromCacheOrCreateNew(context: Context, viewGroup: ViewGroup): ContentViewAndTask? {
+    fun getFromCacheOrCreateNew(context: Context, viewGroup: ViewGroup?): ContentViewAndTask? {
         return if (context is FragmentActivity && !context.isDestroyed && !context.isFinishing) {
             val cache = caches[context]
             if (cache != null) {

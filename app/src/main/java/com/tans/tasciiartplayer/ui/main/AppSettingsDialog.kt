@@ -1,6 +1,5 @@
 package com.tans.tasciiartplayer.ui.main
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
@@ -31,9 +30,7 @@ import kotlinx.coroutines.withContext
 
 class AppSettingsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
 
-    override fun createContentView(context: Context, parent: ViewGroup): View {
-        return LayoutInflater.from(context).inflate(R.layout.app_settings_dialog, parent, false)
-    }
+    override val layoutId: Int = R.layout.app_settings_dialog
 
     override fun firstLaunchInitData() {  }
 

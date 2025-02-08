@@ -13,9 +13,7 @@ import com.tans.tasciiartplayer.audio.audiolist.AudioListType
 import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
 import com.tans.tasciiartplayer.databinding.AudioAlbumItemLayoutBinding
 import com.tans.tasciiartplayer.databinding.AudioAlbumsDialogBinding
-import com.tans.tasciiartplayer.databinding.EmptyItemLayoutBinding
 import com.tans.tuiutils.adapter.impl.builders.SimpleAdapterBuilderImpl
-import com.tans.tuiutils.adapter.impl.builders.plus
 import com.tans.tuiutils.adapter.impl.databinders.DataBinderImpl
 import com.tans.tuiutils.adapter.impl.datasources.DataSourceImpl
 import com.tans.tuiutils.adapter.impl.viewcreatators.SingleItemViewCreatorImpl
@@ -31,8 +29,8 @@ class AlbumsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
 
     override val contentViewHeightInScreenRatio: Float = 1.0f
 
-    override fun createContentView(context: Context, parent: ViewGroup): View {
-        return createContentViewOrGetFromCache(context, parent)
+    override fun createContentView(context: Context, parentView: ViewGroup?): View {
+        return createContentViewOrGetFromCache(context, parentView)
     }
 
     override fun createDialog(contentView: View): Dialog {
@@ -105,7 +103,7 @@ class AlbumsDialog : BaseCoroutineStateDialogFragment<Unit>(Unit) {
 
         private fun createContentViewOrGetFromCache(
             context: Context,
-            parent: ViewGroup): View {
+            parent: ViewGroup?): View {
             return cache.getFromCacheOrCreateNew(context, parent)?.view ?: View(context)
         }
 

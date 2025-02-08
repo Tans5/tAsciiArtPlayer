@@ -1,10 +1,7 @@
 package com.tans.tasciiartplayer.ui.videoplayer
 
 import android.app.Dialog
-import android.content.Context
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.SeekBar
 import com.tans.tasciiartplayer.R
 import com.tans.tasciiartplayer.databinding.VideoPlayerSettingsDialogBinding
@@ -33,9 +30,7 @@ class VideoPlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
 
     override val contentViewWidthInScreenRatio: Float = 0.5f
 
-    override fun createContentView(context: Context, parent: ViewGroup): View {
-        return LayoutInflater.from(context).inflate(R.layout.video_player_settings_dialog, parent, false)
-    }
+    override val layoutId: Int = R.layout.video_player_settings_dialog
 
     override fun createDialog(contentView: View): Dialog {
         return requireActivity().createDefaultDialog(contentView = contentView, dimAmount = 0.0f)

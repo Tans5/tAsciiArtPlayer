@@ -48,11 +48,11 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
         this.type = type
     }
 
-    override fun createContentView(context: Context, parent: ViewGroup): View {
+    override fun createContentView(context: Context, parentView: ViewGroup?): View {
         return if (type == null) {
             View(context)
         } else {
-            createContentViewOrGetFromCache(type, context, parent)
+            createContentViewOrGetFromCache(type, context, parentView)
         }
     }
 
@@ -212,7 +212,7 @@ class AudioListDialog : BaseCoroutineStateDialogFragment<Unit> {
         private fun createContentViewOrGetFromCache(
             type: AudioListType,
             context: Context,
-            parent: ViewGroup): View {
+            parent: ViewGroup?): View {
             return cache.getFromCacheOrCreateNew(type, context, parent)?.view ?: View(context)
         }
 
