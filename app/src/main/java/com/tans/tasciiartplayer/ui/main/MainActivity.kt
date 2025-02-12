@@ -8,11 +8,9 @@ import android.os.Environment
 import android.provider.Settings
 import android.view.View
 import android.widget.Toast
-import androidx.collection.LongSparseArray
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.tans.tasciiartplayer.R
@@ -26,6 +24,7 @@ import com.tans.tuiutils.activity.BaseCoroutineStateActivity
 import com.tans.tuiutils.dialog.showSimpleCancelableCoroutineResultDialogSuspend
 import com.tans.tuiutils.permission.permissionsRequestSuspend
 import com.tans.tuiutils.systembar.annotation.SystemBarStyle
+import com.tans.tuiutils.viewpager2.NoRecycleFragmentStateAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -38,7 +37,8 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
     private val fragments: Map<TabType, Fragment> by lazyViewModelField("fragments") {
         mapOf(
             TabType.Videos to VideosFragment(),
-            TabType.Audios to AudiosFragment()
+            TabType.Audios to AudiosFragment(),
+            TabType.IPTV to IptvFragment()
         )
     }
 
@@ -66,21 +66,9 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
             }
             val viewBinding = MainActivityBinding.bind(contentView)
 
-            val fragmentsAdapter = object : FragmentStateAdapter(this@MainActivity) {
+            val fragmentsAdapter = object : NoRecycleFragmentStateAdapter(this@MainActivity) {
                 override fun getItemCount(): Int = fragments.size
                 override fun createFragment(position: Int): Fragment = fragments[TabType.entries[position]]!!
-            }
-            // To fix act restart cause crash.
-            try {
-                val fragmentsField = FragmentStateAdapter::class.java.getDeclaredField("mFragments")
-                fragmentsField.isAccessible = true
-                val fragments = fragmentsField.get(fragmentsAdapter) as LongSparseArray<Fragment>
-                fragments.clear()
-                for ((i, f) in this@MainActivity.fragments.map { it.value }.withIndex()) {
-                    fragments.put(i.toLong(), f)
-                }
-            } catch (e: Throwable) {
-                e.printStackTrace()
             }
             viewBinding.viewPager.adapter = fragmentsAdapter
             viewBinding.viewPager.isSaveEnabled = false
@@ -91,6 +79,7 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
                     when (tab?.position) {
                         TabType.Videos.ordinal -> updateState { it.copy(selectedTab = TabType.Videos) }
                         TabType.Audios.ordinal -> updateState { it.copy(selectedTab = TabType.Audios) }
+                        TabType.IPTV.ordinal -> updateState { it.copy(selectedTab = TabType.IPTV) }
                     }
                 }
                 override fun onTabUnselected(tab: TabLayout.Tab?) {}
@@ -100,6 +89,7 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
                 tab.text = when (TabType.entries[position]) {
                     TabType.Videos -> getString(R.string.main_act_videos_tab)
                     TabType.Audios -> getString(R.string.main_act_audios_tab)
+                    TabType.IPTV -> getString(R.string.main_act_iptv_tab)
                 }
             }.attach()
 
@@ -166,7 +156,7 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
 
     companion object {
 
-        enum class TabType { Videos, Audios }
+        enum class TabType { Videos, Audios, IPTV }
 
         data class State(
             val selectedTab: TabType = TabType.Videos

@@ -50,6 +50,7 @@
     <!--region MainActivity -->
     <string name="main_act_videos_tab">VIDEOS</string>
     <string name="main_act_audios_tab">AUDIOS</string>
+    <string name="main_act_iptv_tab">IPTV</string>
     <string name="main_act_storage_permission_request_title">Request Permission</string>
     <string name="main_act_storage_permission_request_body">tAsciiArtPlayer needs storage permission to scan new video and audio files.</string>
     <string name="main_act_storage_permission_request_accept">YES</string>

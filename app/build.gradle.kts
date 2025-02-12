@@ -103,4 +103,7 @@ dependencies {
 
     // Media
     implementation(libs.androidx.media)
+
+    // Okhttp
+    implementation(libs.okhttp)
 }
