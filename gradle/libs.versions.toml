@@ -58,4 +58,5 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 googleKsp = { id = "com.google.devtools.ksp", version.ref = "googleKsp" }
+room = { id = "androidx.room", version.ref = "room" }
 

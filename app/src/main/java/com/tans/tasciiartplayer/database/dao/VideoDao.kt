@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface VideoDao {
 
     @Query("SELECT * FROM ${VideoWatchHistory.TABLE_NAME}")
-    suspend fun getAllVideoWatchHistories(): List<VideoWatchHistory>
+    suspend fun queryAllVideoWatchHistories(): List<VideoWatchHistory>
 
     @Query("SELECT * FROM ${VideoWatchHistory.TABLE_NAME}")
     fun observeAllVideoWatchHistories(): Flow<List<VideoWatchHistory>>

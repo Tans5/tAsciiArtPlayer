@@ -71,7 +71,7 @@ object VideoManager : CoroutineState<VideoManagerState> by CoroutineState(VideoM
         val mediaStoreVideos = context.queryVideoFromMediaStore()
         val activeVideoIds = mediaStoreVideos.map { it.id }.toTypedArray()
         val dao = getDaoOrError()
-        val videoIdToLastWatch = dao.getAllVideoWatchHistories().associate { it.videoId to it.lastWatch }
+        val videoIdToLastWatch = dao.queryAllVideoWatchHistories().associate { it.videoId to it.lastWatch }
         updateState { oldState ->
             val newVideos = mediaStoreVideos
                 .mapNotNull { mv ->
