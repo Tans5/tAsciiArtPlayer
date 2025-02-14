@@ -8,6 +8,7 @@ import com.tans.tasciiartplayer.database.AppDatabase
 import com.tans.tasciiartplayer.hwevent.HeadsetObserver
 import com.tans.tasciiartplayer.hwevent.MediaKeyObserver
 import com.tans.tasciiartplayer.hwevent.PhoneObserver
+import com.tans.tasciiartplayer.iptv.IptvManager
 import com.tans.tasciiartplayer.video.VideoManager
 import com.tans.tuiutils.systembar.AutoApplySystemBarAnnotation
 
@@ -26,6 +27,7 @@ class App : Application() {
         AppSettings.init(this)
         VideoManager.init(this, database.videoDao())
         AudioListManager.init(this, database.audioDao())
+        IptvManager.init(this, database.iptvDao())
         AudioPlayerManager.init(this)
         HeadsetObserver.init(this)
         PhoneObserver.init(this)

@@ -6,11 +6,16 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.tans.tmediaplayer.player.model.AudioChannel
 import com.tans.tmediaplayer.player.model.AudioSampleBitDepth
 import com.tans.tmediaplayer.player.model.AudioSampleRate
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
+import java.util.Optional
 
 object AppSettings {
 
@@ -26,6 +31,8 @@ object AppSettings {
     private val AUDIO_OUTPUT_SAMPLE_RATE_KEY = intPreferencesKey("audio_output_sample_rate")
 
     private val AUDIO_OUTPUT_SAMPLE_FMT_KEY = intPreferencesKey("audio_output_sample_fmt")
+
+    private val IPTV_SELECTED_SOURCE_ID_KEY = longPreferencesKey("iptv_selected_source_id")
 
     private var application: Application? = null
 
@@ -72,5 +79,32 @@ object AppSettings {
 
     suspend fun setAudioOutputSampleFormat(simpleFormat: AudioSampleBitDepth) {
         dataStore.edit { it[AUDIO_OUTPUT_SAMPLE_FMT_KEY] = simpleFormat.depth }
+    }
+
+
+    suspend fun getIptvSelectedSourceId(): Long? {
+        return dataStore.data.firstOrNull()?.get(IPTV_SELECTED_SOURCE_ID_KEY)
+    }
+
+    fun observeIptvSelectedSourceId(): Flow<Optional<Long>> {
+        return dataStore.data
+            .map {
+                val id = it[IPTV_SELECTED_SOURCE_ID_KEY]
+                Optional.ofNullable(id)
+            }
+            .distinctUntilChanged()
+    }
+
+    /**
+     * create time as id
+     */
+    suspend fun setIptvSelectedSourceId(id: Long?) {
+        dataStore.edit {
+            if (id == null) {
+                it.remove(IPTV_SELECTED_SOURCE_ID_KEY)
+            } else {
+                it[IPTV_SELECTED_SOURCE_ID_KEY] = id
+            }
+        }
     }
 }

@@ -1,8 +1,8 @@
-package com.tans.tasciiartplayer.m3u8
+package com.tans.tasciiartplayer.iptv.m3u8
 
 import com.tans.tasciiartplayer.AppLog
-import com.tans.tasciiartplayer.m3u8.model.M3u8
-import com.tans.tasciiartplayer.m3u8.model.M3u8Extinf
+import com.tans.tasciiartplayer.iptv.m3u8.model.M3u8
+import com.tans.tasciiartplayer.iptv.m3u8.model.M3u8Extinf
 
 private const val START_TAG = "#EXTM3U"
 

@@ -1,4 +1,4 @@
-package com.tans.tasciiartplayer.m3u8.model
+package com.tans.tasciiartplayer.iptv.m3u8.model
 
 data class M3u8Extinf(
     val durationText: String,
