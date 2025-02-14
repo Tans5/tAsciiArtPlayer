@@ -80,7 +80,6 @@ class VideosFragment : BaseCoroutineStateFragment<VideosFragment.Companion.State
                     itemViewBinding.lastWatchPb.progress = ((lastWatch.toDouble() / video.duration.toDouble()) * 100.0).toInt()
                 }
                 itemViewBinding.root.clicks(this) {
-                    AudioPlayerManager.removeAudioList()
                     startActivity(
                         VideoPlayerActivity.createIntent(
                             context = requireActivity(),

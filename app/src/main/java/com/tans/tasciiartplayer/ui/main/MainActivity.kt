@@ -14,11 +14,11 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.tans.tasciiartplayer.R
-import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManager
 import com.tans.tasciiartplayer.databinding.MainActivityBinding
 import com.tans.tasciiartplayer.ui.audioplayer.AlbumsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.ArtistsDialog
 import com.tans.tasciiartplayer.ui.audioplayer.AudioListDialog
+import com.tans.tasciiartplayer.ui.main.iptv.IptvFragment
 import com.tans.tasciiartplayer.ui.videoplayer.VideoPlayerActivity
 import com.tans.tuiutils.activity.BaseCoroutineStateActivity
 import com.tans.tuiutils.dialog.showSimpleCancelableCoroutineResultDialogSuspend
@@ -132,7 +132,6 @@ class MainActivity : BaseCoroutineStateActivity<MainActivity.Companion.State>(St
                 this@bindContentViewCoroutine.launch {
                     val mediaLink = supportFragmentManager.showSimpleCancelableCoroutineResultDialogSuspend(MediaLinkDialog())
                     if (!mediaLink.isNullOrBlank()) {
-                        AudioPlayerManager.removeAudioList()
                         startActivity(VideoPlayerActivity.createIntent(this@MainActivity, mediaLink))
                     }
                 }

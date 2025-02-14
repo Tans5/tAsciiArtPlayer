@@ -15,6 +15,7 @@ import android.widget.Toast
 import com.tans.tasciiartplayer.AppLog
 import com.tans.tasciiartplayer.AppSettings
 import com.tans.tasciiartplayer.R
+import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManager
 import com.tans.tasciiartplayer.video.VideoManager
 import com.tans.tasciiartplayer.databinding.VideoPlayerActivityBinding
 import com.tans.tasciiartplayer.formatDuration
@@ -49,7 +50,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
     override fun CoroutineScope.firstLaunchInitDataCoroutine() {
         launch(Dispatchers.IO) {
-
+            AudioPlayerManager.removeAudioList()
             val mediaPlayer = tMediaPlayer(
                 audioOutputChannel = AppSettings.getAudioOutputChannels(),
                 audioOutputSampleRate = AppSettings.getAudioOutputSampleRate(),

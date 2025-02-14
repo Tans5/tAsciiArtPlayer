@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="55dp"
+    android:foreground="?attr/selectableItemBackgroundBorderless">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RadioButton
+            android:id="@+id/select_rb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:checked="false"
+            android:layout_marginStart="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
+            android:id="@+id/title_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:ellipsize="end"
+            android:textColor="@color/gray_900"
+            android:textSize="16sp"
+            android:lines="1"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toStartOf="@id/modify_iv"
+            app:layout_constraintStart_toEndOf="@id/select_rb"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/link_tv"
+            tools:text="Title" />
+
+        <TextView
+            android:id="@+id/link_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:ellipsize="end"
+            android:textColor="@color/gray_600"
+            android:textSize="14sp"
+            android:lines="1"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toStartOf="@id/modify_iv"
+            app:layout_constraintStart_toEndOf="@id/select_rb"
+            app:layout_constraintTop_toBottomOf="@id/title_tv"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="https://xxxxxxxx" />
+
+        <ImageView
+            android:id="@+id/modify_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:padding="3dp"
+            android:src="@drawable/icon_modify"
+            android:layout_marginEnd="2dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/delete_iv"/>
+
+        <ImageView
+            android:id="@+id/delete_iv"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:padding="3dp"
+            android:src="@drawable/icon_delete"
+            android:layout_marginEnd="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

@@ -89,4 +89,9 @@
     <string name="media_link_dialog_ok">OK</string>
     <string name="media_link_dialog_cancel">CANCEL</string>
     <!--endregion-->
+
+    <!--region IptvSourceDialog -->
+    <string name="iptv_source_dialog_title">IPTV Source</string>
+    <string name="iptv_source_dialog_add_iptv_source">Add IPTV source</string>
+    <!--endregion -->
 </resources>
