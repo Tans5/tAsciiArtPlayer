@@ -168,6 +168,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
         val viewBinding = VideoPlayerActivityBinding.bind(contentView)
 
+        // Error State observe.
         renderStateNewCoroutine({ it.playerState }) {
             if (it is tMediaPlayerState.Error) {
                 Toast.makeText(this@VideoPlayerActivity, R.string.video_player_act_error, Toast.LENGTH_SHORT).show()
@@ -176,29 +177,38 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
         }
 
         launch {
+            viewBinding.seekingLoadingPb.show()
             // Waiting player active.
             val mediaPlayer = stateFlow.map { it.loadStatus }.filterIsInstance<PlayerLoadStatus.Prepared>().first().player
+            viewBinding.seekingLoadingPb.hide()
             mediaPlayer.attachPlayerView(viewBinding.playerView)
             mediaPlayer.attachSubtitleView(viewBinding.subtitleTv)
             if (mediaPlayer.getState() is tMediaPlayerState.Prepared) {
                 mediaPlayer.play()
             }
             val mediaInfo = mediaPlayer.getMediaInfo()
-            if (mediaInfo != null && mediaInfo.isSeekable) {
+            val isSeekable = mediaInfo?.isSeekable ?: false
+            if (isSeekable && mediaInfo != null) {
                 // Seekable
-                viewBinding.durationTv.visibility = View.VISIBLE
+                viewBinding.durationTv.show()
+                viewBinding.playerSb.show()
+                viewBinding.playPauseLayout.show()
+
+                // Render durationText
                 this@bindContentViewCoroutine.renderStateNewCoroutine({ it.progress.duration }) { duration ->
                     viewBinding.durationTv.text = duration.formatDuration()
                 }
 
+                // Update Seekbar progress.
                 var isPlayerSbInTouching = false
-                viewBinding.playerSb.visibility = View.VISIBLE
                 this@bindContentViewCoroutine.renderStateNewCoroutine({ it.progress }) { (progress, duration) ->
                     if (!isPlayerSbInTouching && mediaPlayer.getState() !is tMediaPlayerState.Seeking) {
                         val progressInPercent = ((progress - mediaInfo.startTime).toFloat() * 100.0 / duration.toFloat() + 0.5f).toInt()
                         viewBinding.playerSb.progress = progressInPercent
                     }
                 }
+
+                // Do user seek request.
                 viewBinding.playerSb.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {}
 
@@ -215,63 +225,74 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                         }
                     }
                 })
+
+                // Observe Player State and update UI
+                this@bindContentViewCoroutine.renderStateNewCoroutine({ it.playerState }) { playerState ->
+
+                    // In Seeking.
+                    if (playerState is tMediaPlayerState.Seeking) {
+                        viewBinding.seekingLoadingPb.show()
+                    } else {
+                        viewBinding.seekingLoadingPb.hide()
+                    }
+
+                    val fixedState = when (playerState) {
+                        is tMediaPlayerState.Seeking -> playerState.lastState
+                        else -> playerState
+                    }
+
+                    // Playing
+                    if (fixedState is tMediaPlayerState.Playing) {
+                        viewBinding.pauseIv.show()
+                    } else {
+                        viewBinding.pauseIv.hide()
+                    }
+
+                    // Paused
+                    if (fixedState is tMediaPlayerState.Prepared ||
+                        fixedState is tMediaPlayerState.Paused ||
+                        fixedState is tMediaPlayerState.Stopped
+                    ) {
+                        viewBinding.playIv.show()
+                    } else {
+                        viewBinding.playIv.hide()
+                    }
+
+                    // Play end.
+                    if (fixedState is tMediaPlayerState.PlayEnd) {
+                        viewBinding.replayIv.show()
+                        viewBinding.actionLayout.show()
+                    } else {
+                        viewBinding.replayIv.hide()
+                    }
+                }
+
+
+                // Player Opt clicks.
+                viewBinding.playIv.clicks(this@bindContentViewCoroutine) {
+                    mediaPlayer.play()
+                }
+
+                viewBinding.pauseIv.clicks(this@bindContentViewCoroutine) {
+                    mediaPlayer.pause()
+                }
+
+                viewBinding.replayIv.clicks(this@bindContentViewCoroutine) {
+                    mediaPlayer.play()
+                }
             } else {
                 // Not seekable
-                viewBinding.durationTv.visibility = View.GONE
-                viewBinding.playerSb.visibility = View.GONE
+                viewBinding.durationTv.hide()
+                viewBinding.playerSb.hide()
+                viewBinding.playPauseLayout.hide()
             }
 
+            // Render progress text.
             this@bindContentViewCoroutine.renderStateNewCoroutine({ it.progress.progress }) { progress ->
                 viewBinding.progressTv.text = progress.formatDuration()
             }
 
-            this@bindContentViewCoroutine.renderStateNewCoroutine({ it.playerState }) { playerState ->
-
-                if (playerState is tMediaPlayerState.Seeking) {
-                    viewBinding.seekingLoadingPb.show()
-                } else {
-                    viewBinding.seekingLoadingPb.hide()
-                }
-
-                val fixedState = when (playerState) {
-                    is tMediaPlayerState.Seeking -> playerState.lastState
-                    else -> playerState
-                }
-                if (fixedState is tMediaPlayerState.Playing) {
-                    viewBinding.pauseIv.show()
-                } else {
-                    viewBinding.pauseIv.hide()
-                }
-
-                if (fixedState is tMediaPlayerState.Prepared ||
-                    fixedState is tMediaPlayerState.Paused ||
-                    fixedState is tMediaPlayerState.Stopped
-                ) {
-                    viewBinding.playIv.show()
-                } else {
-                    viewBinding.playIv.hide()
-                }
-
-                if (fixedState is tMediaPlayerState.PlayEnd) {
-                    viewBinding.replayIv.show()
-                    viewBinding.actionLayout.show()
-                } else {
-                    viewBinding.replayIv.hide()
-                }
-            }
-
-            viewBinding.playIv.clicks(this@bindContentViewCoroutine) {
-                mediaPlayer.play()
-            }
-
-            viewBinding.pauseIv.clicks(this@bindContentViewCoroutine) {
-                mediaPlayer.pause()
-            }
-
-            viewBinding.replayIv.clicks(this@bindContentViewCoroutine) {
-                mediaPlayer.play()
-            }
-
+            // MediaInfo
             viewBinding.infoIv.clicks(this@bindContentViewCoroutine) {
                 val info = mediaPlayer.getMediaInfo()
                 if (info != null) {
@@ -282,11 +303,14 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
             }
 
+            // Settings.
             viewBinding.settingsIv.clicks(this@bindContentViewCoroutine) {
                 viewBinding.actionLayout.hide()
                 val d = VideoPlayerSettingsDialog(playerView = viewBinding.playerView, player = mediaPlayer)
                 d.showSafe(supportFragmentManager, "PlayerSettingsDialog#${System.currentTimeMillis()}}")
             }
+
+            // Subtitles
             val subtitleStreams = mediaPlayer.getMediaInfo()?.subtitleStreams ?: emptyList()
             if (subtitleStreams.isNotEmpty()) {
                 viewBinding.subtitleIv.show()
@@ -299,16 +323,17 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 viewBinding.subtitleIv.hide()
             }
 
+            // Player action
             viewBinding.playerView.setOnTouchListener(PlayerClickTouchListener())
             viewBinding.playerView.clicks(this@bindContentViewCoroutine) {
                 viewBinding.actionLayout.show()
             }
-
             viewBinding.actionLayout.setOnTouchListener(PlayerClickTouchListener())
             viewBinding.actionLayout.clicks(this@bindContentViewCoroutine) {
                 viewBinding.actionLayout.hide()
             }
 
+            // Change screen orientation
             viewBinding.changeScreenOrientationIv.clicks(this@bindContentViewCoroutine) {
                 requestedOrientation = if (this@VideoPlayerActivity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -317,8 +342,8 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 }
             }
 
+            // Show last watch history
             this@bindContentViewCoroutine.launch {
-                // Show last watch history
                 if (mediaInfo != null && intent.getInputMediaType() == InputMediaType.MediaStore) {
                     val lastWatch = intent.getMediaLastWatch()
                     if ((lastWatch > 5000L && (mediaInfo.duration - lastWatch) > 5000L)) {
@@ -378,6 +403,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
     override fun onViewModelCleared() {
         super.onViewModelCleared()
+        // Update play history when finished.
         val player = (stateFlow.value.loadStatus as? PlayerLoadStatus.Prepared)?.player
         if (player != null) {
             val info = player.getMediaInfo()
