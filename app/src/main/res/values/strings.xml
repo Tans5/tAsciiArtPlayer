@@ -94,4 +94,12 @@
     <string name="iptv_source_dialog_title">IPTV Source</string>
     <string name="iptv_source_dialog_add_iptv_source">Add IPTV source</string>
     <!--endregion -->
+
+    <!-- region AddIptvSourceDialog -->
+    <string name="add_iptv_source_dialog_title">Add IPTV Source</string>
+    <string name="add_iptv_source_dialog_input_name_hint">Input IPTV source name.</string>
+    <string name="add_iptv_source_dialog_input_name_error">Source name is empty.</string>
+    <string name="add_iptv_source_dialog_input_source_hint">Input IPTV source link.</string>
+    <string name="add_iptv_source_dialog_input_link_error">Source link is empty.</string>
+    <!--endregion -->
 </resources>

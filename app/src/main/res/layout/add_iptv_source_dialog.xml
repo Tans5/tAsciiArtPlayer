@@ -9,21 +9,54 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <TextView
+        android:id="@+id/title_tv"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="?attr/dialogPreferredPadding"
+        android:layout_marginStart="?attr/dialogPreferredPadding"
+        android:layout_marginTop="17dp"
+        android:layout_width="0dp"
+        android:text="@string/add_iptv_source_dialog_title"
+        android:textColor="@color/gray_900"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_layout"
+        android:id="@+id/name_input_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="?attr/dialogPreferredPadding"
         android:layout_marginEnd="?attr/dialogPreferredPadding"
-        android:layout_marginTop="17dp"
-        android:hint="@string/media_link_dialog_input_hint"
+        android:layout_marginTop="10dp"
+        android:hint="@string/add_iptv_source_dialog_input_name_hint"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/title_tv">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/text_et"
+            android:id="@+id/name_input_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/link_input_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="?attr/dialogPreferredPadding"
+        android:layout_marginEnd="?attr/dialogPreferredPadding"
+        android:layout_marginTop="5dp"
+        android:hint="@string/add_iptv_source_dialog_input_source_hint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/name_input_layout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/link_input_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -38,7 +71,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="12dp"
         android:layout_marginBottom="4dp"
-        app:layout_constraintTop_toBottomOf="@id/text_layout"
+        app:layout_constraintTop_toBottomOf="@id/link_input_layout"
         app:layout_constraintEnd_toStartOf="@id/ok_bt"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -51,7 +84,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="12dp"
         android:layout_marginBottom="4dp"
-        app:layout_constraintTop_toBottomOf="@id/text_layout"
+        app:layout_constraintTop_toBottomOf="@id/link_input_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

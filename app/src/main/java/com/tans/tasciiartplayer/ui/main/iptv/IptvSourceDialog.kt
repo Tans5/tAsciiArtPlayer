@@ -97,7 +97,7 @@ class IptvSourceDialog : BaseCoroutineStateDialogFragment<IptvSourceDialog.Compa
                                     .map {
                                         when {
                                             it.second == data.second -> true to data.second
-                                            it.first -> false to data.second
+                                            it.first -> false to it.second
                                             else -> it
                                         }
                                     }
@@ -113,7 +113,7 @@ class IptvSourceDialog : BaseCoroutineStateDialogFragment<IptvSourceDialog.Compa
             dataBinder = DataBinderImpl { _, itemView, _ ->
                 val itemViewBinding = IptvSourceAddLayoutBinding.bind(itemView)
                 itemViewBinding.root.clicks(this@IptvSourceDialog) {
-                    // TODO: Add source.
+                    AddIptvSourceDialog().showSafe(this.childFragmentManager, "AddIptvSourceDialog#${System.currentTimeMillis()}")
                 }
             }
         )
