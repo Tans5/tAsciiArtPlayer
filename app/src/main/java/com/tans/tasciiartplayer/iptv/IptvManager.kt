@@ -41,25 +41,19 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
             dao.observeAllIpTvSource()
                 .distinctUntilChanged()
                 .collect { allIptvSources ->
+                    AppLog.d(TAG, "Iptv sources changed: $allIptvSources")
                     updateState { oldState ->
+                        val selectedIptvSourceIdInSp = oldState.selectedIptvSourceId.getOrNull()
                         val lastSelectedSource = oldState.selectedIptvSource.getOrNull()
-                        val newSelectedSource = if (lastSelectedSource == null) {
-                            Optional.ofNullable(allIptvSources.getOrNull(0).apply {
-                                val createTime = this?.createTime
-                                launch { AppSettings.setIptvSelectedSourceId(createTime) }
-                            })
-                        } else {
-                            val new = allIptvSources.find { it.createTime == lastSelectedSource.createTime }
-                            if (new == null) {
-                                Optional.ofNullable(allIptvSources.getOrNull(0).apply {
-                                    val createTime = this?.createTime
-                                    launch { AppSettings.setIptvSelectedSourceId(createTime) }
-                                })
-                            } else {
-                                Optional.of(new)
+                        val new = allIptvSources.find { it.createTime == selectedIptvSourceIdInSp } ?: allIptvSources.getOrNull(0)
+                        if (lastSelectedSource != new) {
+                            if (new != null && new.createTime != selectedIptvSourceIdInSp) {
+                                AppLog.d(TAG, "Auto selected ${new.createTime}.")
                             }
+                            oldState.copy(selectedIptvSource = Optional.ofNullable(new), allIptvSources = allIptvSources)
+                        } else {
+                            oldState.copy(allIptvSources = allIptvSources)
                         }
-                        oldState.copy(selectedIptvSource = newSelectedSource, allIptvSources = allIptvSources)
                     }
                 }
         }
@@ -74,21 +68,18 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
                     updateState { oldState ->
                         if (oldState.selectedIptvSource.getOrNull()?.createTime != newSelectedIptvId) {
                             if (newSelectedIptvId == null) {
-                                oldState.copy(selectedIptvSource = Optional.empty())
+                                oldState.copy(selectedIptvSource = Optional.empty(), selectedIptvSourceId = it)
                             } else {
-                                val targetSource = oldState.allIptvSources.find { it.createTime == newSelectedIptvId }
+                                val targetSource = oldState.allIptvSources.find { s -> s.createTime == newSelectedIptvId }
                                 if (targetSource == null) {
-                                    AppLog.e(TAG, "Wrong selected iptv source id: $newSelectedIptvId")
-                                    launch {
-                                        AppSettings.setIptvSelectedSourceId(oldState.selectedIptvSource.getOrNull()?.createTime)
-                                    }
-                                    oldState
+                                    AppLog.e(TAG, "Selected iptv source id $newSelectedIptvId not in ${oldState.allIptvSources}.")
+                                    oldState.copy(selectedIptvSourceId = it)
                                 } else {
-                                    oldState.copy(selectedIptvSource = Optional.of(targetSource))
+                                    oldState.copy(selectedIptvSource = Optional.of(targetSource), selectedIptvSourceId = it)
                                 }
                             }
                         } else {
-                            oldState
+                            oldState.copy(selectedIptvSourceId = it)
                         }
                     }
                 }
@@ -235,7 +226,8 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
     data class IptvManagerState(
         val loadIptvSourceStatus: LoadIptvSourceStatus = LoadIptvSourceStatus.NoData,
         val selectedIptvSource: Optional<IptvSource> = Optional.empty(),
-        val allIptvSources: List<IptvSource> = emptyList()
+        val allIptvSources: List<IptvSource> = emptyList(),
+        val selectedIptvSourceId: Optional<Long> = Optional.empty()
     )
 
     const val TAG = "IptvManager"
