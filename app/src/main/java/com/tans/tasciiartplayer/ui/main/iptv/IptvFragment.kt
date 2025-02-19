@@ -89,6 +89,7 @@ class IptvFragment : BaseCoroutineStateFragment<Unit>(Unit) {
                 if (tvLogoUrl != null) {
                     Glide.with(this@IptvFragment)
                         .load(tvLogoUrl)
+                        .placeholder(R.drawable.icon_movie)
                         .error(R.drawable.icon_movie)
                         .into(itemViewBinding.tvLogoIv)
                 } else {
