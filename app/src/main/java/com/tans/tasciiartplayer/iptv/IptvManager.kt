@@ -45,11 +45,8 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
                     updateState { oldState ->
                         val selectedIptvSourceIdInSp = oldState.selectedIptvSourceId.getOrNull()
                         val lastSelectedSource = oldState.selectedIptvSource.getOrNull()
-                        val new = allIptvSources.find { it.createTime == selectedIptvSourceIdInSp } ?: allIptvSources.getOrNull(0)
+                        val new = allIptvSources.find { it.createTime == selectedIptvSourceIdInSp }
                         if (lastSelectedSource != new) {
-                            if (new != null && new.createTime != selectedIptvSourceIdInSp) {
-                                AppLog.d(TAG, "Auto selected ${new.createTime}.")
-                            }
                             oldState.copy(selectedIptvSource = Optional.ofNullable(new), allIptvSources = allIptvSources)
                         } else {
                             oldState.copy(allIptvSources = allIptvSources)
@@ -68,12 +65,12 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
                     updateState { oldState ->
                         if (oldState.selectedIptvSource.getOrNull()?.createTime != newSelectedIptvId) {
                             if (newSelectedIptvId == null) {
-                                oldState.copy(selectedIptvSource = Optional.empty(), selectedIptvSourceId = it)
+                                oldState.copy(selectedIptvSource = Optional.empty(), selectedIptvSourceId = Optional.empty())
                             } else {
                                 val targetSource = oldState.allIptvSources.find { s -> s.createTime == newSelectedIptvId }
                                 if (targetSource == null) {
                                     AppLog.e(TAG, "Selected iptv source id $newSelectedIptvId not in ${oldState.allIptvSources}.")
-                                    oldState.copy(selectedIptvSourceId = it)
+                                    oldState.copy(selectedIptvSource = Optional.empty(), selectedIptvSourceId = it)
                                 } else {
                                     oldState.copy(selectedIptvSource = Optional.of(targetSource), selectedIptvSourceId = it)
                                 }
@@ -193,8 +190,8 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
                     is LoadIptvSourceStatus.Loading -> {
                         LoadIptvSourceStatus.LoadSuccess(source = source, loaded = it)
                     }
-                    is LoadIptvSourceStatus.RefreshSuccess -> {
-                        LoadIptvSourceStatus.RefreshSuccess(source = source, loaded = it, lastSource = startStatus.lastSource, lastLoaded = startStatus.loaded)
+                    is LoadIptvSourceStatus.Refreshing -> {
+                        LoadIptvSourceStatus.RefreshSuccess(source = source, loaded = it, lastSource = startStatus.lastSource, lastLoaded = startStatus.lastLoaded)
                     }
                     else -> {
                         // Can't be here.

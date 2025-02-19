@@ -74,6 +74,10 @@
     <string name="audios_fgt_no_play">No Play</string>
     <!--endregion-->
 
+    <!--region IptvFragment-->
+    <string name="iptv_fgt_no_data">No Data</string>
+    <!--endregion -->
+
     <!--region VideoPlayerActivity-->
     <string name="video_player_act_error">An error occurred. T_T</string>
     <!--endregion -->

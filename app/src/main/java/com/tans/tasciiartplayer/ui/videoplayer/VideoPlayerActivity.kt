@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -89,6 +88,12 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                     mediaPlayer.prepare(customLink)
                 }
             }
+
+            if (isFinishing || isDestroyed) {
+                mediaPlayer.release()
+                return@launch
+            }
+
             when (loadResult) {
                 OptResult.Success -> {
                     updateState { it.copy(loadStatus = PlayerLoadStatus.Prepared(mediaPlayer)) }
@@ -102,7 +107,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                         ).collect {
                             if (it) {
                                 val playerState = mediaPlayer.getState()
-                                if (playerState is tMediaPlayerState.Playing) {
+                                if (playerState is tMediaPlayerState.Playing && mediaPlayer.getMediaInfo()?.isSeekable == true) {
                                     mediaPlayer.pause()
                                 }
                             }
@@ -127,14 +132,16 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                                         }
 
                                         MediaKeyObserver.MediaKeyEvent.Pause -> {
-                                            if (playerState is tMediaPlayerState.Playing) {
+                                            if (playerState is tMediaPlayerState.Playing && mediaPlayer.getMediaInfo()?.isSeekable == true) {
                                                 mediaPlayer.pause()
                                             }
                                         }
 
                                         MediaKeyObserver.MediaKeyEvent.PlayOrPause -> {
                                             if (playerState is tMediaPlayerState.Playing) {
-                                                mediaPlayer.pause()
+                                                if (mediaPlayer.getMediaInfo()?.isSeekable == true ) {
+                                                    mediaPlayer.pause()
+                                                }
                                             } else {
                                                 mediaPlayer.play()
                                             }
@@ -142,7 +149,8 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
                                         MediaKeyObserver.MediaKeyEvent.Stop -> {
                                             if (playerState !is tMediaPlayerState.Stopped &&
-                                                playerState !is tMediaPlayerState.PlayEnd
+                                                playerState !is tMediaPlayerState.PlayEnd &&
+                                                mediaPlayer.getMediaInfo()?.isSeekable == true
                                             ) {
                                                 mediaPlayer.stop()
                                             }
@@ -154,11 +162,11 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                                 }
                             }
                     }
-                    Log.d(TAG, "Load media file success.")
+                    AppLog.d(TAG, "Load media file success.")
                 }
 
                 OptResult.Fail -> {
-                    Log.e(TAG, "Load media file fail.")
+                    AppLog.e(TAG, "Load media file fail.")
                 }
             }
         }
@@ -396,7 +404,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
     override fun onPause() {
         super.onPause()
         val player = (stateFlow.value.loadStatus as? PlayerLoadStatus.Prepared)?.player
-        if (player != null && player.getState() is tMediaPlayerState.Playing) {
+        if (player != null && player.getState() is tMediaPlayerState.Playing && player.getMediaInfo()?.isSeekable == true) {
             player.pause()
         }
     }
