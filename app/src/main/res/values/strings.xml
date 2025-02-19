@@ -102,4 +102,12 @@
     <string name="add_iptv_source_dialog_input_source_hint">Input IPTV source link.</string>
     <string name="add_iptv_source_dialog_input_link_error">Source link is empty.</string>
     <!--endregion -->
+
+    <!--region ModifyIptvSourceDialog-->
+    <string name="modify_iptv_source_dialog_title">Modify IPTV Source</string>
+    <string name="modify_iptv_source_dialog_input_name_hint">Input new IPTV source name.</string>
+    <string name="modify_iptv_source_dialog_input_name_error">New source name is empty.</string>
+    <string name="modify_iptv_source_dialog_input_source_hint">Input new IPTV source link.</string>
+    <string name="modify_iptv_source_dialog_input_link_error">New source link is empty.</string>
+    <!--endregion -->
 </resources>

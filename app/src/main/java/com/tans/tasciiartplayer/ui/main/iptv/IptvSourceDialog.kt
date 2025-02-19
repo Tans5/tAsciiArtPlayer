@@ -81,7 +81,7 @@ class IptvSourceDialog : BaseCoroutineStateDialogFragment<IptvSourceDialog.Compa
                 itemViewBinding.titleTv.text = data.second.title
                 itemViewBinding.linkTv.text = data.second.sourceUrl
                 itemViewBinding.modifyIv.clicks(this@IptvSourceDialog) {
-                    // TODO: Modify
+                    ModifyIptvSourceDialog(data.second).showSafe(this@IptvSourceDialog.childFragmentManager, "ModifyIptvSourceDialog#${System.currentTimeMillis()}")
                 }
                 itemViewBinding.deleteIv.clicks(this@IptvSourceDialog) {
                     IptvManager.deleteIptvSource(data.second)
