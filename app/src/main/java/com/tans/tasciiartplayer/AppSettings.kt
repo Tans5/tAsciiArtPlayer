@@ -11,10 +11,12 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.tans.tmediaplayer.player.model.AudioChannel
 import com.tans.tmediaplayer.player.model.AudioSampleBitDepth
 import com.tans.tmediaplayer.player.model.AudioSampleRate
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import java.util.Optional
 
 object AppSettings {
@@ -50,6 +52,10 @@ object AppSettings {
         return dataStore.data.firstOrNull()?.get(VIDEO_DECODE_HARDWARE_KEY) ?: true
     }
 
+    fun isVideoDecodeHardwareBlocking(): Boolean = runBlocking(appGlobalCoroutineScope.coroutineContext) {
+        isVideoDecodeHardware()
+    }
+
     suspend fun setVideoDecodeHardware(videoDecodeHardware: Boolean) {
         dataStore.edit { it[VIDEO_DECODE_HARDWARE_KEY] = videoDecodeHardware }
     }
@@ -57,6 +63,10 @@ object AppSettings {
     suspend fun getAudioOutputChannels(): AudioChannel {
         val channel = dataStore.data.firstOrNull()?.get(AUDIO_OUTPUT_CHANNELS_KEY)
         return AudioChannel.entries.find { it.channel == channel } ?: AudioChannel.Stereo
+    }
+
+    fun getAudioOutputChannelsBlocking(): AudioChannel = runBlocking(appGlobalCoroutineScope.coroutineContext) {
+        getAudioOutputChannels()
     }
 
     suspend fun setAudioOutputChannels(channel: AudioChannel) {
@@ -68,6 +78,10 @@ object AppSettings {
         return AudioSampleRate.entries.find { it.rate == sampleRate } ?: AudioSampleRate.Rate48000
     }
 
+    fun getAudioOutputSampleRateBlocking(): AudioSampleRate = runBlocking(appGlobalCoroutineScope.coroutineContext) {
+        getAudioOutputSampleRate()
+    }
+
     suspend fun setAudioOutputSampleRate(simpleRate: AudioSampleRate) {
         dataStore.edit { it[AUDIO_OUTPUT_SAMPLE_RATE_KEY] = simpleRate.rate }
     }
@@ -75,6 +89,10 @@ object AppSettings {
     suspend fun getAudioOutputSampleFormat(): AudioSampleBitDepth {
         val simpleDepth = dataStore.data.firstOrNull()?.get(AUDIO_OUTPUT_SAMPLE_FMT_KEY)
         return AudioSampleBitDepth.entries.find { it.depth == simpleDepth } ?: AudioSampleBitDepth.SixteenBits
+    }
+
+    fun getAudioOutputSampleFormatBlocking(): AudioSampleBitDepth = runBlocking(appGlobalCoroutineScope.coroutineContext) {
+        getAudioOutputSampleFormat()
     }
 
     suspend fun setAudioOutputSampleFormat(simpleFormat: AudioSampleBitDepth) {

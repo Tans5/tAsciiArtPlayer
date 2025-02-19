@@ -47,19 +47,18 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
     override val layoutId: Int = R.layout.video_player_activity
 
+    private val mediaPlayer by lazyViewModelField {
+        tMediaPlayer(
+            audioOutputChannel = AppSettings.getAudioOutputChannelsBlocking(),
+            audioOutputSampleRate = AppSettings.getAudioOutputSampleRateBlocking(),
+            audioOutputSampleBitDepth = AppSettings.getAudioOutputSampleFormatBlocking(),
+            enableVideoHardwareDecoder = AppSettings.isVideoDecodeHardwareBlocking()
+        )
+    }
+
     override fun CoroutineScope.firstLaunchInitDataCoroutine() {
         launch(Dispatchers.IO) {
             AudioPlayerManager.removeAudioList()
-            val mediaPlayer = tMediaPlayer(
-                audioOutputChannel = AppSettings.getAudioOutputChannels(),
-                audioOutputSampleRate = AppSettings.getAudioOutputSampleRate(),
-                audioOutputSampleBitDepth = AppSettings.getAudioOutputSampleFormat(),
-                enableVideoHardwareDecoder = AppSettings.isVideoDecodeHardware()
-            )
-            if (isFinishing || isDestroyed) {
-                mediaPlayer.release()
-                return@launch
-            }
 
             mediaPlayer.setListener(object : tMediaPlayerListener {
                 override fun onPlayerState(state: tMediaPlayerState) {
@@ -89,14 +88,8 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 }
             }
 
-            if (isFinishing || isDestroyed) {
-                mediaPlayer.release()
-                return@launch
-            }
-
             when (loadResult) {
                 OptResult.Success -> {
-                    updateState { it.copy(loadStatus = PlayerLoadStatus.Prepared(mediaPlayer)) }
                     // Observe headset
                     this@firstLaunchInitDataCoroutine.launch {
                         merge(
@@ -187,7 +180,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
         launch {
             viewBinding.seekingLoadingPb.show()
             // Waiting player active.
-            val mediaPlayer = stateFlow.map { it.loadStatus }.filterIsInstance<PlayerLoadStatus.Prepared>().first().player
+            stateFlow.map { it.playerState }.filterIsInstance<tMediaPlayerState.Prepared>().first()
             viewBinding.seekingLoadingPb.hide()
             mediaPlayer.attachPlayerView(viewBinding.playerView)
             mediaPlayer.attachSubtitleView(viewBinding.subtitleTv)
@@ -403,31 +396,27 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
     override fun onPause() {
         super.onPause()
-        val player = (stateFlow.value.loadStatus as? PlayerLoadStatus.Prepared)?.player
-        if (player != null && player.getState() is tMediaPlayerState.Playing && player.getMediaInfo()?.isSeekable == true) {
-            player.pause()
+        if (mediaPlayer.getState() is tMediaPlayerState.Playing && mediaPlayer.getMediaInfo()?.isSeekable == true) {
+            mediaPlayer.pause()
         }
     }
 
     override fun onViewModelCleared() {
         super.onViewModelCleared()
         // Update play history when finished.
-        val player = (stateFlow.value.loadStatus as? PlayerLoadStatus.Prepared)?.player
-        if (player != null) {
-            val info = player.getMediaInfo()
-            if (info != null && intent.getInputMediaType() == InputMediaType.MediaStore) {
-                val mediaId = intent.getMediaIdExtra()
-                val state = player.getState()
-                if (state is tMediaPlayerState.Stopped || state is tMediaPlayerState.PlayEnd) {
-                    VideoManager.updateOrInsertWatchHistory(videoId = mediaId, watchHistory = info.duration)
-                } else {
-                    val progress = player.getProgress()
-                    VideoManager.updateOrInsertWatchHistory(videoId = mediaId, watchHistory = progress)
-                }
+        val info = mediaPlayer.getMediaInfo()
+        if (info != null && intent.getInputMediaType() == InputMediaType.MediaStore) {
+            val mediaId = intent.getMediaIdExtra()
+            val state = mediaPlayer.getState()
+            if (state is tMediaPlayerState.Stopped || state is tMediaPlayerState.PlayEnd) {
+                VideoManager.updateOrInsertWatchHistory(videoId = mediaId, watchHistory = info.duration)
+            } else {
+                val progress = mediaPlayer.getProgress()
+                VideoManager.updateOrInsertWatchHistory(videoId = mediaId, watchHistory = progress)
             }
-            Dispatchers.IO.asExecutor().execute {
-                player.release()
-            }
+        }
+        Dispatchers.IO.asExecutor().execute {
+            mediaPlayer.release()
         }
     }
 
@@ -534,16 +523,9 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             val duration: Long = 0L
         )
 
-        sealed class PlayerLoadStatus {
-            data class Prepared(val player: tMediaPlayer) : PlayerLoadStatus()
-
-            data object None : PlayerLoadStatus()
-        }
-
         data class State(
             val playerState: tMediaPlayerState = tMediaPlayerState.NoInit,
             val progress: Progress = Progress(),
-            val loadStatus: PlayerLoadStatus = PlayerLoadStatus.None
         )
 
         private enum class InputMediaType {
