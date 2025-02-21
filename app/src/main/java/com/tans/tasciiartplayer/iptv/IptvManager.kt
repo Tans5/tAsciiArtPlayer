@@ -87,7 +87,7 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
             stateFlow()
                 .map { it.selectedIptvSource }
                 .distinctUntilChangedBy { it.getOrNull()?.sourceUrl }
-                .collect { loadIptvSource(it) }
+                .collect { loadIptvSource(it, false) }
         }
     }
 
@@ -110,7 +110,7 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
 
     suspend fun refresh() {
         val source = currentState().selectedIptvSource
-        loadIptvSource(source)
+        loadIptvSource(source, true)
     }
 
     private fun getDaoOrError(): IptvDao {
@@ -119,7 +119,7 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
 
     private val loadIptvSourceLock = Mutex()
 
-    private suspend fun loadIptvSource(selectedSource: Optional<IptvSource>) {
+    private suspend fun loadIptvSource(selectedSource: Optional<IptvSource>, isRefreshing: Boolean) {
         loadIptvSourceLock.withLock {
             val source = selectedSource.getOrNull()
             if (source == null) {
@@ -136,25 +136,37 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
                     LoadIptvSourceStatus.Loading(source)
                 }
                 is LoadIptvSourceStatus.LoadSuccess -> {
-                    LoadIptvSourceStatus.Refreshing(
-                        source = source,
-                        lastLoaded = currentLoadingStatus.loaded,
-                        lastSource = currentLoadingStatus.source
-                    )
+                    if (isRefreshing) {
+                        LoadIptvSourceStatus.Refreshing(
+                            source = source,
+                            lastLoaded = currentLoadingStatus.loaded,
+                            lastSource = currentLoadingStatus.source
+                        )
+                    } else {
+                        LoadIptvSourceStatus.Loading(source)
+                    }
                 }
                 is LoadIptvSourceStatus.RefreshFail -> {
-                    LoadIptvSourceStatus.Refreshing(
-                        source = source,
-                        lastLoaded = currentLoadingStatus.lastLoaded,
-                        lastSource = currentLoadingStatus.lastSource
-                    )
+                    if (isRefreshing) {
+                        LoadIptvSourceStatus.Refreshing(
+                            source = source,
+                            lastLoaded = currentLoadingStatus.lastLoaded,
+                            lastSource = currentLoadingStatus.lastSource
+                        )
+                    } else {
+                        LoadIptvSourceStatus.Loading(source)
+                    }
                 }
                 is LoadIptvSourceStatus.RefreshSuccess -> {
-                    LoadIptvSourceStatus.Refreshing(
-                        source = source,
-                        lastLoaded = currentLoadingStatus.loaded,
-                        lastSource = currentLoadingStatus.source
-                    )
+                    if (isRefreshing) {
+                        LoadIptvSourceStatus.Refreshing(
+                            source = source,
+                            lastLoaded = currentLoadingStatus.loaded,
+                            lastSource = currentLoadingStatus.source
+                        )
+                    } else {
+                        LoadIptvSourceStatus.Loading(source)
+                    }
                 }
             }
             updateState { it.copy(loadIptvSourceStatus = startStatus) }

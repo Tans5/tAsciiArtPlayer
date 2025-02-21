@@ -73,10 +73,10 @@ class IptvFragment : BaseCoroutineStateFragment<Unit>(Unit) {
                         is IptvManager.LoadIptvSourceStatus.LoadSuccess -> loadStatus.loaded.extinfs
                         is IptvManager.LoadIptvSourceStatus.RefreshSuccess -> loadStatus.loaded.extinfs
                         is IptvManager.LoadIptvSourceStatus.Refreshing -> loadStatus.lastLoaded.extinfs
+                        is IptvManager.LoadIptvSourceStatus.RefreshFail -> loadStatus.lastLoaded.extinfs
                         is IptvManager.LoadIptvSourceStatus.LoadFail,
                         is IptvManager.LoadIptvSourceStatus.Loading,
-                        IptvManager.LoadIptvSourceStatus.NoData,
-                        is IptvManager.LoadIptvSourceStatus.RefreshFail -> {
+                        IptvManager.LoadIptvSourceStatus.NoData -> {
                             emptyList()
                         }
                     }
@@ -110,7 +110,7 @@ class IptvFragment : BaseCoroutineStateFragment<Unit>(Unit) {
                     when (val loadStatus = it.loadIptvSourceStatus) {
                         is IptvManager.LoadIptvSourceStatus.LoadFail -> listOf(loadStatus.msg)
                         IptvManager.LoadIptvSourceStatus.NoData -> listOf(ContextCompat.getString(requireContext(), R.string.iptv_fgt_no_data))
-                        is IptvManager.LoadIptvSourceStatus.RefreshFail -> listOf(loadStatus.msg)
+                        is IptvManager.LoadIptvSourceStatus.RefreshFail,
                         is IptvManager.LoadIptvSourceStatus.Loading,
                         is IptvManager.LoadIptvSourceStatus.LoadSuccess,
                         is IptvManager.LoadIptvSourceStatus.RefreshSuccess,
