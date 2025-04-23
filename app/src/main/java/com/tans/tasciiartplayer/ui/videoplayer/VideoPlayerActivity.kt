@@ -188,8 +188,8 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                 mediaPlayer.play()
             }
             val mediaInfo = mediaPlayer.getMediaInfo()
-            val isSeekable = mediaInfo?.isSeekable ?: false
-            if (isSeekable && mediaInfo != null) {
+            val isSeekable = mediaInfo?.isSeekable == true
+            if (isSeekable) {
                 // Seekable
                 viewBinding.durationTv.show()
                 viewBinding.playerSb.show()

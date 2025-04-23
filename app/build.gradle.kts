@@ -70,6 +70,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 room { schemaDirectory("$projectDir/schemas") }
@@ -95,6 +98,9 @@ dependencies {
     // Tans
     implementation(libs.tmediaplayer)
     implementation(libs.tuiutils)
+    implementation(libs.tapm.core)
+    implementation(libs.tapm.autoinit)
+    debugImplementation(libs.tapm.log)
 
     // Room
     implementation(libs.androidx.room.runtime)

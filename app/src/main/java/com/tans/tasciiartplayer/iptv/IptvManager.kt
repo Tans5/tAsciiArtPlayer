@@ -1,8 +1,10 @@
 package com.tans.tasciiartplayer.iptv
 
 import android.app.Application
+import com.tans.tapm.monitors.HttpRequestMonitor
 import com.tans.tasciiartplayer.AppLog
 import com.tans.tasciiartplayer.AppSettings
+import com.tans.tasciiartplayer.BuildConfig
 import com.tans.tasciiartplayer.appGlobalCoroutineScope
 import com.tans.tasciiartplayer.database.dao.IptvDao
 import com.tans.tasciiartplayer.database.entity.IptvSource
@@ -29,7 +31,13 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
     private var dao: IptvDao? = null
 
     private val okHttpClient: OkHttpClient by lazy {
-        OkHttpClient.Builder().build()
+        OkHttpClient.Builder()
+            .apply {
+                if (BuildConfig.DEBUG) {
+                    addInterceptor(HttpRequestMonitor)
+                }
+            }
+            .build()
     }
 
     fun init(app: Application, dao: IptvDao) {

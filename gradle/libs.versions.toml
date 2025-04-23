@@ -1,26 +1,27 @@
 [versions]
-agp = "8.7.3"
+agp = "8.9.2"
 kotlin = "2.0.21"
 googleKsp = "2.0.21-1.0.26"
-coreKtx = "1.15.0"
+coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
 material = "1.12.0"
-activity = "1.10.0"
-room = "2.6.1"
-datastore = "1.1.2"
-constraintlayout = "2.2.0"
+activity = "1.10.1"
+room = "2.7.0"
+datastore = "1.1.4"
+constraintlayout = "2.2.1"
 corouines = "1.10.1"
 tuiutils = "1.1.1"
 glide = "4.16.0"
 swiperefreshlayout = "1.1.0"
 tmediaplayer = "1.5.4"
 androidx-media = "1.7.0"
-androidx-media3 = "1.5.1"
+androidx-media3 = "1.6.1"
 androidx-lifecycle = "2.8.7"
 okhttp = "4.12.0"
+tapm = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +51,10 @@ androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.re
 androidx-media = { group = "androidx.media", name = "media", version.ref = "androidx-media" }
 androidx-lifecycle-progress = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "androidx-lifecycle" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+tapm-core = { group = "io.github.tans5", name= "tapm-core", version.ref = "tapm" }
+tapm-autoinit = { group = "io.github.tans5", name= "tapm-autoinit", version.ref = "tapm" }
+tapm-log = { group = "io.github.tans5", name= "tapm-log", version.ref = "tapm" }
+tapm-breakpad = { group = "io.github.tans5", name= "tapm-breakpad", version.ref = "tapm" }
 
 
 [plugins]

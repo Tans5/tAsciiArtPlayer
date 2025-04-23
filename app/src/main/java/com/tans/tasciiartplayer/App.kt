@@ -1,7 +1,15 @@
 package com.tans.tasciiartplayer
 
 import android.app.Application
+import android.content.Context
 import androidx.room.Room
+import com.tans.tapm.autoinit.tApmAutoInit
+import com.tans.tapm.monitors.CpuPowerCostMonitor
+import com.tans.tapm.monitors.CpuUsageMonitor
+import com.tans.tapm.monitors.ForegroundScreenPowerCostMonitor
+import com.tans.tapm.monitors.HttpRequestMonitor
+import com.tans.tapm.monitors.MainThreadLagMonitor
+import com.tans.tapm.monitors.MemoryUsageMonitor
 import com.tans.tasciiartplayer.audio.audiolist.AudioListManager
 import com.tans.tasciiartplayer.audio.audioplayer.AudioPlayerManager
 import com.tans.tasciiartplayer.database.AppDatabase
@@ -14,6 +22,27 @@ import com.tans.tuiutils.systembar.AutoApplySystemBarAnnotation
 
 class App : Application() {
 
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(base)
+        tApmAutoInit.addBuilderInterceptor { builder ->
+            if (BuildConfig.DEBUG) {
+                builder
+                    // CpuUsage
+                    .addMonitor(CpuUsageMonitor().apply { setMonitorInterval(1000L * 10) })
+                    // CpuPowerCost
+                    .addMonitor(CpuPowerCostMonitor())
+                    // ForegroundScreenPowerCost
+                    .addMonitor(ForegroundScreenPowerCostMonitor())
+                    // Http
+                    .addMonitor(HttpRequestMonitor())
+                    // MainThreadLag
+                    .addMonitor(MainThreadLagMonitor())
+                    // MemoryUsage
+                    .addMonitor(MemoryUsageMonitor())
+            }
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         AutoApplySystemBarAnnotation.init(this)
@@ -21,7 +50,8 @@ class App : Application() {
             context = this,
             klass = AppDatabase::class.java,
             name = AppDatabase.DATA_BASE_NAME
-        ).fallbackToDestructiveMigration()
+        )
+            .fallbackToDestructiveMigration(false)
             .build()
 
         AppSettings.init(this)
