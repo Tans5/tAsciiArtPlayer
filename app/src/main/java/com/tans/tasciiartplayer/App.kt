@@ -45,6 +45,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        AppLog.init(this)
         AutoApplySystemBarAnnotation.init(this)
         val database = Room.databaseBuilder(
             context = this,

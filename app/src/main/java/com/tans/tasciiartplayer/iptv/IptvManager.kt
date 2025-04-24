@@ -205,7 +205,7 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
                 }
                 updateState { s -> s.copy(loadIptvSourceStatus = failStatus) }
             }.onSuccess {
-                AppLog.d(TAG, "Load iptv source url ${source.sourceUrl} success: $it.")
+                AppLog.d(TAG, "Load iptv source url ${source.sourceUrl} success.")
                 val successStatus = when (startStatus) {
                     is LoadIptvSourceStatus.Loading -> {
                         LoadIptvSourceStatus.LoadSuccess(source = source, loaded = it)

@@ -101,6 +101,7 @@ dependencies {
     implementation(libs.tapm.core)
     implementation(libs.tapm.autoinit)
     debugImplementation(libs.tapm.log)
+    implementation(libs.tlog)
 
     // Room
     implementation(libs.androidx.room.runtime)

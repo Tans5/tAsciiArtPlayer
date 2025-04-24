@@ -9,19 +9,20 @@ espressoCore = "3.6.1"
 appcompat = "1.7.0"
 material = "1.12.0"
 activity = "1.10.1"
-room = "2.7.0"
+room = "2.7.1"
 datastore = "1.1.4"
 constraintlayout = "2.2.1"
 corouines = "1.10.1"
 tuiutils = "1.1.1"
 glide = "4.16.0"
 swiperefreshlayout = "1.1.0"
-tmediaplayer = "1.5.4"
+tmediaplayer = "1.5.5"
 androidx-media = "1.7.0"
 androidx-media3 = "1.6.1"
 androidx-lifecycle = "2.8.7"
 okhttp = "4.12.0"
 tapm = "1.0.1"
+tlog = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -55,6 +56,7 @@ tapm-core = { group = "io.github.tans5", name= "tapm-core", version.ref = "tapm"
 tapm-autoinit = { group = "io.github.tans5", name= "tapm-autoinit", version.ref = "tapm" }
 tapm-log = { group = "io.github.tans5", name= "tapm-log", version.ref = "tapm" }
 tapm-breakpad = { group = "io.github.tans5", name= "tapm-breakpad", version.ref = "tapm" }
+tlog = { group = "io.github.tans5", name = "tlog", version.ref = "tlog" }
 
 
 [plugins]
