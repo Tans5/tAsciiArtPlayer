@@ -46,11 +46,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            packaging {
-                jniLibs {
-                    keepDebugSymbols += listOf("*/arm64-v8a/*.so", "*/armeabi-v7a/*.so", "*/x86/*.so", "*/x86_64/*.so")
-                }
-            }
             signingConfig = signingConfigs.findByName("debug")
         }
         release {
