@@ -23,3 +23,10 @@
 -keep class com.google.android.material.bottomsheet.BottomSheetBehavior { *; }
 
 -keep class androidx.viewpager2.adapter.FragmentStateAdapter {*;}
+
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
+    public static *** w(...);
+}
