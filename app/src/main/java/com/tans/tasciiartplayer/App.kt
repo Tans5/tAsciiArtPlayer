@@ -19,6 +19,7 @@ import com.tans.tasciiartplayer.hwevent.PhoneObserver
 import com.tans.tasciiartplayer.iptv.IptvManager
 import com.tans.tasciiartplayer.video.VideoManager
 import com.tans.tuiutils.systembar.AutoApplySystemBarAnnotation
+import okhttp3.OkHttpClient
 
 class App : Application() {
 
@@ -63,5 +64,18 @@ class App : Application() {
         HeadsetObserver.init(this)
         PhoneObserver.init(this)
         MediaKeyObserver.init(this)
+    }
+
+    companion object {
+
+        val okhttpClient: OkHttpClient by lazy {
+            OkHttpClient.Builder()
+                .apply {
+                    if (BuildConfig.DEBUG) {
+                        addInterceptor(HttpRequestMonitor)
+                    }
+                }
+                .build()
+        }
     }
 }

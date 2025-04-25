@@ -1,10 +1,9 @@
 package com.tans.tasciiartplayer.iptv
 
 import android.app.Application
-import com.tans.tapm.monitors.HttpRequestMonitor
+import com.tans.tasciiartplayer.App
 import com.tans.tasciiartplayer.AppLog
 import com.tans.tasciiartplayer.AppSettings
-import com.tans.tasciiartplayer.BuildConfig
 import com.tans.tasciiartplayer.appGlobalCoroutineScope
 import com.tans.tasciiartplayer.database.dao.IptvDao
 import com.tans.tasciiartplayer.database.entity.IptvSource
@@ -19,7 +18,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -29,16 +27,6 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
     private var application: Application? = null
 
     private var dao: IptvDao? = null
-
-    private val okHttpClient: OkHttpClient by lazy {
-        OkHttpClient.Builder()
-            .apply {
-                if (BuildConfig.DEBUG) {
-                    addInterceptor(HttpRequestMonitor)
-                }
-            }
-            .build()
-    }
 
     fun init(app: Application, dao: IptvDao) {
         this.application = app
@@ -185,7 +173,7 @@ object IptvManager : CoroutineState<IptvManager.IptvManagerState> by CoroutineSt
                     .get()
                     .url(url)
                     .build()
-                val call = okHttpClient.newCall(request)
+                val call = App.okhttpClient.newCall(request)
                 val response = call.execute()
                 val body = response.body?.string() ?: error("Empty response body: ${source.sourceUrl}")
                 body.parseAsM3u8()
