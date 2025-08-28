@@ -46,7 +46,8 @@ object AudioPlayerManager : tMediaPlayerListener, CoroutineState<AudioPlayerMana
                 audioOutputChannel = AppSettings.getAudioOutputChannels(),
                 audioOutputSampleBitDepth = AppSettings.getAudioOutputSampleFormat(),
                 audioOutputSampleRate = AppSettings.getAudioOutputSampleRate(),
-                enableVideoHardwareDecoder = false
+                enableVideoHardwareDecoder = false,
+                enableHwSurface = false
             )
             player.getAndSet(p)?.release()
             p.setListener(this@AudioPlayerManager)
