@@ -39,6 +39,8 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -162,7 +164,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
                     updateState {
                         val progress = mediaPlayer.getProgress()
                         val duration = mediaPlayer.getMediaInfo()?.duration ?: 0L
-                        it.copy(playerState = state, progress = Progress(progress = progress.coerceIn(0, duration), duration = duration))
+                        it.copy(playerState = state, progress = Progress(progress = progress, duration = duration))
                     }
                 }
             }
@@ -170,7 +172,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             override fun onProgressUpdate(progress: Long, duration: Long) {
                 launch {
                     if (viewBinding.actionLayout.isVisible()) {
-                        updateState { it.copy(progress = Progress(progress = progress.coerceIn(progress, duration), duration = duration)) }
+                        updateState { it.copy(progress = Progress(progress = progress, duration = duration)) }
                     }
                 }
             }
@@ -203,15 +205,23 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
                 // Render durationText
                 this@bindContentViewCoroutine.renderStateNewCoroutine({ it.progress.duration }) { duration ->
-                    viewBinding.durationTv.text = duration.formatDuration()
+                    if (duration > 0) {
+                        viewBinding.durationTv.text = duration.formatDuration()
+                    } else {
+                        viewBinding.durationTv.text = ""
+                    }
                 }
 
                 // Update Seekbar progress.
                 var isPlayerSbInTouching = false
                 this@bindContentViewCoroutine.renderStateNewCoroutine({ it.progress }) { (progress, duration) ->
                     if (!isPlayerSbInTouching && mediaPlayer.getState() !is tMediaPlayerState.Seeking) {
-                        val progressInPercent = ((progress - mediaInfo.startTime).toFloat() * 100.0 / duration.toFloat() + 0.5f).toInt()
-                        viewBinding.playerSb.progress = progressInPercent
+                        if (duration <= 0) {
+                            viewBinding.playerSb.progress = 100
+                        } else {
+                            val progressInPercent = ((progress - mediaInfo.startTime).toFloat() * 100.0 / duration.toFloat() + 0.5f).toInt()
+                            viewBinding.playerSb.progress = progressInPercent.coerceIn(0, 100)
+                        }
                     }
                 }
 

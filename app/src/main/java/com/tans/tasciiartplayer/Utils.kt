@@ -3,10 +3,19 @@ package com.tans.tasciiartplayer
 import java.util.Locale
 
 fun Long.formatDuration(): String {
-    val durationInSeconds = this / 1000
-    val minuets = durationInSeconds / 60
-    val seconds = durationInSeconds % 60
-    return "%02d:%02d".format(minuets, seconds)
+    return if (this < 0) {
+        "--:--"
+    } else {
+        val durationInSeconds = this / 1000
+        val hours = durationInSeconds / (60 * 60)
+        val minuets = durationInSeconds % (60 * 60) / 60
+        val seconds = durationInSeconds % 60
+        if (hours > 0) {
+            "%d:%02d:%02d".format(hours, minuets, seconds)
+        } else {
+            "%02d:%02d".format(minuets, seconds)
+        }
+    }
 }
 
 private const val KB = 1024
