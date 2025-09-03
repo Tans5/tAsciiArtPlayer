@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
@@ -102,7 +103,11 @@ class AudioPlaybackService : Service(), CoroutineScope by CoroutineScope(Dispatc
             .setSilent(true)
             .setAutoCancel(false)
             .setOngoing(true)
-        startForeground(serviceHashCode, notificationBuilder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(serviceHashCode, notificationBuilder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
+        } else {
+            startForeground(serviceHashCode, notificationBuilder.build())
+        }
         observePlayingMediaStoreAudioChanged { audio ->
             if (audio != null) {
                 notificationBuilder.setContentTitle(audio.title)

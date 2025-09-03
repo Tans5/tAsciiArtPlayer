@@ -97,8 +97,8 @@ class VideoPlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
                 if (fromUser) {
                     asciiArtFilter.setCharLineWidth(requestWidth)
                     requestRender()
-                    viewBinding.charWidthTv.text = ctx.getString(R.string.player_setting_dialog_ascii_char_width, requestWidth)
                 }
+                viewBinding.charWidthTv.text = ctx.getString(R.string.player_setting_dialog_ascii_char_width, requestWidth)
             }
         })
         val charWidthProgress = ((asciiArtFilter.getCharLineWith().toFloat() - AsciiArtImageFilter.MIN_CHAR_LINE_WIDTH.toFloat()) / (AsciiArtImageFilter.MAX_CHAR_LINE_WIDTH - AsciiArtImageFilter.MIN_CHAR_LINE_WIDTH).toFloat() * 100.0f + 0.5f).toInt()
@@ -115,12 +115,44 @@ class VideoPlayerSettingsDialog : BaseCoroutineStateDialogFragment<Unit> {
                     val requestRate = progress.toFloat() / 100.0f
                     asciiArtFilter.colorFillRate(requestRate)
                     requestRender()
-                    viewBinding.imageColorFillRateTv.text = ctx.getString(R.string.player_setting_dialog_ascii_image_color_fill_rate, progress)
                 }
+                viewBinding.imageColorFillRateTv.text = ctx.getString(R.string.player_setting_dialog_ascii_image_color_fill_rate, progress)
             }
         })
         val colorFillProgress = (asciiArtFilter.getColorFillRate() * 100.0f + 0.5f).toInt()
         viewBinding.imageColorFillRateTv.text = ctx.getString(R.string.player_setting_dialog_ascii_image_color_fill_rate, colorFillProgress)
         viewBinding.imageColorFillRateSb.progress = colorFillProgress
+
+        viewBinding.subtitleXOffsetSb.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onStartTrackingTouch(seekBar: SeekBar?) { }
+            override fun onStopTrackingTouch(seekBar: SeekBar?) { }
+
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    val requestRate = progress.toFloat() / 100.0f
+                    player.setSubtitleXOffset(requestRate)
+                    requestRender()
+                }
+                viewBinding.subtitleXOffsetTv.text = ctx.getString(R.string.player_setting_dialog_subtitle_x_offset, progress)
+            }
+        })
+        viewBinding.subtitleXOffsetSb.progress = (player.getSubtitleXOffset() * 100.0f).toInt()
+        viewBinding.subtitleXOffsetTv.text = ctx.getString(R.string.player_setting_dialog_subtitle_x_offset, viewBinding.subtitleXOffsetSb.progress)
+
+        viewBinding.subtitleYOffsetSb.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onStartTrackingTouch(seekBar: SeekBar?) { }
+            override fun onStopTrackingTouch(seekBar: SeekBar?) { }
+
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    val requestRate = progress.toFloat() / 100.0f
+                    player.setSubtitleYOffset(requestRate)
+                    requestRender()
+                }
+                viewBinding.subtitleYOffsetTv.text = ctx.getString(R.string.player_setting_dialog_subtitle_y_offset, progress)
+            }
+        })
+        viewBinding.subtitleYOffsetSb.progress = (player.getSubtitleYOffset() * 100.0f).toInt()
+        viewBinding.subtitleYOffsetTv.text = ctx.getString(R.string.player_setting_dialog_subtitle_y_offset, viewBinding.subtitleYOffsetSb.progress)
     }
 }

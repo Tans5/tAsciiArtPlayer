@@ -45,6 +45,9 @@
     <string name="player_setting_dialog_ascii_color_reverse">Color Reverse: </string>
     <string name="player_setting_dialog_ascii_char_width">Char Width: %d</string>
     <string name="player_setting_dialog_ascii_image_color_fill_rate">Image Color Fill Rate: %d</string>
+    <string name="player_setting_dialog_subtitle_settings">Subtitle Settings: </string>
+    <string name="player_setting_dialog_subtitle_x_offset">Subtitle X-axis Offset: %d</string>
+    <string name="player_setting_dialog_subtitle_y_offset">Subtitle Y-axis Offset: %d</string>
     <!--endregion-->
 
     <!--region MainActivity -->

@@ -60,20 +60,6 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
         launch(Dispatchers.IO) {
             AudioPlayerManager.removeAudioList()
 
-            mediaPlayer.setListener(object : tMediaPlayerListener {
-                override fun onPlayerState(state: tMediaPlayerState) {
-                    this@firstLaunchInitDataCoroutine.launch {
-                        updateState { it.copy(playerState = state) }
-                    }
-                }
-
-                override fun onProgressUpdate(progress: Long, duration: Long) {
-                    this@firstLaunchInitDataCoroutine.launch {
-                        updateState { it.copy(progress = Progress(progress = progress, duration = duration)) }
-                    }
-                }
-            })
-
             val inputMediaType = intent.getInputMediaType()
             val loadResult = when (inputMediaType) {
                 InputMediaType.MediaStore -> {
@@ -169,6 +155,27 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
         val viewBinding = VideoPlayerActivityBinding.bind(contentView)
 
+
+        mediaPlayer.setListener(object : tMediaPlayerListener {
+            override fun onPlayerState(state: tMediaPlayerState) {
+                launch {
+                    updateState {
+                        val progress = mediaPlayer.getProgress()
+                        val duration = mediaPlayer.getMediaInfo()?.duration ?: 0L
+                        it.copy(playerState = state, progress = Progress(progress = progress.coerceIn(0, duration), duration = duration))
+                    }
+                }
+            }
+
+            override fun onProgressUpdate(progress: Long, duration: Long) {
+                launch {
+                    if (viewBinding.actionLayout.isVisible()) {
+                        updateState { it.copy(progress = Progress(progress = progress.coerceIn(progress, duration), duration = duration)) }
+                    }
+                }
+            }
+        })
+
         // Error State observe.
         renderStateNewCoroutine({ it.playerState }) {
             if (it is tMediaPlayerState.Error) {
@@ -183,7 +190,6 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
             stateFlow.map { it.playerState }.filterIsInstance<tMediaPlayerState.Prepared>().first()
             viewBinding.seekingLoadingPb.hide()
             mediaPlayer.attachPlayerView(viewBinding.playerView)
-            mediaPlayer.attachSubtitleView(viewBinding.subtitleTv)
             if (mediaPlayer.getState() is tMediaPlayerState.Prepared) {
                 mediaPlayer.play()
             }
