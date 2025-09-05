@@ -29,6 +29,8 @@
     <string name="media_info_dialog_fps">Fps: %.1f</string>
     <string name="media_info_dialog_pixel_depth">PixelBitDepth: %d bits</string>
     <string name="media_info_dialog_pixel_format">PixelFormat: %s</string>
+    <string name="media_info_dialog_display_rotation">DisplayRotation: %d</string>
+    <string name="media_info_dialog_display_ratio">DisplayRatio: %.3f</string>
     <string name="media_info_dialog_channels">Channels: %d</string>
     <string name="media_info_dialog_simple_rate">SampleRate: %d Hz</string>
     <string name="media_info_dialog_bitrate">Bitrate: %d kbps</string>

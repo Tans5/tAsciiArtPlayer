@@ -164,6 +164,8 @@ fun VideoStreamInfo.getVideoStreamInfoStrings(ctx: Context): List<String> {
         videoKeyValue.add(ctx.getString(R.string.media_info_dialog_pixel_depth, videoPixelBitDepth))
     }
     videoKeyValue.add(ctx.getString(R.string.media_info_dialog_pixel_format, videoPixelFormat.name))
+    videoKeyValue.add(ctx.getString(R.string.media_info_dialog_display_rotation, videoDisplayRotation))
+    videoKeyValue.add(ctx.getString(R.string.media_info_dialog_display_ratio, videoDisplayRatio))
 
     if (videoStreamMetadata.isNotEmpty()) {
         videoKeyValue.add("")
