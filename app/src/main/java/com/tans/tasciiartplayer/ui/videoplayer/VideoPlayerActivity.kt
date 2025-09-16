@@ -39,8 +39,6 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -49,7 +47,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
 
     override val layoutId: Int = R.layout.video_player_activity
 
-    private val mediaPlayer by lazyViewModelField {
+    private val mediaPlayer by lazyViewModelField("mediaPlayer") {
         tMediaPlayer(
             audioOutputChannel = AppSettings.getAudioOutputChannelsBlocking(),
             audioOutputSampleRate = AppSettings.getAudioOutputSampleRateBlocking(),
@@ -156,7 +154,6 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
     @SuppressLint("ClickableViewAccessibility", "Recycle")
     override fun CoroutineScope.bindContentViewCoroutine(contentView: View) {
         val viewBinding = VideoPlayerActivityBinding.bind(contentView)
-
 
         mediaPlayer.setListener(object : tMediaPlayerListener {
             override fun onPlayerState(state: tMediaPlayerState) {
@@ -433,6 +430,7 @@ class VideoPlayerActivity : BaseCoroutineStateActivity<VideoPlayerActivity.Compa
         }
         Dispatchers.IO.asExecutor().execute {
             mediaPlayer.release()
+            AppLog.d(TAG, "Player released.")
         }
     }
 
